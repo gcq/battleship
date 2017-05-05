@@ -14,20 +14,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JButton;
-import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import utils.Enums;
+import ui.interfaces.GridClickListener;
+import ui.interfaces.GridClickPublisher;
 import utils.Enums.Direction;
 import core.Ship;
 
 
-public class BoardPanel extends JPanel implements ActionListener {
+public class BoardPanel extends JPanel implements ActionListener, GridClickPublisher {
 	
 	Color buttonColor; 
 	String[] topBtnsText = {"1","2","3","4","5","6","7","8","9","10"};
 	String[] leftBtnsText = {"A","B","C","D","E","F","G","H","I","J"};
+	
+	GridClickListener listener = new GridClickListener() {
+		
+		@Override
+		public void onGridClick(int x, int y) {
+			System.out.println("Listener per defecte. Crida setGridClickListener. (" + x + ", " + y + ")");
+			
+		}
+	};
+	
 	public BoardPanel () {
 		buttonColor = Color.BLUE;
 		setAlignmentY(Component.TOP_ALIGNMENT);
@@ -54,7 +64,7 @@ public class BoardPanel extends JPanel implements ActionListener {
 				gbc_button.insets = new Insets(0, 0, 0, 0);
 				gbc_button.gridx = gridX+1;
 				gbc_button.gridy = gridY+1;
-				button.setActionCommand(button.getText());
+				button.setActionCommand(gridX + "," + gridY);
 				button.addActionListener(this);
 				add(button, gbc_button);
 				gridY++;
@@ -102,8 +112,17 @@ public class BoardPanel extends JPanel implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
+		System.out.println(e.getActionCommand());
 		
+		String[] coords = e.getActionCommand().split(",");
+		int x = Integer.parseInt(coords[0]);
+		int y = Integer.parseInt(coords[1]);
+		
+		listener.onGridClick(x, y);
+	}
+	
+	public void setGridClickListener(GridClickListener l) {
+		listener = l;
 	}
 	
 	public void addShip(Ship ship) {
@@ -113,7 +132,6 @@ public class BoardPanel extends JPanel implements ActionListener {
 	public void displayShip(int x, int y, Direction direction, int length) {
 		
 	}
-
 }
 
 
