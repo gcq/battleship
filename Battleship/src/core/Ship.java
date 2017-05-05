@@ -63,8 +63,8 @@ public class Ship {
 		return hits;
 	}
 	
-	public void hit() {
-		hits++;
+	public boolean hit() {
+		return ++hits >= getLength();
 	}
 	
 	public int getId() {

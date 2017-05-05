@@ -3,6 +3,7 @@ package core;
 import java.util.HashMap;
 import java.util.Map;
 
+import utils.Enums.HitType;
 import core.exceptions.InvalidShipPlacementException;
 
 public class Player {
@@ -70,16 +71,19 @@ public class Player {
 		}
 	}
 	
-	public boolean hit(int x, int y) {
+	public HitType hit(int x, int y) {
 		int shipid = board.get(x, y);
+		
 		boolean isHit = shipid > 0;
 		
 		if (isHit) {
 			board.set(x, y, -1);
-			ships.get(shipid).hit();
+			
+			if (ships.get(shipid).hit())
+				return HitType.SUNK;
 		}
 		
-		return isHit;
+		return (isHit) ? HitType.HIT : HitType.WATER;
 	}
 	
 	public boolean isDead() {

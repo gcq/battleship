@@ -7,4 +7,10 @@ public class Enums {
 		HORIZONTAL
 	}
 	
+	public static enum HitType {
+		WATER,
+		HIT,
+		SUNK
+	}
+	
 }
