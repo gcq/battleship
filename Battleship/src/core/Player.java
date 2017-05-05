@@ -14,9 +14,9 @@ public class Player {
 	public Player(Board board) {
 		this.board = board;
 		
-		for (int y = 0; y < board.h; y++)
-			for (int x = 0; x < board.w; x++)
-				board.set(x, y, 0);
+		for (int y = 0; y < this.board.h; y++)
+			for (int x = 0; x < this.board.w; x++)
+				this.board.set(x, y, 0);
 		
 		ships = new HashMap<>();
 	}

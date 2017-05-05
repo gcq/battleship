@@ -6,11 +6,14 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import ui.interfaces.GridClickListener;
+
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Component;
 
-public class Gui extends JFrame {
+public class Gui extends JFrame implements GridClickListener{
 
 	private JPanel contentPane;
 	private BoardPanel boardPanel;
@@ -48,9 +51,16 @@ public class Gui extends JFrame {
 		boardPanel.setBounds(50, 50, 682, 562);
 		boardPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		boardPanel.setPreferredSize(new Dimension(500, 500));
+		boardPanel.setGridClickListener(this);
+		
 		contentPane.add(boardPanel);
 		setContentPane(contentPane);
 		pack();
 		
+	}
+
+	@Override
+	public void onGridClick(int x, int y) {
+		System.out.println("Clicked on [" + x + ", " + y + "]");
 	}
 }

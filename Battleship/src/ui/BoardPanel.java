@@ -112,7 +112,7 @@ public class BoardPanel extends JPanel implements ActionListener, GridClickPubli
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		System.out.println(e.getActionCommand());
+//		System.out.println(e.getActionCommand());
 		
 		String[] coords = e.getActionCommand().split(",");
 		int x = Integer.parseInt(coords[0]);

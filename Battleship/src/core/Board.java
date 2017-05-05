@@ -48,7 +48,7 @@ public class Board {
 			
 			for (int x = 0; x < w; x++) {
 				int i = get(x, y);
-				s += ((i >= 0) ? " " : "") + i;
+				s += ((i >= 0) ? " " : "") + ((i >= 0) ? i : " x");
 			}
 			
 			s += "\n";
