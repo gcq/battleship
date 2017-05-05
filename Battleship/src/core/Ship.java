@@ -2,14 +2,10 @@ package core;
 
 import utils.Enums.Direction;
 
-//enum Direction {
-//	VERTICAL,
-//	HORIZONTAL
-//}
 
 public class Ship {
 
-	int x, y;
+	int x, y, id;
 	int length;
 	
 	Direction direction;
@@ -17,11 +13,16 @@ public class Ship {
 	int hits;
 	
 	public Ship(int x, int y, int length, Direction direction) {
+		this(x, y, length, direction, -100);
+	}
+
+	public Ship(int x, int y, int length, Direction direction, int id) {
 		super();
 		this.x = x;
 		this.y = y;
 		this.length = length;
 		this.direction = direction;
+		this.id = id;
 		
 		hits = 0;
 	}
@@ -65,6 +66,16 @@ public class Ship {
 	public void hit() {
 		hits++;
 	}
+	
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+	
+	/* FI GETTERS & SETTERS */
 	
 	public boolean isSunk() {
 		return hits >= length;

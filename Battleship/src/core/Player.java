@@ -1,15 +1,14 @@
 package core;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+
+import core.exceptions.InvalidShipPlacementException;
 
 public class Player {
 	
 	Board board;
-	List<Ship> ships;
-	Map<Integer, Ship> shipIds;
+	Map<Integer, Ship> ships;
 	
 	public Player(Board board) {
 		this.board = board;
@@ -18,37 +17,56 @@ public class Player {
 			for (int x = 0; x < board.w; x++)
 				board.set(x, y, 0);
 		
-		ships = new ArrayList<>();
-		shipIds = new HashMap<>();
+		ships = new HashMap<>();
 	}
 	
-	public void addShip(Ship ship) {
-		ships.add(ship);
-		shipIds.put(getShipId(ship), ship);
+	public void addShip(Ship ship) throws InvalidShipPlacementException {
+		ship.setId(getNextShipId());
+		ships.put(ship.getId(), ship);
+		placeShip(ship);
 	}
 	
-	public int getShipId(Ship ship) {
-		return ships.indexOf(ship) + 1;
+	public int getNextShipId() {
+		return ships.size() + 1;
 	}
 	
-	public void resetBoard() {
-		for (Ship s : ships) {
-			int x = s.getX();
-			int y = s.getY();
+	public boolean checkShipPlacement(Ship s) {
+		int x = s.getX();
+		int y = s.getY();
+		
+		for (int i = 0; i < s.getLength(); i++)
+			if (board.get(x, y) != 0)
+				return false;
+		
+		return true;
+	}
+	
+	private void placeShip(Ship s) throws InvalidShipPlacementException {
+		
+		if (!checkShipPlacement(s))
+			throw new InvalidShipPlacementException();
+		
+		int x = s.getX();
+		int y = s.getY();
+		
+		for (int i = 0; i < s.getLength(); i++) {
+			board.set(x, y, s.getId());
 			
-			for (int i = 0; i < s.getLength(); i++) {
-				board.set(x, y, getShipId(s));
-				
-				switch (s.getDirection()) {
-					case HORIZONTAL:
-						x++;
-						break;
-	
-					case VERTICAL:
-						y++;
-						break;
-				}
+			switch (s.getDirection()) {
+				case HORIZONTAL:
+					x++;
+					break;
+
+				case VERTICAL:
+					y++;
+					break;
 			}
+		}
+	}
+	
+	public void resetBoard() throws InvalidShipPlacementException {
+		for (Ship s : ships.values()) {
+			placeShip(s);
 		}
 	}
 	
@@ -58,14 +76,14 @@ public class Player {
 		
 		if (isHit) {
 			board.set(x, y, -1);
-			shipIds.get(shipid).hit();
+			ships.get(shipid).hit();
 		}
 		
 		return isHit;
 	}
 	
 	public boolean isDead() {
-		for (Ship s : ships) {
+		for (Ship s : ships.values()) {
 			if (!s.isSunk())
 				return false;
 		}
