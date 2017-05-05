@@ -1,9 +1,11 @@
 package core;
 
-enum Direction {
-	VERTICAL,
-	HORIZONTAL
-}
+import utils.Enums.Direction;
+
+//enum Direction {
+//	VERTICAL,
+//	HORIZONTAL
+//}
 
 public class Ship {
 

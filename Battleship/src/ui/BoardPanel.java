@@ -18,6 +18,10 @@ import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import utils.Enums;
+import utils.Enums.Direction;
+import core.Ship;
+
 
 public class BoardPanel extends JPanel implements ActionListener {
 	
@@ -101,8 +105,17 @@ public class BoardPanel extends JPanel implements ActionListener {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public void addShip(Ship ship) {
+		displayShip(ship.getX(), ship.getY(), ship.getDirection(), ship.getLength());
+	}
+	
+	public void displayShip(int x, int y, Direction direction, int length) {
+		
+	}
 
 }
+
 
 class MyMouseAdapter extends MouseAdapter {
 	@Override

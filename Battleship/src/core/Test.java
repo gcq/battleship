@@ -2,6 +2,8 @@ package core;
 
 import java.util.Scanner;
 
+import utils.Enums.Direction;
+
 public class Test {
 
 	public static void main(String[] args) {
