@@ -28,6 +28,7 @@ public class BoardPanel extends JPanel implements ActionListener, GridClickPubli
 	Color buttonColor; 
 	String[] topBtnsText = {"1","2","3","4","5","6","7","8","9","10"};
 	String[] leftBtnsText = {"A","B","C","D","E","F","G","H","I","J"};
+	private List<JButton>btnArray;
 	
 	GridClickListener listener = new GridClickListener() {
 		
@@ -48,7 +49,7 @@ public class BoardPanel extends JPanel implements ActionListener, GridClickPubli
 		gbl_btnPanel.rowWeights = new double[]{0.0,0,0,0,0,0,0,0,0,0};
 		setLayout(gbl_btnPanel);
 		
-		List<JButton>btnArray = new ArrayList<JButton>();
+		btnArray = new ArrayList<JButton>();
 		int gridX = 0;
 		int gridY = 0;
 		
@@ -131,6 +132,14 @@ public class BoardPanel extends JPanel implements ActionListener, GridClickPubli
 	
 	public void displayShip(int x, int y, Direction direction, int length) {
 		
+	}
+	
+	public void printShip (int x, int y) {
+		for (JButton jButton : btnArray) {
+			if (jButton.getActionCommand().equals(String.valueOf(x) + "," + String.valueOf(y))) {
+				jButton.setBackground(Color.gray);
+			}
+		}
 	}
 }
 
