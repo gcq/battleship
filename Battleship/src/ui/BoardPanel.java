@@ -6,12 +6,22 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetDragEvent;
+import java.awt.dnd.DropTargetDropEvent;
+import java.awt.dnd.DropTargetEvent;
+import java.awt.dnd.DropTargetListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TooManyListenersException;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -23,9 +33,12 @@ import utils.Enums.Direction;
 import core.Ship;
 
 
-public class BoardPanel extends JPanel implements ActionListener, GridClickPublisher {
+public class BoardPanel extends JPanel implements ActionListener, GridClickPublisher, DropTargetListener  {
+	
+	DropTarget dropTarget;
 	
 	Color buttonColor; 
+	JPanel[] shipPanels;
 	String[] topBtnsText = {"1","2","3","4","5","6","7","8","9","10"};
 	String[] leftBtnsText = {"A","B","C","D","E","F","G","H","I","J"};
 	private List<JButton>btnArray;
@@ -39,7 +52,14 @@ public class BoardPanel extends JPanel implements ActionListener, GridClickPubli
 		}
 	};
 	
-	public BoardPanel () {
+	
+	public BoardPanel (JPanel[] shipPanels) {
+		this.shipPanels = shipPanels;
+		
+		for (int i = 0; i < shipPanels.length; i++) {
+			new DropTarget(shipPanels[i], DnDConstants.ACTION_COPY_OR_MOVE, this);
+		}
+		
 		buttonColor = Color.BLUE;
 		setAlignmentY(Component.TOP_ALIGNMENT);
 		GridBagLayout gbl_btnPanel = new GridBagLayout();
@@ -133,14 +153,65 @@ public class BoardPanel extends JPanel implements ActionListener, GridClickPubli
 	public void displayShip(int x, int y, Direction direction, int length) {
 		
 	}
-	
-	public void printShip (int x, int y) {
-		for (JButton jButton : btnArray) {
-			if (jButton.getActionCommand().equals(String.valueOf(x) + "," + String.valueOf(y))) {
-				jButton.setBackground(Color.gray);
-			}
-		}
+
+	public List<JButton> getBtnArray() {
+		return btnArray;
 	}
+
+	public void setBtnArray(List<JButton> btnArray) {
+		this.btnArray = btnArray;
+	}
+
+	@Override
+	public void dragEnter(DropTargetDragEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void dragExit(DropTargetEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void dragOver(DropTargetDragEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void drop(DropTargetDropEvent e) {
+		System.out.println("Dropping");
+
+	    try {
+	      Transferable t = e.getTransferable();
+
+	      if (e.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+	        e.acceptDrop(e.getDropAction());
+
+	        String s;
+	        s = (String) t.getTransferData(DataFlavor.stringFlavor);
+	        
+	        //target.setText(s);
+	        System.out.println("Data droped: " + s);
+
+	        e.dropComplete(true);
+	      } else
+	        e.rejectDrop();
+	    } catch (java.io.IOException e2) {
+	    	
+	    } catch (UnsupportedFlavorException e2) {
+	    }
+	}
+
+	@Override
+	public void dropActionChanged(DropTargetDragEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	
 }
 
 

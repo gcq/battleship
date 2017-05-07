@@ -55,12 +55,6 @@ public class Gui extends JFrame implements GridClickListener, ActionListener{
 		contentPane.setPreferredSize(new Dimension(800, 700));
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(null);
-		boardPanel = new BoardPanel();
-		boardPanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		boardPanel.setBounds(-55, 53, 682, 562);
-		boardPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		boardPanel.setPreferredSize(new Dimension(500, 500));
-		boardPanel.setGridClickListener(this);
 		
 		shipZonePanel = new ShipZonePanel();
 		shipZonePanel.setBorder(new EmptyBorder(2, 2, 2, 2));
@@ -68,6 +62,15 @@ public class Gui extends JFrame implements GridClickListener, ActionListener{
 		shipZonePanel.setAlignmentX(RIGHT_ALIGNMENT);
 		contentPane.add(shipZonePanel);
 		shipZonePanel.setLayout(new BoxLayout(shipZonePanel, BoxLayout.Y_AXIS));
+		
+		boardPanel = new BoardPanel(shipZonePanel.getPanelArray());
+		boardPanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		boardPanel.setBounds(-55, 53, 682, 562);
+		boardPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		boardPanel.setPreferredSize(new Dimension(500, 500));
+		boardPanel.setGridClickListener(this);
+		
+		
 		
 		contentPane.add(boardPanel);
 		setContentPane(contentPane);
@@ -107,12 +110,9 @@ public class Gui extends JFrame implements GridClickListener, ActionListener{
 	@Override
 	public void onGridClick(int x, int y) {
 		System.out.println("Clicked on [" + x + ", " + y + "]");
-//		boardPanel.printShip(x, y);
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		
 	}
 }
