@@ -3,6 +3,7 @@ package ui;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
@@ -20,7 +21,9 @@ import java.awt.dnd.DropTarget;
 import java.awt.dnd.InvalidDnDOperationException;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
+import java.awt.event.MouseMotionListener;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -108,13 +111,13 @@ class ShipPanelButton extends JButton {
 	}
 }
 
-public class ShipZonePanel extends JPanel{
+public class ShipZonePanel extends JPanel implements MouseMotionListener, MouseListener{
 	
 	BoardPanel boardPanel;
 	
-	JLayeredPane layeredPane;
-
 	int ships = 5;
+	
+	Point originPoint = null;
 	
 	Ship[] shipArray;
 	
@@ -143,12 +146,13 @@ public class ShipZonePanel extends JPanel{
 		return this.panelArray;
 	}
 	
+	
+	
+	
 	public ShipZonePanel() {
 		shipArray = new Ship[ships];
 		panelArray = new JPanel[ships];
 		
-		layeredPane = new JLayeredPane();
-		layeredPane.setLayout(new BoxLayout(layeredPane, BoxLayout.Y_AXIS));
 		
 		
 //		setBackground(Color.pink);
@@ -167,32 +171,75 @@ public class ShipZonePanel extends JPanel{
 			JPanel panel = new ShipPanel();
 			for (int j = 0; j < shipArray[i].getLength(); j++) {
 				JButton btn = new ShipPanelButton();
-				btn.setName("mec");
 				panel.add(btn);
-				panel.addMouseMotionListener(new MouseAdapter() {
-					@Override
-					public void mouseDragged(MouseEvent e) {
-						System.out.println(e.getX() + " " +  e.getY());
-						((JPanel)e.getComponent()).setLocation(e.getX(), e.getY());
-//						if (e.getX)
-//						((JPanel)e.getSource()).getRootPane().add(e.getComponent());
-//						repaint();
-						e.getComponent().getParent().repaint();
-//						repaint();
-					}
-				});
+				
 //				System.out.println((JButton)panel.getComponents()[j]);
 			}
-			layeredPane.add(panel);
+			
+			panel.addMouseListener(this);
+			panel.addMouseMotionListener(this);
+			
+			add(panel);
 			this.panelArray[i] = panel;
 		}
-		for (int i = 0; i < layeredPane.getComponents().length; i++) {
-			layeredPane.moveToFront(layeredPane.getComponents()[i]);
-		}
-		
-		add(layeredPane);
 		
 
+	}
+
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		System.out.println(e.getX() + " " +  e.getY());
+		
+//		final Point newPanelClickPoint = e.getPoint();
+//	
+//		final int newX = initialPoint.x + (newPanelClickPoint.x - panelClickPoint.x),
+//                 newY = initialPoint.y + (newPanelClickPoint.y - panelClickPoint.y);
+		 
+//		e.translatePoint(e.getComponent().getLocation().x, e.getComponent().getLocation().y);
+		((JPanel)e.getComponent()).setLocation(e.getX() - originPoint.x, e.getY() - originPoint.y);
+//		((JPanel)e.getComponent()).setLocation(newX, newY);
+//		if (e.getX)
+		((JPanel)e.getSource()).getRootPane().getLayeredPane().add(e.getComponent());
+		((JPanel)e.getSource()).getRootPane().getLayeredPane().setLayer(e.getComponent(), 1);
+		((JPanel)e.getSource()).getRootPane().repaint();
+//		repaint();
+		repaint();
+		
+	}
+
+	@Override
+	public void mouseMoved(MouseEvent e) {
+//		((JPanel)e.getSource()).setLocation(e.getX(), e.getY());
+		repaint();
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		originPoint = e.getComponent().getLocation();
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 //	private boolean rotatePanel (JPanel panel) {

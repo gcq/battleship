@@ -99,8 +99,6 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 //		shipZonePanel.addMouseListener(mouseListener);
 //		shipZonePanel.addMouseMotionListener(this);
 		
-		contentPane.add(shipZonePanel);
-
 		shipZonePanel.setLayout(new BoxLayout(shipZonePanel, BoxLayout.Y_AXIS));
 		
 		getLayeredPane().moveToFront(shipZonePanel);
