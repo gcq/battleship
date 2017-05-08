@@ -26,6 +26,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
@@ -33,9 +34,9 @@ import core.Ship;
 
 
 
-class ShipPanel extends JPanel implements DragGestureListener, DragSourceListener{
+class ShipPanel extends JPanel {
 	
-	private DragSource ds = DragSource.getDefaultDragSource();
+	
 	 
 	public ShipPanel() {
 		setBounds(0, 0, 100, 100);
@@ -44,59 +45,59 @@ class ShipPanel extends JPanel implements DragGestureListener, DragSourceListene
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		
 		int action = DnDConstants.ACTION_COPY_OR_MOVE;
-	    ds.createDefaultDragGestureRecognizer(this, action, this);
+//	    ds.createDefaultDragGestureRecognizer(this, action, this);
 	}
 
-	@Override
-	public void dragDropEnd(DragSourceDropEvent dsde) {
-		System.out.println("Drag and drop end");
-
-	    if (dsde.getDropSuccess() == false) {
-	      System.out.println("unsuccessful");
-	      return;
-	    }
-	}
-
-	@Override
-	public void dragEnter(DragSourceDragEvent dsde) {
-		System.out.println("Entering drop target #2");
-
-	    DragSourceContext ctx = dsde.getDragSourceContext();
-
-	    int action = dsde.getDropAction();
-	    if ((action & DnDConstants.ACTION_COPY) != 0)
-	      ctx.setCursor(DragSource.DefaultCopyDrop);
-	    else
-	      ctx.setCursor(DragSource.DefaultCopyNoDrop);
-	}
-
-	@Override
-	public void dragExit(DragSourceEvent dse) {
-		System.out.println("Exiting drop target #2");
-	}
-
-	@Override
-	public void dragOver(DragSourceDragEvent dsde) {
-	    System.out.println("Dragging over drop target #2");
-	}
-
-	@Override
-	public void dropActionChanged(DragSourceDragEvent dsde) {
-	    System.out.println("Drop action changed #2");
-	}
-
-	@Override
-	public void dragGestureRecognized(DragGestureEvent e) {
-		try {
-			JPanel panel = ((JPanel)e.getComponent());
-			String transferData = String.valueOf(panel.getComponents().length);
-			System.out.println("Transfer data (ShipLength): " + transferData);
-			Transferable t = new StringSelection(transferData);
-			e.startDrag(DragSource.DefaultCopyNoDrop, t, this);
-	    } catch (InvalidDnDOperationException e2) {
-	      System.out.println(e2);
-	    }
-	}
+//	@Override
+//	public void dragDropEnd(DragSourceDropEvent dsde) {
+//		System.out.println("Drag and drop end");
+//
+//	    if (dsde.getDropSuccess() == false) {
+//	      System.out.println("unsuccessful");
+//	      return;
+//	    }
+//	}
+//
+//	@Override
+//	public void dragEnter(DragSourceDragEvent dsde) {
+//		System.out.println("Entering drop target #2");
+//
+//	    DragSourceContext ctx = dsde.getDragSourceContext();
+//
+//	    int action = dsde.getDropAction();
+//	    if ((action & DnDConstants.ACTION_COPY) != 0)
+//	      ctx.setCursor(DragSource.DefaultCopyDrop);
+//	    else
+//	      ctx.setCursor(DragSource.DefaultCopyNoDrop);
+//	}
+//
+//	@Override
+//	public void dragExit(DragSourceEvent dse) {
+//		System.out.println("Exiting drop target #2");
+//	}
+//
+//	@Override
+//	public void dragOver(DragSourceDragEvent dsde) {
+//	    System.out.println("Dragging over drop target #2");
+//	}
+//
+//	@Override
+//	public void dropActionChanged(DragSourceDragEvent dsde) {
+//	    System.out.println("Drop action changed #2");
+//	}
+//
+//	@Override
+//	public void dragGestureRecognized(DragGestureEvent e) {
+//		try {
+//			JPanel panel = ((JPanel)e.getComponent());
+//			String transferData = String.valueOf(panel.getComponents().length);
+//			System.out.println("Transfer data (ShipLength): " + transferData);
+//			Transferable t = new StringSelection(transferData);
+//			e.startDrag(DragSource.DefaultCopyNoDrop, t, this);
+//	    } catch (InvalidDnDOperationException e2) {
+//	      System.out.println(e2);
+//	    }
+//	}
 }
 
 class ShipPanelButton extends JButton {
@@ -109,12 +110,9 @@ class ShipPanelButton extends JButton {
 
 public class ShipZonePanel extends JPanel{
 	
-	public static final int X_ORIGIN = 75;
-	public static final int Y_ORIGIN = 117;
-	public static final int TILE_SIZE = 47;
-	public static final int BORDER_SIZE = 5;
-	
 	BoardPanel boardPanel;
+	
+	JLayeredPane layeredPane;
 
 	int ships = 5;
 	
@@ -149,6 +147,11 @@ public class ShipZonePanel extends JPanel{
 		shipArray = new Ship[ships];
 		panelArray = new JPanel[ships];
 		
+		layeredPane = new JLayeredPane();
+		layeredPane.setLayout(new BoxLayout(layeredPane, BoxLayout.Y_AXIS));
+		
+		
+//		setBackground(Color.pink);
 		initShips();
 		
 		JLabel title = new JLabel("Drag and drop your ships");
@@ -166,93 +169,109 @@ public class ShipZonePanel extends JPanel{
 				JButton btn = new ShipPanelButton();
 				btn.setName("mec");
 				panel.add(btn);
+				panel.addMouseMotionListener(new MouseAdapter() {
+					@Override
+					public void mouseDragged(MouseEvent e) {
+						System.out.println(e.getX() + " " +  e.getY());
+						((JPanel)e.getComponent()).setLocation(e.getX(), e.getY());
+//						if (e.getX)
+//						((JPanel)e.getSource()).getRootPane().add(e.getComponent());
+//						repaint();
+						e.getComponent().getParent().repaint();
+//						repaint();
+					}
+				});
 //				System.out.println((JButton)panel.getComponents()[j]);
 			}
-			add(panel);
+			layeredPane.add(panel);
 			this.panelArray[i] = panel;
 		}
+		for (int i = 0; i < layeredPane.getComponents().length; i++) {
+			layeredPane.moveToFront(layeredPane.getComponents()[i]);
+		}
 		
+		add(layeredPane);
 		
 
 	}
 	
-	private boolean rotatePanel (JPanel panel) {
-		
-		//if panel has X Axis layout
-		if (((BoxLayout) panel.getLayout()).getAxis() == BoxLayout.X_AXIS) {
-			// set the layout to y axis
-			panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-			
-			// swap the width and height
-			int temp = panel.getWidth();
-			int temp2 = panel.getHeight();
-			panel.setSize(temp2, temp);
-			
-			// revalidates the panel, forcing the layout to update
-			panel.validate();
-			
-			// sets the panel location
-			panel.setLocation(panel.getX(), panel.getY());
-			
-			// gets the length of the ship
-			int counter = 0;
-			while (Y_ORIGIN + ((TILE_SIZE + BORDER_SIZE) * counter) < panel.getY() + panel.getWidth()) {
-				counter++;
-			}
-			counter--;
-
-			// if the panel is intersecting another ship panel or is partially
-			// off the grid
-			if (!(counter <= 10 - panel.getHeight() / TILE_SIZE && counter >= 0)
-					|| isIntersection(panel)) {
-				// return that the rotation was a failure
-				return false;
-			}
-		}
-		
-		//if panel has Y Axis layout
-		else if (((BoxLayout) panel.getLayout()).getAxis() == BoxLayout.Y_AXIS) {
-			// set the layout to y axis
-			panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
-			// swap the width and height
-			int temp = panel.getWidth();
-			int temp2 = panel.getHeight();
-			panel.setSize(temp2, temp);
-			
-			// revalidates the panel, forcing the layout to update
-			panel.validate();
-
-			// sets the panel location
-			panel.setLocation(panel.getX(), panel.getY());
-
-			// gets the length of the ship
-			int counter = 0;
-			while (X_ORIGIN + ((TILE_SIZE + BORDER_SIZE) * counter) < panel.getX() + panel.getHeight()) {
-				counter++;
-			}
-			counter--;
-
-			// if the panel is intersecting another ship panel or is partially
-			// off the grid
-			if (!(counter <= 10 - panel.getWidth() / TILE_SIZE && counter >= 0)
-					|| isIntersection(panel)) {
-				// set the location to the starting location
-				// panel.setLocation(shipArray[shipNum].getStartingOffGridPosition());
-				// return that the rotation was a failure
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	private boolean isIntersection (JPanel panel) {
-		for (int i = 0; i < panelArray.length; i++) {
-			// checks if p intersects with a panel in the array other than
-			// itself
-			if (panel.getBounds().intersects(panelArray[i].getBounds()) && !panel.equals(panelArray[i])) {
-				return true;
-			}
-		}
-		return false;
-	}
+//	private boolean rotatePanel (JPanel panel) {
+//		
+//		//if panel has X Axis layout
+//		if (((BoxLayout) panel.getLayout()).getAxis() == BoxLayout.X_AXIS) {
+//			// set the layout to y axis
+//			panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+//			
+//			// swap the width and height
+//			int temp = panel.getWidth();
+//			int temp2 = panel.getHeight();
+//			panel.setSize(temp2, temp);
+//			
+//			// revalidates the panel, forcing the layout to update
+//			panel.validate();
+//			
+//			// sets the panel location
+//			panel.setLocation(panel.getX(), panel.getY());
+//			
+//			// gets the length of the ship
+//			int counter = 0;
+//			while (Y_ORIGIN + ((TILE_SIZE + BORDER_SIZE) * counter) < panel.getY() + panel.getWidth()) {
+//				counter++;
+//			}
+//			counter--;
+//
+//			// if the panel is intersecting another ship panel or is partially
+//			// off the grid
+//			if (!(counter <= 10 - panel.getHeight() / TILE_SIZE && counter >= 0)
+//					|| isIntersection(panel)) {
+//				// return that the rotation was a failure
+//				return false;
+//			}
+//		}
+//		
+//		//if panel has Y Axis layout
+//		else if (((BoxLayout) panel.getLayout()).getAxis() == BoxLayout.Y_AXIS) {
+//			// set the layout to y axis
+//			panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+//			// swap the width and height
+//			int temp = panel.getWidth();
+//			int temp2 = panel.getHeight();
+//			panel.setSize(temp2, temp);
+//			
+//			// revalidates the panel, forcing the layout to update
+//			panel.validate();
+//
+//			// sets the panel location
+//			panel.setLocation(panel.getX(), panel.getY());
+//
+//			// gets the length of the ship
+//			int counter = 0;
+//			while (X_ORIGIN + ((TILE_SIZE + BORDER_SIZE) * counter) < panel.getX() + panel.getHeight()) {
+//				counter++;
+//			}
+//			counter--;
+//
+//			// if the panel is intersecting another ship panel or is partially
+//			// off the grid
+//			if (!(counter <= 10 - panel.getWidth() / TILE_SIZE && counter >= 0)
+//					|| isIntersection(panel)) {
+//				// set the location to the starting location
+//				// panel.setLocation(shipArray[shipNum].getStartingOffGridPosition());
+//				// return that the rotation was a failure
+//				return false;
+//			}
+//		}
+//		return true;
+//	}
+//	
+//	private boolean isIntersection (JPanel panel) {
+//		for (int i = 0; i < panelArray.length; i++) {
+//			// checks if p intersects with a panel in the array other than
+//			// itself
+//			if (panel.getBounds().intersects(panelArray[i].getBounds()) && !panel.equals(panelArray[i])) {
+//				return true;
+//			}
+//		}
+//		return false;
+//	}
 }

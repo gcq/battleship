@@ -9,19 +9,29 @@ import javax.swing.border.EmptyBorder;
 
 import ui.interfaces.GridClickListener;
 
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+
+import javax.swing.JLayeredPane;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JLabel;
+import javax.swing.SwingUtilities;
+
 import java.awt.FlowLayout;
+
 import javax.swing.BoxLayout;
 
-public class Gui extends JFrame implements GridClickListener, ActionListener{
+public class Gui extends JFrame implements GridClickListener, ActionListener, MouseMotionListener{
 
 	private JPanel contentPane;
 	private BoardPanel boardPanel;
@@ -42,6 +52,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener{
 			}
 		});
 	}
+	
 
 	/**
 	 * Create the frame.
@@ -60,8 +71,23 @@ public class Gui extends JFrame implements GridClickListener, ActionListener{
 		shipZonePanel.setBorder(new EmptyBorder(2, 2, 2, 2));
 		shipZonePanel.setBounds(604, 103, 150, 500);
 		shipZonePanel.setAlignmentX(RIGHT_ALIGNMENT);
+		
+		
+		MouseListener mouseListener = new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				System.out.println("Component dropped on Position: " + "X[" + e.getX() + "]" + "Y[" + e.getY() + "]");
+			}
+		};
+		
+//		shipZonePanel.addMouseListener(mouseListener);
+//		shipZonePanel.addMouseMotionListener(this);
+		
 		contentPane.add(shipZonePanel);
 		shipZonePanel.setLayout(new BoxLayout(shipZonePanel, BoxLayout.Y_AXIS));
+		
+		getLayeredPane().moveToFront(shipZonePanel);
+		
 		
 		boardPanel = new BoardPanel(shipZonePanel.getPanelArray());
 		boardPanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
@@ -70,7 +96,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener{
 		boardPanel.setPreferredSize(new Dimension(500, 500));
 		boardPanel.setGridClickListener(this);
 		
-		
+		getLayeredPane().moveToBack(boardPanel);
 		
 		contentPane.add(boardPanel);
 		setContentPane(contentPane);
@@ -114,5 +140,28 @@ public class Gui extends JFrame implements GridClickListener, ActionListener{
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+	}
+
+	@Override
+	public void mouseDragged(MouseEvent e) {
+//		System.out.println("Component dragged: " + e.getComponent());
+//		System.out.println("Position: X[" + e.getX() + "]" + "Y[" + e.getY() + "]" );
+//		Component shipPanel = ((Container) e.getComponent()).getComponents()[1];
+//		Component ship = ((JLayeredPane)shipPanel).getComponents()[0];
+//		
+////		((JLayeredPane)shipPanel).remove(ship);
+//		System.out.println(ship);
+//		ship.setLocation(e.getX(), e.getY());
+//		contentPane.add(ship);
+//		System.out.println(shipPanel);
+//		System.out.println("Ship position: " + SwingUtilities.convertPoint(ship, ship.getX(), ship.getY(), this));
+//		System.out.println("Ship position: " + ship.getParent().getParent().getLocation());
+		repaint();
+	}
+
+	@Override
+	public void mouseMoved(MouseEvent e) {
+		//System.out.println("Component moved: " + e.getComponent());
+		
 	}
 }
