@@ -4,6 +4,7 @@ import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.LayoutManager;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,6 +21,7 @@ import ui.interfaces.GridClickListener;
 
 public class Gui extends JFrame implements GridClickListener, ActionListener{
 
+	JPanel contentPane;
 	private JPanel gamePane;
 	private BoardPanel boardPanel;
 	private ShipZonePanel shipZonePanel;
@@ -48,7 +50,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener{
 		setLocation(new Point(50, 50));		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		JPanel contentPane = new JPanel();
+		contentPane = new JPanel();
 		contentPane.setLayout(new CardLayout());
 		
 		gamePane = new JPanel();
@@ -75,9 +77,18 @@ public class Gui extends JFrame implements GridClickListener, ActionListener{
 		
 		UserPanel userPanel = new UserPanel();
 		
+		userPanel.getBtnGo().addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				changePanel("game");
+				
+			}
+		});
+		
 		contentPane.add(userPanel, "user");
 		
-		((CardLayout) contentPane.getLayout()).show(contentPane, "user");
+		changePanel("user");
 		
 		setContentPane(contentPane);
 		
@@ -111,6 +122,11 @@ public class Gui extends JFrame implements GridClickListener, ActionListener{
 //		boardPanel.setVisible(false);
 		pack();
 		
+	}
+	
+	public void changePanel(String name) {
+		LayoutManager layout = (CardLayout) contentPane.getLayout();
+		((CardLayout) layout).show(contentPane, name);
 	}
 
 	@Override
