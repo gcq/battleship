@@ -1,9 +1,19 @@
 package ui;
 
-import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.LayoutManager;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+import javax.swing.BoxLayout;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
@@ -33,7 +43,9 @@ import javax.swing.BoxLayout;
 
 public class Gui extends JFrame implements GridClickListener, ActionListener, MouseMotionListener{
 
-	private JPanel contentPane;
+
+	JPanel contentPane;
+	private JPanel gamePane;
 	private BoardPanel boardPanel;
 	private ShipZonePanel shipZonePanel;
 
@@ -63,14 +75,18 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		contentPane = new JPanel();
-		contentPane.setPreferredSize(new Dimension(800, 700));
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		contentPane.setLayout(null);
+		contentPane.setLayout(new CardLayout());
+		
+		gamePane = new JPanel();
+		gamePane.setPreferredSize(new Dimension(800, 700));
+		gamePane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		gamePane.setLayout(null);
 		
 		shipZonePanel = new ShipZonePanel();
 		shipZonePanel.setBorder(new EmptyBorder(2, 2, 2, 2));
 		shipZonePanel.setBounds(604, 103, 150, 500);
 		shipZonePanel.setAlignmentX(RIGHT_ALIGNMENT);
+
 		
 		
 		MouseListener mouseListener = new MouseAdapter() {
@@ -84,10 +100,12 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 //		shipZonePanel.addMouseMotionListener(this);
 		
 		contentPane.add(shipZonePanel);
+
 		shipZonePanel.setLayout(new BoxLayout(shipZonePanel, BoxLayout.Y_AXIS));
 		
 		getLayeredPane().moveToFront(shipZonePanel);
-		
+
+		gamePane.add(shipZonePanel);
 		
 		boardPanel = new BoardPanel(shipZonePanel.getPanelArray());
 		boardPanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
@@ -95,15 +113,31 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		boardPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		boardPanel.setPreferredSize(new Dimension(500, 500));
 		boardPanel.setGridClickListener(this);
+		gamePane.add(boardPanel);
 		
 		getLayeredPane().moveToBack(boardPanel);
+		contentPane.add(gamePane, "game");
 		
-		contentPane.add(boardPanel);
+		UserPanel userPanel = new UserPanel();
+		
+		userPanel.getBtnGo().addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				changePanel("game");
+				
+			}
+		});
+		
+		contentPane.add(userPanel, "user");
+		
+		changePanel("user");
+		
 		setContentPane(contentPane);
 		
 		JMenuBar menuBar = new JMenuBar();
-		menuBar.setBounds(0, 0, 369, 21);
-		contentPane.add(menuBar);
+		menuBar.setBounds(0, 0, 800, 21);
+		gamePane.add(menuBar);
 		
 		JMenu gameMenu = new JMenu("Game");
 		menuBar.add(gameMenu);
@@ -131,6 +165,11 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 //		boardPanel.setVisible(false);
 		pack();
 		
+	}
+	
+	public void changePanel(String name) {
+		LayoutManager layout = (CardLayout) contentPane.getLayout();
+		((CardLayout) layout).show(contentPane, name);
 	}
 
 	@Override
