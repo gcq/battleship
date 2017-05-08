@@ -93,7 +93,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener{
 		setContentPane(contentPane);
 		
 		JMenuBar menuBar = new JMenuBar();
-		menuBar.setBounds(0, 0, 369, 21);
+		menuBar.setBounds(0, 0, 800, 21);
 		gamePane.add(menuBar);
 		
 		JMenu gameMenu = new JMenu("Game");
