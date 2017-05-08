@@ -8,8 +8,13 @@ import core.exceptions.InvalidShipPlacementException;
 
 public class Player {
 	
+	String name;
 	Board board;
 	Map<Integer, Ship> ships;
+	
+	public Player () {
+		
+	}
 	
 	public Player(Board board) {
 		this.board = board;
@@ -95,6 +100,16 @@ public class Player {
 		return true;
 	}
 	
+	
+	
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	@Override
 	public String toString() {
 		return board.toString();

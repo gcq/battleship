@@ -14,6 +14,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
@@ -29,6 +30,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.JLayeredPane;
 import javax.swing.JMenuBar;
@@ -41,13 +44,24 @@ import java.awt.FlowLayout;
 
 import javax.swing.BoxLayout;
 
+import java.awt.BorderLayout;
+
+import javax.swing.JButton;
+import javax.swing.JTextField;
+
+import core.Player;
+
 public class Gui extends JFrame implements GridClickListener, ActionListener, MouseMotionListener{
 
-
-	JPanel contentPane;
+	private UserPanel userPanel;
+	private JPanel contentPane;
+	private JPanel profilePanel;
+	private CardLayout cardLayout;
 	private JPanel gamePane;
 	private BoardPanel boardPanel;
 	private ShipZonePanel shipZonePanel;
+	
+	private Player player;
 
 	/**
 	 * Launch the application.
@@ -70,12 +84,16 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 	 * Create the frame.
 	 */
 	public Gui() {
+		
+		player = new Player();
+		
+		addWindowListener(new MyWindowAdapter());
+		
 		setResizable(false);		
 		setLocation(new Point(50, 50));		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		contentPane = new JPanel();
-		contentPane.setLayout(new CardLayout());
 		
 		gamePane = new JPanel();
 		gamePane.setPreferredSize(new Dimension(800, 700));
@@ -96,8 +114,8 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 			}
 		};
 		
-//		shipZonePanel.addMouseListener(mouseListener);
-//		shipZonePanel.addMouseMotionListener(this);
+		cardLayout = new CardLayout();
+		contentPane.setLayout(cardLayout);
 		
 		shipZonePanel.setLayout(new BoxLayout(shipZonePanel, BoxLayout.Y_AXIS));
 		
@@ -116,19 +134,6 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		getLayeredPane().moveToBack(boardPanel);
 		contentPane.add(gamePane, "game");
 		
-		UserPanel userPanel = new UserPanel();
-		
-		userPanel.getBtnGo().addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				changePanel("game");
-				
-			}
-		});
-		
-		contentPane.add(userPanel, "user");
-		
 		changePanel("user");
 		
 		setContentPane(contentPane);
@@ -140,34 +145,66 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		JMenu gameMenu = new JMenu("Game");
 		menuBar.add(gameMenu);
 		
-		JMenuItem menuItem = new JMenuItem("Start");
-		gameMenu.add(menuItem);
+		JMenuItem startItem = new JMenuItem("start");
+		startItem.setMnemonic(startItem.getText().charAt(0));
+		startItem.setActionCommand(startItem.getText());
+		startItem.addActionListener(this);
+		gameMenu.add(startItem);
 		
 		JMenu profileMenu = new JMenu("Profile");
 		menuBar.add(profileMenu);
 		
-		JMenuItem editProfile = new JMenuItem("Edit");
+		JMenuItem editProfile = new JMenuItem("edit");
+		editProfile.setMnemonic(editProfile.getText().charAt(0));
+		editProfile.setActionCommand(editProfile.getText());
+		editProfile.addActionListener(this);
 		profileMenu.add(editProfile);
-		
-		JMenuItem showProfile = new JMenuItem("Show");
-		profileMenu.add(showProfile);
 		
 		JMenu settingsMenu = new JMenu("Settings");
 		menuBar.add(settingsMenu);
 		
-		JMenuItem turnMode = new JMenuItem("Turn Mode");
+		JMenuItem turnMode = new JMenuItem("turn Mode");
+		turnMode.setActionCommand(turnMode.getText());
+		turnMode.addActionListener(this);
 		settingsMenu.add(turnMode);
 		
-		JMenuItem turnTime = new JMenuItem("Turn Time");
+		JMenuItem turnTime = new JMenuItem("turn Time");
+		turnTime.setActionCommand(turnTime.getText());
+		turnTime.addActionListener(this);
 		settingsMenu.add(turnTime);
-//		boardPanel.setVisible(false);
+		
+		userPanel = new UserPanel();
+		
+		userPanel.getBtnGo().addActionListener(this);
+		userPanel.getBtnGo().setActionCommand(userPanel.getBtnGo().getText());
+		
+		contentPane.add(userPanel, "intro");
+		
+		profilePanel = new ProfilePanel();
+		((ProfilePanel) profilePanel).getSaveBtn().addActionListener(this);
+		((ProfilePanel) profilePanel).getSaveBtn().setActionCommand(((ProfilePanel) profilePanel).getSaveBtnText());
+		
+		((ProfilePanel) profilePanel).getCloseBtn().addActionListener(this);
+		((ProfilePanel) profilePanel).getCloseBtn().setActionCommand(((ProfilePanel) profilePanel).getCloseBtnText());
+		
+		contentPane.add(profilePanel, "profile");
+		cardLayout.show(contentPane, "intro");
 		pack();
 		
 	}
 	
+//	new ActionListener() {
+//		
+//		@Override
+//		public void actionPerformed(ActionEvent e) {
+//			changePanel("game");
+//			player.setName(userPanel.getUsername());
+//			((ProfilePanel) profilePanel).setUsername(userPanel.getUsername());
+//		}
+//	}
+	
 	public void changePanel(String name) {
-		LayoutManager layout = (CardLayout) contentPane.getLayout();
-		((CardLayout) layout).show(contentPane, name);
+		cardLayout.show(contentPane, name);
 	}
 
 	@Override
@@ -177,6 +214,23 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		if (e.getActionCommand().equals("edit")) {
+			cardLayout.show(contentPane, "profile");
+		}
+		else if (e.getActionCommand().equals("go")) {
+			changePanel("game");
+			player.setName(userPanel.getUsername());
+			((ProfilePanel) profilePanel).setUsername(userPanel.getUsername());
+		}
+		
+		else if (e.getActionCommand().equals("CloseProfile")) {
+			changePanel("game");
+		}
+		
+		else if (e.getActionCommand().equals("SaveProfile")) {
+			changePanel("game");
+			player.setName(((ProfilePanel) profilePanel).getUsername());
+		}
 	}
 
 	@Override
@@ -193,7 +247,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 //		System.out.println(shipPanel);
 //		System.out.println("Ship position: " + SwingUtilities.convertPoint(ship, ship.getX(), ship.getY(), this));
 //		System.out.println("Ship position: " + ship.getParent().getParent().getLocation());
-		repaint();
+//		repaint();
 	}
 
 	@Override
@@ -201,4 +255,15 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		//System.out.println("Component moved: " + e.getComponent());
 		
 	}
+	
+	class MyWindowAdapter extends WindowAdapter {
+		@Override
+		public void windowClosing(WindowEvent e) {
+			int result = JOptionPane.showConfirmDialog(null, "Are you sure about this?", "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+			if (result == JOptionPane.YES_OPTION)
+				dispose();
+		}
+	}
+
 }
+
