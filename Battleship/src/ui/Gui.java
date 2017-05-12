@@ -4,6 +4,7 @@ import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.GridBagLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,6 +16,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -25,6 +27,7 @@ import javax.swing.border.EmptyBorder;
 
 import ui.interfaces.GridClickListener;
 import core.Player;
+import core.Ship;
 
 public class Gui extends JFrame implements GridClickListener, ActionListener{
 
@@ -35,6 +38,15 @@ public class Gui extends JFrame implements GridClickListener, ActionListener{
 	private JPanel gamePane;
 	private BoardPanel boardPanel;
 	private ShipZonePanel shipZonePanel;
+	
+	private int portavionesLength = 5;
+	private int acorazadoLength = 4;
+	private int cruceroLength = 3;
+	private int submarinoLength = 3;
+	private int destructorLength = 2;
+	
+	Ship[] shipArray;
+	int ships = 5;
 	
 	private Player player;
 
@@ -59,6 +71,8 @@ public class Gui extends JFrame implements GridClickListener, ActionListener{
 	 * Create the frame.
 	 */
 	public Gui() {
+		
+		shipArray = new Ship[ships];
 		
 		player = new Player();
 		
@@ -98,13 +112,15 @@ public class Gui extends JFrame implements GridClickListener, ActionListener{
 
 		gamePane.add(shipZonePanel);
 		
-		boardPanel = new BoardPanel(shipZonePanel.getPanelArray());
+		boardPanel = new BoardPanel();
 		boardPanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		boardPanel.setBounds(-55, 53, 682, 562);
 		boardPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		boardPanel.setPreferredSize(new Dimension(500, 500));
 		boardPanel.setGridClickListener(this);
 		gamePane.add(boardPanel);
+		
+		
 		
 		getLayeredPane().moveToBack(boardPanel);
 		contentPane.add(gamePane, "game");
@@ -196,6 +212,27 @@ public class Gui extends JFrame implements GridClickListener, ActionListener{
 			changePanel("game");
 			player.setName(((ProfilePanel) profilePanel).getUsername());
 		}
+	}
+	
+	public void initShips () {
+		Ship portaviones = new Ship(portavionesLength, 1);
+		Ship acorazado = new Ship(acorazadoLength, 2);
+		Ship crucero = new Ship(cruceroLength, 3);
+		Ship submarino = new Ship(submarinoLength, 4);
+		Ship destructor = new Ship(destructorLength, 5);
+		this.shipArray[0] = portaviones;
+		this.shipArray[1] = acorazado;
+		this.shipArray[2] = crucero;
+		this.shipArray[3] = submarino;
+		this.shipArray[4] = destructor;
+		
+		for (int i = 0; i < ships; i++) {
+			for (int j = 0; j < shipArray[i].getLength(); j++) {
+				
+			}
+		}
+			
+		
 	}
 
 	

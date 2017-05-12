@@ -53,12 +53,7 @@ public class BoardPanel extends JPanel implements ActionListener, GridClickPubli
 	};
 	
 	
-	public BoardPanel (JPanel[] shipPanels) {
-		this.shipPanels = shipPanels;
-		
-		for (int i = 0; i < shipPanels.length; i++) {
-//			new DropTarget(shipPanels[i], DnDConstants.ACTION_COPY_OR_MOVE, this);
-		}
+	public BoardPanel () {
 		
 		buttonColor = Color.BLUE;
 		setAlignmentY(Component.TOP_ALIGNMENT);

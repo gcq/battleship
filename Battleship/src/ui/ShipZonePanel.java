@@ -4,6 +4,9 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.Point;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
@@ -24,6 +27,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -111,7 +116,7 @@ class ShipPanelButton extends JButton {
 	}
 }
 
-public class ShipZonePanel extends JPanel implements MouseMotionListener, MouseListener{
+public class ShipZonePanel extends JPanel implements MouseListener{
 	
 	BoardPanel boardPanel;
 	
@@ -120,6 +125,7 @@ public class ShipZonePanel extends JPanel implements MouseMotionListener, MouseL
 	Point originPoint = null;
 	
 	Ship[] shipArray;
+	private List<JButton>btnArray;
 	
 	private int portavionesLength = 5;
 	private int acorazadoLength = 4;
@@ -153,66 +159,131 @@ public class ShipZonePanel extends JPanel implements MouseMotionListener, MouseL
 		shipArray = new Ship[ships];
 		panelArray = new JPanel[ships];
 		
-		
-		
-//		setBackground(Color.pink);
 		initShips();
+		setPreferredSize(new Dimension(100, 100));
+		setAlignmentY(Component.TOP_ALIGNMENT);
+		GridBagLayout gbl_btnPanel = new GridBagLayout();
+		gbl_btnPanel.columnWidths = new int[] {50, 50, 50, 50, 50};
+		gbl_btnPanel.rowHeights = new int[] {50, 50, 50, 50, 50};
+		gbl_btnPanel.columnWeights = new double[]{0.0,0,0,0,};
+		gbl_btnPanel.rowWeights = new double[]{0.0,0,0,0,0};
+		setLayout(gbl_btnPanel);
 		
-		JLabel title = new JLabel("Drag and drop your ships");
-		title.setAlignmentX(Component.CENTER_ALIGNMENT);
-		add(title);
 		
-		setLayout(null);
+//		JButton button = new JButton("New button");
+//		GridBagConstraints gbc_button = new GridBagConstraints();
+//		gbc_button.gridwidth = 2;
+//		gbc_button.insets = new Insets(0, 0, 5, 5);
+//		gbc_button.gridx = 0;
+//		gbc_button.gridy = 0;
+//		add(button, gbc_button);
+		int gridX = 0;
+		int gridY = 0;
 		
-		int shipNum;
+		btnArray = new ArrayList<JButton>();
 		
-		for (int i = 0; i < panelArray.length; i++) {
-			shipNum = i;
-			JPanel panel = new ShipPanel();
-			for (int j = 0; j < shipArray[i].getLength(); j++) {
-				JButton btn = new ShipPanelButton();
-				panel.add(btn);
-//				System.out.println((JButton)panel.getComponents()[j]);
-			}
-			
-			panel.addMouseListener(this);
-			panel.addMouseMotionListener(this);
-			
-			add(panel);
-			this.panelArray[i] = panel;
+		for (int i = 0; i < shipArray.length; i++) {
+//			for (int j = 1; j <= shipArray.length + 1 ; j++) {
+				JButton button = new JButton();
+				button.addMouseListener(new MyMouseAdapter());
+				button.setForeground(Color.WHITE);
+				button.setBackground(Color.black);
+//				button.setPreferredSize(new Dimension(50, 50));
+				button.setAlignmentX(Component.CENTER_ALIGNMENT);
+				GridBagConstraints gbc_button = new GridBagConstraints();
+				gbc_button.insets = new Insets(0, 0, 5, 5);
+				gbc_button.gridwidth = shipArray[i].getLength(); 
+				gbc_button.gridx = gridX;
+				gbc_button.gridy = gridY;
+				System.out.println("gridX: " + gridX + " | " + "gridY: " + gridY);
+				System.out.println("Button Width: " + shipArray[i].getLength());
+				button.setActionCommand(gridX + "," + gridY);
+//				button.addActionListener(this);
+				button.addMouseListener((MouseListener) this);
+				add(button, gbc_button);
+				gridY++;
+				btnArray.add(button);
+//			}
+			//gridX++;	
 		}
 		
-
-	}
-
-	@Override
-	public void mouseDragged(MouseEvent e) {
-		System.out.println(e.getX() + " " +  e.getY());
-//		final Point newPanelClickPoint = e.getPoint();
-//	
-//		final int newX = initialPoint.x + (newPanelClickPoint.x - panelClickPoint.x),
-//                 newY = initialPoint.y + (newPanelClickPoint.y - panelClickPoint.y);
-		 
-//		e.translatePoint(e.getComponent().getLocation().x, e.getComponent().getLocation().y);
-		((JPanel)e.getComponent()).setLocation(e.getX(), e.getY() );
-//		((JPanel)e.getComponent()).setLocation(newX, newY);
-//		if (e.getX)
-//		((JPanel)e.getSource()).getRootPane().getLayeredPane().add(e.getComponent());
-//		((JPanel)e.getSource()).getRootPane().getLayeredPane().setLayer(e.getComponent(), 1);
-		//((JPanel)e.getSource()).getRootPane().repaint();
-//		repaint();
-		repaint();
 		
-	}
+		
+		
+		
+		
 
-	@Override
-	public void mouseMoved(MouseEvent e) {
-//		((JPanel)e.getSource()).setLocation(e.getX(), e.getY());
-		repaint();
 	}
+//
+//	@Override
+//	public void mouseDragged(MouseEvent e) {
+//		System.out.println(e.getX() + " " +  e.getY());
+////		final Point newPanelClickPoint = e.getPoint();
+////	
+////		final int newX = initialPoint.x + (newPanelClickPoint.x - panelClickPoint.x),
+////                 newY = initialPoint.y + (newPanelClickPoint.y - panelClickPoint.y);
+//		 
+////		e.translatePoint(e.getComponent().getLocation().x, e.getComponent().getLocation().y);
+//		((JPanel)e.getComponent()).setLocation(e.getX(), e.getY() );
+////		((JPanel)e.getComponent()).setLocation(newX, newY);
+////		if (e.getX)
+////		((JPanel)e.getSource()).getRootPane().getLayeredPane().add(e.getComponent());
+////		((JPanel)e.getSource()).getRootPane().getLayeredPane().setLayer(e.getComponent(), 1);
+//		//((JPanel)e.getSource()).getRootPane().repaint();
+////		repaint();
+//		repaint();
+//		
+//	}
+//
+//	@Override
+//	public void mouseMoved(MouseEvent e) {
+////		((JPanel)e.getSource()).setLocation(e.getX(), e.getY());
+//		repaint();
+//	}
+//
+//	@Override
+//	public void mouseClicked(MouseEvent e) {
+//		// TODO Auto-generated method stub
+//		
+//	}
+//
+//	@Override
+//	public void mouseEntered(MouseEvent e) {
+//		// TODO Auto-generated method stub
+//		
+//	}
+//
+//	@Override
+//	public void mouseExited(MouseEvent e) {
+//		// TODO Auto-generated method stub
+//		
+//	}
+//
+//	@Override
+//	public void mousePressed(MouseEvent e) {
+//		originPoint = e.getComponent().getLocation();
+//	}
+//
+//	@Override
+//	public void mouseReleased(MouseEvent e) {
+//		// TODO Auto-generated method stub
+//		
+//	}
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -225,17 +296,6 @@ public class ShipZonePanel extends JPanel implements MouseMotionListener, MouseL
 
 	@Override
 	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mousePressed(MouseEvent e) {
-		originPoint = e.getComponent().getLocation();
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub
 		
 	}
