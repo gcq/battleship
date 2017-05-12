@@ -51,7 +51,7 @@ import javax.swing.JTextField;
 
 import core.Player;
 
-public class Gui extends JFrame implements GridClickListener, ActionListener, MouseMotionListener{
+public class Gui extends JFrame implements GridClickListener, ActionListener{
 
 	private UserPanel userPanel;
 	private JPanel contentPane;
@@ -193,16 +193,6 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		
 	}
 	
-//	new ActionListener() {
-//		
-//		@Override
-//		public void actionPerformed(ActionEvent e) {
-//			changePanel("game");
-//			player.setName(userPanel.getUsername());
-//			((ProfilePanel) profilePanel).setUsername(userPanel.getUsername());
-//		}
-//	}
-	
 	public void changePanel(String name) {
 		cardLayout.show(contentPane, name);
 	}
@@ -233,28 +223,6 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		}
 	}
 
-	@Override
-	public void mouseDragged(MouseEvent e) {
-//		System.out.println("Component dragged: " + e.getComponent());
-//		System.out.println("Position: X[" + e.getX() + "]" + "Y[" + e.getY() + "]" );
-//		Component shipPanel = ((Container) e.getComponent()).getComponents()[1];
-//		Component ship = ((JLayeredPane)shipPanel).getComponents()[0];
-//		
-////		((JLayeredPane)shipPanel).remove(ship);
-//		System.out.println(ship);
-//		ship.setLocation(e.getX(), e.getY());
-//		contentPane.add(ship);
-//		System.out.println(shipPanel);
-//		System.out.println("Ship position: " + SwingUtilities.convertPoint(ship, ship.getX(), ship.getY(), this));
-//		System.out.println("Ship position: " + ship.getParent().getParent().getLocation());
-//		repaint();
-	}
-
-	@Override
-	public void mouseMoved(MouseEvent e) {
-		//System.out.println("Component moved: " + e.getComponent());
-		
-	}
 	
 	class MyWindowAdapter extends WindowAdapter {
 		@Override

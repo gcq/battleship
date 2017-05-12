@@ -172,7 +172,6 @@ public class ShipZonePanel extends JPanel implements MouseMotionListener, MouseL
 			for (int j = 0; j < shipArray[i].getLength(); j++) {
 				JButton btn = new ShipPanelButton();
 				panel.add(btn);
-				
 //				System.out.println((JButton)panel.getComponents()[j]);
 			}
 			
@@ -189,19 +188,18 @@ public class ShipZonePanel extends JPanel implements MouseMotionListener, MouseL
 	@Override
 	public void mouseDragged(MouseEvent e) {
 		System.out.println(e.getX() + " " +  e.getY());
-		
 //		final Point newPanelClickPoint = e.getPoint();
 //	
 //		final int newX = initialPoint.x + (newPanelClickPoint.x - panelClickPoint.x),
 //                 newY = initialPoint.y + (newPanelClickPoint.y - panelClickPoint.y);
 		 
 //		e.translatePoint(e.getComponent().getLocation().x, e.getComponent().getLocation().y);
-		((JPanel)e.getComponent()).setLocation(e.getX() - originPoint.x, e.getY() - originPoint.y);
+		((JPanel)e.getComponent()).setLocation(e.getX(), e.getY() );
 //		((JPanel)e.getComponent()).setLocation(newX, newY);
 //		if (e.getX)
-		((JPanel)e.getSource()).getRootPane().getLayeredPane().add(e.getComponent());
-		((JPanel)e.getSource()).getRootPane().getLayeredPane().setLayer(e.getComponent(), 1);
-		((JPanel)e.getSource()).getRootPane().repaint();
+//		((JPanel)e.getSource()).getRootPane().getLayeredPane().add(e.getComponent());
+//		((JPanel)e.getSource()).getRootPane().getLayeredPane().setLayer(e.getComponent(), 1);
+		//((JPanel)e.getSource()).getRootPane().repaint();
 //		repaint();
 		repaint();
 		
