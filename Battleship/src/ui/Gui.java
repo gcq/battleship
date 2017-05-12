@@ -5,8 +5,10 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -21,10 +23,12 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.KeyStroke;
 import javax.swing.border.EmptyBorder;
 
 import ui.interfaces.GridClickListener;
 import core.Player;
+import java.awt.event.KeyEvent;
 
 public class Gui extends JFrame implements GridClickListener, ActionListener, MouseMotionListener{
 
@@ -124,6 +128,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		startItem.setMnemonic(startItem.getText().charAt(0));
 		startItem.setActionCommand(startItem.getText());
 		startItem.addActionListener(this);
+		startItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
 		gameMenu.add(startItem);
 		
 		JMenu profileMenu = new JMenu("Profile");
@@ -133,6 +138,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		editProfile.setMnemonic(editProfile.getText().charAt(0));
 		editProfile.setActionCommand(editProfile.getText());
 		editProfile.addActionListener(this);
+		editProfile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.CTRL_MASK));
 		profileMenu.add(editProfile);
 		
 		JMenu settingsMenu = new JMenu("Settings");
@@ -141,11 +147,13 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		JMenuItem turnMode = new JMenuItem("turn Mode");
 		turnMode.setActionCommand(turnMode.getText());
 		turnMode.addActionListener(this);
+		turnMode.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M, InputEvent.CTRL_MASK));
 		settingsMenu.add(turnMode);
 		
 		JMenuItem turnTime = new JMenuItem("turn Time");
 		turnTime.setActionCommand(turnTime.getText());
 		turnTime.addActionListener(this);
+		turnTime.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.CTRL_MASK));
 		settingsMenu.add(turnTime);
 		
 		userPanel = new UserPanel();
