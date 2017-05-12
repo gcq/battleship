@@ -4,10 +4,15 @@ import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.EventQueue;
-import java.awt.LayoutManager;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
@@ -19,36 +24,6 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import ui.interfaces.GridClickListener;
-
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Point;
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-
-import javax.swing.JLayeredPane;
-import javax.swing.JMenuBar;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JLabel;
-import javax.swing.SwingUtilities;
-
-import java.awt.FlowLayout;
-
-import javax.swing.BoxLayout;
-
-import java.awt.BorderLayout;
-
-import javax.swing.JButton;
-import javax.swing.JTextField;
-
 import core.Player;
 
 public class Gui extends JFrame implements GridClickListener, ActionListener{
@@ -227,9 +202,12 @@ public class Gui extends JFrame implements GridClickListener, ActionListener{
 	class MyWindowAdapter extends WindowAdapter {
 		@Override
 		public void windowClosing(WindowEvent e) {
+			
 			int result = JOptionPane.showConfirmDialog(null, "Are you sure about this?", "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 			if (result == JOptionPane.YES_OPTION)
-				dispose();
+				setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+			else
+				setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		}
 	}
 
