@@ -142,7 +142,18 @@ public class BoardPanel extends JPanel implements ActionListener, GridClickPubli
 	}
 	
 	public void addShip(Ship ship) {
-		displayShip(ship.getX(), ship.getY(), ship.getDirection(), ship.getLength());
+		//displayShip(ship.getX(), ship.getY(), ship.getDirection(), ship.getLength());
+		
+		if (ship.getDirection() == Direction.HORIZONTAL) {
+			for (int x = ship.getX(); x < ship.getX() + ship.getLength(); x++) {
+				getButtonAt(x, ship.getY());
+			}
+			
+		} else if (ship.getDirection() == Direction.VERTICAL) {
+			for (int y = ship.getY(); y < ship.getY() + ship.getLength(); y++) {
+				getButtonAt(ship.getX(), y);
+			}
+		}
 	}
 	
 	public void displayShip(int x, int y, Direction direction, int length) {
@@ -155,6 +166,10 @@ public class BoardPanel extends JPanel implements ActionListener, GridClickPubli
 
 	public void setBtnArray(List<JButton> btnArray) {
 		this.btnArray = btnArray;
+	}
+	
+	public JButton getButtonAt(int x, int y) {
+		return btnArray.get(y + x * 10);
 	}
 //
 //	@Override
