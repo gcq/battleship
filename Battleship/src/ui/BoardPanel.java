@@ -145,6 +145,13 @@ public class BoardPanel extends JPanel implements ActionListener, GridClickPubli
 		listener = l;
 	}
 	
+	public String resetBoard () {
+		for (JButton jButton : btnArray) {
+			jButton.setBackground(buttonColor);
+		}
+		return "Board resetejat";
+	}
+	
 	/**
 	 * 
 	 * @param ship
@@ -165,7 +172,7 @@ public class BoardPanel extends JPanel implements ActionListener, GridClickPubli
 		return true;
 	}
 	
-	public String addShip(Ship ship) {
+	public boolean addShip(Ship ship) {
 		//displayShip(ship.getX(), ship.getY(), ship.getDirection(), ship.getLength());
 		
 		if (ship.getDirection() == Direction.HORIZONTAL) {
@@ -174,6 +181,8 @@ public class BoardPanel extends JPanel implements ActionListener, GridClickPubli
 					getButtonAt(x, ship.getY()).setBackground(shipColor);
 				}
 			}
+			else
+				return false;
 			
 		} else if (ship.getDirection() == Direction.VERTICAL) {
 			if (isValidPosition(ship)) {
@@ -181,8 +190,10 @@ public class BoardPanel extends JPanel implements ActionListener, GridClickPubli
 					getButtonAt(ship.getX(), y).setBackground(shipColor);
 				}
 			}
+			else 
+				return false;
 		}
-		return "Vaixell " + ship + " afegit al taulell";
+		return true;
 	}
 	
 	public void displayShip(int x, int y, Direction direction, int length) {

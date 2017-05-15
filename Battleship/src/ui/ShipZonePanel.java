@@ -30,6 +30,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.Box;
@@ -46,9 +47,6 @@ import core.Ship;
 
 
 class ShipPanel extends JPanel {
-	
-	
-	 
 	public ShipPanel() {
 		setBounds(0, 0, 100, 100);
 		setMinimumSize(new Dimension(150, 50));
@@ -57,8 +55,6 @@ class ShipPanel extends JPanel {
 		
 		int action = DnDConstants.ACTION_COPY_OR_MOVE;
 	}
-
-
 }
 
 class ShipPanelButton extends JButton {
@@ -91,8 +87,7 @@ public class ShipZonePanel extends JPanel implements  MouseListener, MouseMotion
 	ShipZonePanel self;
 	MyMouseAdapter myMouseAdapter;
 	
-	List<Ship> shipArray
-	;
+	List<Ship> shipArray;
 	private List<JButton>btnArray;
 	
 	private int portavionesLength = 5;
@@ -127,7 +122,54 @@ public class ShipZonePanel extends JPanel implements  MouseListener, MouseMotion
 		System.out.println("index: " + this.shipArray.indexOf(ship));
 		remove(this.btnArray.get(this.shipArray.indexOf(ship)));
 		this.btnArray.remove(this.shipArray.indexOf(ship));
+		this.shipArray.remove(this.shipArray.indexOf(ship));
 		return "Vaixell " + ship + " esborrat del panell";
+	}
+	
+	public String reset () {
+		if (this.shipArray.size() > 0 && this.btnArray.size() > 0)
+			removeAllShips();
+		
+		initShips();
+		initShipsBtnArray();
+		System.out.println("btnArray: " + btnArray);
+		return "ShipZonePanel reset";
+	}
+	
+	public void removeAllShips () {
+		for (int i = 0; i < btnArray.size(); i++) {
+			System.out.println(i);
+			remove(this.btnArray.get(i));
+			this.btnArray.remove(i);
+			this.shipArray.remove(i);
+		}
+		repaint();
+//			remove(this.btnArray.get(i));
+//			this.btnArray.remove(i);
+	}
+	
+	
+	public void initShipsBtnArray () {
+		int gridX = 0;
+		int gridY = 0;
+		for (int i = 0; i < ships; i++) {
+			JButton button = new ShipPanelButton();			
+			GridBagConstraints gbc_button = new GridBagConstraints();				
+			gbc_button.gridwidth = shipArray.get(i).getLength(); 
+			gbc_button.insets = new Insets(0, 0, 5, 0);
+			gbc_button.gridx = gridX;
+			gbc_button.gridy = gridY;
+			gbc_button.fill=GridBagConstraints.BOTH;
+			button.addMouseListener(this);
+			button.setActionCommand(gridX + "," + gridY);
+			add(button, gbc_button);
+			gridY++;
+			button.addMouseListener(myMouseAdapter);
+			btnArray.add(button);
+			System.out.println("gridX: " + gridX + " | " + "gridY: " + gridY);
+			System.out.println("Button Width: " + gbc_button.gridwidth);
+		}
+		repaint();
 	}
 
 	public ShipZonePanel() {
@@ -146,31 +188,9 @@ public class ShipZonePanel extends JPanel implements  MouseListener, MouseMotion
 		gbl_btnPanel.rowWeights = new double[]{0,0,0,0,0};
 		setLayout(gbl_btnPanel);
 		
-		int gridX = 0;
-		int gridY = 0;
-		
 		btnArray = new ArrayList<JButton>();
 		
-		
-		for (int i = 0; i < shipArray.size(); i++) {
-			JButton button = new ShipPanelButton();			
-			GridBagConstraints gbc_button = new GridBagConstraints();				
-			gbc_button.gridwidth = shipArray.get(i).getLength(); 
-			gbc_button.insets = new Insets(0, 0, 5, 0);
-			gbc_button.gridx = gridX;
-			gbc_button.gridy = gridY;
-			gbc_button.fill=GridBagConstraints.BOTH;
-			button.addMouseListener(this);
-			button.setActionCommand(gridX + "," + gridY);
-			add(button, gbc_button);
-			gridY++;
-			btnArray.add(button);
-			
-			button.addMouseListener(myMouseAdapter);
-			
-			System.out.println("gridX: " + gridX + " | " + "gridY: " + gridY);
-			System.out.println("Button Width: " + gbc_button.gridwidth);	
-		}
+		initShipsBtnArray();
 
 //		addFocusListener(this);
 //		addMouseMotionListener(this);
@@ -201,6 +221,7 @@ public class ShipZonePanel extends JPanel implements  MouseListener, MouseMotion
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		System.out.println("component: " + e.getComponent());
+		System.out.println("selected ship: " + shipArray.get(btnArray.indexOf(e.getComponent())));
 		setSelectedShip(shipArray.get(btnArray.indexOf(e.getComponent())));
 	}
 

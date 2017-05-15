@@ -37,6 +37,7 @@ import java.awt.Color;
 import core.Player;
 import core.Ship;
 import core.exceptions.InvalidPointsForShipException;
+import javax.swing.JButton;
 
 public class Gui extends JFrame implements GridClickListener, ActionListener, MouseMotionListener{
 
@@ -49,7 +50,6 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 	private ShipZonePanel shipZonePanel;
 	
 	Point lastClick;
-	Ship lastClickedShip;
 	
 	Ship[] shipArray;
 	int ships = 5;
@@ -172,6 +172,12 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		turnTime.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.CTRL_MASK));
 		settingsMenu.add(turnTime);
 		
+		JButton resetBoard = new JButton("Reset Board");
+		resetBoard.setActionCommand("resetBoard");
+		resetBoard.addActionListener(this);
+		resetBoard.setBounds(647, 402, 109, 23);
+		gamePane.add(resetBoard);
+		
 		userPanel = new UserPanel();
 		
 		userPanel.getBtnGo().addActionListener(this);
@@ -207,16 +213,17 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		
 		System.out.println("from " + lastClick + " to " + currentClick);
 		
-		if (clickedShip != lastClickedShip) {
-			Ship ship = new Ship(x, y, clickedShip.getLength(), clickedShip.getDirection());
+		if (clickedShip != null ) {
+			Ship ship = new Ship(x, y, clickedShip.getLength(), clickedShip.getDirection(), clickedShip.getId());
 			System.out.println(ship);
-			boardPanel.addShip(ship);
-			lastClickedShip = clickedShip;
-			System.out.println(shipZonePanel.removeShip(clickedShip));
+			if (boardPanel.addShip(ship)) { // Si s'afegeix correctament (posicio correcta) borrem del panell
+				System.out.println(shipZonePanel.removeShip(clickedShip));
+				shipZonePanel.setSelectedShip(null);
+			}
+			else {
+				System.out.println("Posicio incorrecta");
+			}
 			repaint();
-		}
-		else {
-			System.out.println("Tens seleccionat el mateix vaixell");
 		}
 		
 		
@@ -240,6 +247,11 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		else if (e.getActionCommand().equals("SaveProfile")) {
 			changePanel("game");
 			player.setName(((ProfilePanel) profilePanel).getUsername());
+		}
+		
+		else if (e.getActionCommand().equals("resetBoard")) {
+			System.out.println(boardPanel.resetBoard());
+			System.out.println(shipZonePanel.reset());
 		}
 	}
 	
@@ -270,6 +282,5 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 	public void mouseMoved(MouseEvent e) {
 		System.out.println(e.getComponent());
 	}
-
 }
 
