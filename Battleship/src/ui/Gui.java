@@ -4,21 +4,18 @@ import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.EventQueue;
-import java.awt.GridBagLayout;
 import java.awt.Point;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -31,7 +28,7 @@ import javax.swing.border.EmptyBorder;
 import ui.interfaces.GridClickListener;
 import core.Player;
 import core.Ship;
-import java.awt.event.KeyEvent;
+import core.exceptions.InvalidPointsForShipException;
 
 public class Gui extends JFrame implements GridClickListener, ActionListener{
 
@@ -42,6 +39,8 @@ public class Gui extends JFrame implements GridClickListener, ActionListener{
 	private JPanel gamePane;
 	private BoardPanel boardPanel;
 	private ShipZonePanel shipZonePanel;
+	
+	Point lastClick;
 	
 	private int portavionesLength = 5;
 	private int acorazadoLength = 4;
@@ -199,6 +198,29 @@ public class Gui extends JFrame implements GridClickListener, ActionListener{
 	@Override
 	public void onGridClick(int x, int y) {
 		System.out.println("Clicked on [" + x + ", " + y + "]");
+		
+		Point currentClick = new Point(x, y);
+		
+		if (lastClick == null) {
+			lastClick = currentClick;
+		
+		} else {
+			System.out.println("from " + lastClick + " to " + currentClick);
+			
+			Ship ship = null;
+			try {
+				ship = Ship.getShipFromPoints(lastClick, currentClick);
+			} catch (InvalidPointsForShipException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			boardPanel.addShip(ship);
+			
+			System.out.println(ship);
+			
+			lastClick = null;
+		}
 	}
 
 	@Override

@@ -1,5 +1,8 @@
 package core;
 
+import java.awt.Point;
+
+import core.exceptions.InvalidPointsForShipException;
 import utils.Enums.Direction;
 
 
@@ -30,6 +33,36 @@ public class Ship {
 		this.id = id;
 		
 		hits = 0;
+	}
+	
+	public static Ship getShipFromPoints(Point a, Point b) throws InvalidPointsForShipException {
+		if (a.getX() == b.getX()) {
+			//VERTICAL
+			
+			int minY = (int) Math.min(a.getY(), b.getY());
+			int maxY = (int) Math.max(a.getY(), b.getY());
+			
+			return new Ship((int) a.getX(), minY, maxY - minY + 1, Direction.VERTICAL);
+		
+		} else if (a.getY() == b.getY()) {
+			//HORIZONTAL
+			
+			int minX = (int) Math.min(a.getX(), b.getX());
+			int maxX = (int) Math.max(a.getX(), b.getX());
+			
+			return new Ship(minX, (int) a.getY(), maxX - minX + 1, Direction.HORIZONTAL);
+		
+		} else {
+			//INVALID
+			throw new InvalidPointsForShipException("Points are not in a line");
+		}
+		
+	}
+	
+	@Override
+	public String toString() {
+		return "Ship [id=" + id + ", x=" + x + ", y=" + y + ", length="
+				+ length + ", direction=" + direction + ", hits=" + hits + "]";
 	}
 
 	public int getX() {
