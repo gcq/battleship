@@ -12,6 +12,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -26,15 +27,18 @@ import javax.swing.KeyStroke;
 import javax.swing.border.EmptyBorder;
 
 import ui.interfaces.GridClickListener;
+import utils.Enums.Direction;
 import core.Player;
 import core.Ship;
+
 import java.awt.event.KeyEvent;
 import java.awt.Color;
+
 import core.Player;
 import core.Ship;
 import core.exceptions.InvalidPointsForShipException;
 
-public class Gui extends JFrame implements GridClickListener, ActionListener{
+public class Gui extends JFrame implements GridClickListener, ActionListener, MouseMotionListener{
 
 	private UserPanel userPanel;
 	private JPanel contentPane;
@@ -45,12 +49,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener{
 	private ShipZonePanel shipZonePanel;
 	
 	Point lastClick;
-	
-	private int portavionesLength = 5;
-	private int acorazadoLength = 4;
-	private int cruceroLength = 3;
-	private int submarinoLength = 3;
-	private int destructorLength = 2;
+	Ship lastClickedShip;
 	
 	Ship[] shipArray;
 	int ships = 5;
@@ -98,7 +97,6 @@ public class Gui extends JFrame implements GridClickListener, ActionListener{
 		
 		shipZonePanel = new ShipZonePanel();
 		shipZonePanel.setBorder(new EmptyBorder(2, 2, 2, 2));
-		//shipZonePanel.setBounds(604, 103, 150, 500);
 		shipZonePanel.setBounds(564,107,274, 256);
 		shipZonePanel.setAlignmentX(RIGHT_ALIGNMENT);
 
@@ -190,6 +188,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener{
 		
 		contentPane.add(profilePanel, "profile");
 		cardLayout.show(contentPane, "intro");
+		
 		pack();
 		
 	}
@@ -204,26 +203,23 @@ public class Gui extends JFrame implements GridClickListener, ActionListener{
 		
 		Point currentClick = new Point(x, y);
 		
-		if (lastClick == null) {
-			lastClick = currentClick;
+		Ship clickedShip = shipZonePanel.getSelectedShip();
 		
-		} else {
-			System.out.println("from " + lastClick + " to " + currentClick);
-			
-			Ship ship = null;
-			try {
-				ship = Ship.getShipFromPoints(lastClick, currentClick);
-			} catch (InvalidPointsForShipException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			boardPanel.addShip(ship);
-			
+		System.out.println("from " + lastClick + " to " + currentClick);
+		
+		if (clickedShip != lastClickedShip) {
+			Ship ship = new Ship(x, y, clickedShip.getLength(), clickedShip.getDirection());
 			System.out.println(ship);
-			
-			lastClick = null;
+			boardPanel.addShip(ship);
+			lastClickedShip = clickedShip;
+			System.out.println(shipZonePanel.removeShip(clickedShip));
+			repaint();
 		}
+		else {
+			System.out.println("Tens seleccionat el mateix vaixell");
+		}
+		
+		
 	}
 
 	@Override
@@ -247,26 +243,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener{
 		}
 	}
 	
-	public void initShips () {
-		Ship portaviones = new Ship(portavionesLength, 1);
-		Ship acorazado = new Ship(acorazadoLength, 2);
-		Ship crucero = new Ship(cruceroLength, 3);
-		Ship submarino = new Ship(submarinoLength, 4);
-		Ship destructor = new Ship(destructorLength, 5);
-		this.shipArray[0] = portaviones;
-		this.shipArray[1] = acorazado;
-		this.shipArray[2] = crucero;
-		this.shipArray[3] = submarino;
-		this.shipArray[4] = destructor;
-		
-		for (int i = 0; i < ships; i++) {
-			for (int j = 0; j < shipArray[i].getLength(); j++) {
-				
-			}
-		}
-			
-		
-	}
+
 
 	
 	class MyWindowAdapter extends WindowAdapter {
@@ -279,6 +256,19 @@ public class Gui extends JFrame implements GridClickListener, ActionListener{
 			else
 				setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		}
+	}
+
+
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void mouseMoved(MouseEvent e) {
+		System.out.println(e.getComponent());
 	}
 
 }

@@ -22,6 +22,8 @@ import java.awt.dnd.DragSourceEvent;
 import java.awt.dnd.DragSourceListener;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.InvalidDnDOperationException;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -38,6 +40,7 @@ import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import utils.Enums.Direction;
 import core.Ship;
 
 
@@ -59,20 +62,37 @@ class ShipPanel extends JPanel {
 }
 
 class ShipPanelButton extends JButton {
+	boolean clicked;
+	
 	public ShipPanelButton () {
 		setBackground(Color.black);
+		this.clicked = false;
+	}
+	
+	public boolean isClicked () {
+		return this.clicked;
+	}
+	
+	public void setClicked (boolean click) {
+		this.clicked = click;
 	}
 }
 
-public class ShipZonePanel extends JPanel implements MouseListener{
+public class ShipZonePanel extends JPanel implements  MouseListener, MouseMotionListener, FocusListener{
 	
 	BoardPanel boardPanel;
+	
+	Ship selectedShip;
 	
 	int ships = 5;
 	
 	Point originPoint = null;
 	
-	Ship[] shipArray;
+	ShipZonePanel self;
+	MyMouseAdapter myMouseAdapter;
+	
+	List<Ship> shipArray
+	;
 	private List<JButton>btnArray;
 	
 	private int portavionesLength = 5;
@@ -81,35 +101,44 @@ public class ShipZonePanel extends JPanel implements MouseListener{
 	private int submarinoLength = 3;
 	private int destructorLength = 2;
 	
-	JPanel[] panelArray;
-	
 	public void initShips () {
-		Ship portaviones = new Ship(portavionesLength, 1);
-		Ship acorazado = new Ship(acorazadoLength, 2);
-		Ship crucero = new Ship(cruceroLength, 3);
-		Ship submarino = new Ship(submarinoLength, 4);
-		Ship destructor = new Ship(destructorLength, 5);
-		this.shipArray[0] = portaviones;
-		this.shipArray[1] = acorazado;
-		this.shipArray[2] = crucero;
-		this.shipArray[3] = submarino;
-		this.shipArray[4] = destructor;
-	}
-	
-	public JPanel[] getPanelArray () {
-		return this.panelArray;
+		Ship portaviones = new Ship(1, portavionesLength, Direction.HORIZONTAL);
+		Ship acorazado = new Ship(2, acorazadoLength, Direction.HORIZONTAL);
+		Ship crucero = new Ship(3, cruceroLength, Direction.HORIZONTAL);
+		Ship submarino = new Ship(4, submarinoLength, Direction.HORIZONTAL);
+		Ship destructor = new Ship(5, destructorLength, Direction.HORIZONTAL);
+		this.shipArray.add(portaviones);
+		this.shipArray.add(acorazado);
+		this.shipArray.add(crucero);
+		this.shipArray.add(submarino);
+		this.shipArray.add(destructor);
 	}
 	
 	
+	public Ship getSelectedShip() {
+		return selectedShip;
+	}
+
+	public void setSelectedShip(Ship selectedShip) {
+		this.selectedShip = selectedShip;
+	}
 	
-	
+	public String removeShip (Ship ship) {
+		System.out.println("index: " + this.shipArray.indexOf(ship));
+		remove(this.btnArray.get(this.shipArray.indexOf(ship)));
+		this.btnArray.remove(this.shipArray.indexOf(ship));
+		return "Vaixell " + ship + " esborrat del panell";
+	}
+
 	public ShipZonePanel() {
-		shipArray = new Ship[ships];
-		panelArray = new JPanel[ships];
+		self = this;
+		
+		myMouseAdapter = new MyMouseAdapter();
+		
+		shipArray = new ArrayList<Ship>();
 		
 		initShips();
 		setPreferredSize(new Dimension(250, 250));
-		//setAlignmentY(Component.TOP_ALIGNMENT);
 		GridBagLayout gbl_btnPanel = new GridBagLayout();
 		gbl_btnPanel.columnWidths = new int[] {50, 50, 50, 50, 50};
 		gbl_btnPanel.rowHeights = new int[] {50, 50, 50, 50, 50};
@@ -122,32 +151,57 @@ public class ShipZonePanel extends JPanel implements MouseListener{
 		
 		btnArray = new ArrayList<JButton>();
 		
-		for (int i = 0; i < shipArray.length; i++) {
+		
+		for (int i = 0; i < shipArray.size(); i++) {
 			JButton button = new ShipPanelButton();			
 			GridBagConstraints gbc_button = new GridBagConstraints();				
-			gbc_button.gridwidth = shipArray[i].getLength(); 
+			gbc_button.gridwidth = shipArray.get(i).getLength(); 
 			gbc_button.insets = new Insets(0, 0, 5, 0);
 			gbc_button.gridx = gridX;
 			gbc_button.gridy = gridY;
 			gbc_button.fill=GridBagConstraints.BOTH;
-			button.addMouseListener(new MyMouseAdapter());
-//			button.addActionListener(this);
+			button.addMouseListener(this);
 			button.setActionCommand(gridX + "," + gridY);
-			button.addMouseListener((MouseListener) this);
 			add(button, gbc_button);
 			gridY++;
 			btnArray.add(button);
+			
+			button.addMouseListener(myMouseAdapter);
 			
 			System.out.println("gridX: " + gridX + " | " + "gridY: " + gridY);
 			System.out.println("Button Width: " + gbc_button.gridwidth);	
 		}
 
+//		addFocusListener(this);
+//		addMouseMotionListener(this);
+//		addMouseListener(this);
 	}
-	
+
 	@Override
-	public void mouseClicked(MouseEvent e) {
+	public void mouseDragged(MouseEvent e) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void mouseMoved(MouseEvent e) {
+		
+	}
+
+	@Override
+	public void focusGained(FocusEvent e) {
+	}
+
+	@Override
+	public void focusLost(FocusEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		System.out.println("component: " + e.getComponent());
+		setSelectedShip(shipArray.get(btnArray.indexOf(e.getComponent())));
 	}
 
 	@Override
