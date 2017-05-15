@@ -53,66 +53,14 @@ class ShipPanel extends JPanel {
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		
 		int action = DnDConstants.ACTION_COPY_OR_MOVE;
-//	    ds.createDefaultDragGestureRecognizer(this, action, this);
 	}
 
-//	@Override
-//	public void dragDropEnd(DragSourceDropEvent dsde) {
-//		System.out.println("Drag and drop end");
-//
-//	    if (dsde.getDropSuccess() == false) {
-//	      System.out.println("unsuccessful");
-//	      return;
-//	    }
-//	}
-//
-//	@Override
-//	public void dragEnter(DragSourceDragEvent dsde) {
-//		System.out.println("Entering drop target #2");
-//
-//	    DragSourceContext ctx = dsde.getDragSourceContext();
-//
-//	    int action = dsde.getDropAction();
-//	    if ((action & DnDConstants.ACTION_COPY) != 0)
-//	      ctx.setCursor(DragSource.DefaultCopyDrop);
-//	    else
-//	      ctx.setCursor(DragSource.DefaultCopyNoDrop);
-//	}
-//
-//	@Override
-//	public void dragExit(DragSourceEvent dse) {
-//		System.out.println("Exiting drop target #2");
-//	}
-//
-//	@Override
-//	public void dragOver(DragSourceDragEvent dsde) {
-//	    System.out.println("Dragging over drop target #2");
-//	}
-//
-//	@Override
-//	public void dropActionChanged(DragSourceDragEvent dsde) {
-//	    System.out.println("Drop action changed #2");
-//	}
-//
-//	@Override
-//	public void dragGestureRecognized(DragGestureEvent e) {
-//		try {
-//			JPanel panel = ((JPanel)e.getComponent());
-//			String transferData = String.valueOf(panel.getComponents().length);
-//			System.out.println("Transfer data (ShipLength): " + transferData);
-//			Transferable t = new StringSelection(transferData);
-//			e.startDrag(DragSource.DefaultCopyNoDrop, t, this);
-//	    } catch (InvalidDnDOperationException e2) {
-//	      System.out.println(e2);
-//	    }
-//	}
+
 }
 
 class ShipPanelButton extends JButton {
 	public ShipPanelButton () {
 		setBackground(Color.black);
-		setMinimumSize(new Dimension(20, 30));
-		setMaximumSize(new Dimension(30, 30));
 	}
 }
 
@@ -160,116 +108,42 @@ public class ShipZonePanel extends JPanel implements MouseListener{
 		panelArray = new JPanel[ships];
 		
 		initShips();
-		setPreferredSize(new Dimension(100, 100));
-		setAlignmentY(Component.TOP_ALIGNMENT);
+		setPreferredSize(new Dimension(250, 250));
+		//setAlignmentY(Component.TOP_ALIGNMENT);
 		GridBagLayout gbl_btnPanel = new GridBagLayout();
 		gbl_btnPanel.columnWidths = new int[] {50, 50, 50, 50, 50};
 		gbl_btnPanel.rowHeights = new int[] {50, 50, 50, 50, 50};
-		gbl_btnPanel.columnWeights = new double[]{0.0,0,0,0,};
-		gbl_btnPanel.rowWeights = new double[]{0.0,0,0,0,0};
+		gbl_btnPanel.columnWeights = new double[]{0,0,0,0,0};
+		gbl_btnPanel.rowWeights = new double[]{0,0,0,0,0};
 		setLayout(gbl_btnPanel);
 		
-		
-//		JButton button = new JButton("New button");
-//		GridBagConstraints gbc_button = new GridBagConstraints();
-//		gbc_button.gridwidth = 2;
-//		gbc_button.insets = new Insets(0, 0, 5, 5);
-//		gbc_button.gridx = 0;
-//		gbc_button.gridy = 0;
-//		add(button, gbc_button);
 		int gridX = 0;
 		int gridY = 0;
 		
 		btnArray = new ArrayList<JButton>();
 		
 		for (int i = 0; i < shipArray.length; i++) {
-//			for (int j = 1; j <= shipArray.length + 1 ; j++) {
-				JButton button = new JButton();
-				button.addMouseListener(new MyMouseAdapter());
-				button.setForeground(Color.WHITE);
-				button.setBackground(Color.black);
-//				button.setPreferredSize(new Dimension(50, 50));
-				button.setAlignmentX(Component.CENTER_ALIGNMENT);
-				GridBagConstraints gbc_button = new GridBagConstraints();
-				gbc_button.insets = new Insets(0, 0, 5, 5);
-				gbc_button.gridwidth = shipArray[i].getLength(); 
-				gbc_button.gridx = gridX;
-				gbc_button.gridy = gridY;
-				System.out.println("gridX: " + gridX + " | " + "gridY: " + gridY);
-				System.out.println("Button Width: " + shipArray[i].getLength());
-				button.setActionCommand(gridX + "," + gridY);
-//				button.addActionListener(this);
-				button.addMouseListener((MouseListener) this);
-				add(button, gbc_button);
-				gridY++;
-				btnArray.add(button);
-//			}
-			//gridX++;	
+			JButton button = new ShipPanelButton();			
+			GridBagConstraints gbc_button = new GridBagConstraints();				
+			gbc_button.gridwidth = shipArray[i].getLength(); 
+			gbc_button.insets = new Insets(0, 0, 5, 0);
+			gbc_button.gridx = gridX;
+			gbc_button.gridy = gridY;
+			gbc_button.fill=GridBagConstraints.BOTH;
+			button.addMouseListener(new MyMouseAdapter());
+//			button.addActionListener(this);
+			button.setActionCommand(gridX + "," + gridY);
+			button.addMouseListener((MouseListener) this);
+			add(button, gbc_button);
+			gridY++;
+			btnArray.add(button);
+			
+			System.out.println("gridX: " + gridX + " | " + "gridY: " + gridY);
+			System.out.println("Button Width: " + gbc_button.gridwidth);	
 		}
-		
-		
-		
-		
-		
-		
 
 	}
-//
-//	@Override
-//	public void mouseDragged(MouseEvent e) {
-//		System.out.println(e.getX() + " " +  e.getY());
-////		final Point newPanelClickPoint = e.getPoint();
-////	
-////		final int newX = initialPoint.x + (newPanelClickPoint.x - panelClickPoint.x),
-////                 newY = initialPoint.y + (newPanelClickPoint.y - panelClickPoint.y);
-//		 
-////		e.translatePoint(e.getComponent().getLocation().x, e.getComponent().getLocation().y);
-//		((JPanel)e.getComponent()).setLocation(e.getX(), e.getY() );
-////		((JPanel)e.getComponent()).setLocation(newX, newY);
-////		if (e.getX)
-////		((JPanel)e.getSource()).getRootPane().getLayeredPane().add(e.getComponent());
-////		((JPanel)e.getSource()).getRootPane().getLayeredPane().setLayer(e.getComponent(), 1);
-//		//((JPanel)e.getSource()).getRootPane().repaint();
-////		repaint();
-//		repaint();
-//		
-//	}
-//
-//	@Override
-//	public void mouseMoved(MouseEvent e) {
-////		((JPanel)e.getSource()).setLocation(e.getX(), e.getY());
-//		repaint();
-//	}
-//
-//	@Override
-//	public void mouseClicked(MouseEvent e) {
-//		// TODO Auto-generated method stub
-//		
-//	}
-//
-//	@Override
-//	public void mouseEntered(MouseEvent e) {
-//		// TODO Auto-generated method stub
-//		
-//	}
-//
-//	@Override
-//	public void mouseExited(MouseEvent e) {
-//		// TODO Auto-generated method stub
-//		
-//	}
-//
-//	@Override
-//	public void mousePressed(MouseEvent e) {
-//		originPoint = e.getComponent().getLocation();
-//	}
-//
-//	@Override
-//	public void mouseReleased(MouseEvent e) {
-//		// TODO Auto-generated method stub
-//		
-//	}
-
+	
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub

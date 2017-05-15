@@ -32,6 +32,7 @@ import ui.interfaces.GridClickListener;
 import core.Player;
 import core.Ship;
 import java.awt.event.KeyEvent;
+import java.awt.Color;
 
 public class Gui extends JFrame implements GridClickListener, ActionListener{
 
@@ -89,13 +90,14 @@ public class Gui extends JFrame implements GridClickListener, ActionListener{
 		contentPane = new JPanel();
 		
 		gamePane = new JPanel();
-		gamePane.setPreferredSize(new Dimension(800, 700));
+		gamePane.setPreferredSize(new Dimension(850, 700));
 		gamePane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		gamePane.setLayout(null);
 		
 		shipZonePanel = new ShipZonePanel();
 		shipZonePanel.setBorder(new EmptyBorder(2, 2, 2, 2));
-		shipZonePanel.setBounds(604, 103, 150, 500);
+		//shipZonePanel.setBounds(604, 103, 150, 500);
+		shipZonePanel.setBounds(564,107,274, 256);
 		shipZonePanel.setAlignmentX(RIGHT_ALIGNMENT);
 
 		
@@ -109,8 +111,6 @@ public class Gui extends JFrame implements GridClickListener, ActionListener{
 		
 		cardLayout = new CardLayout();
 		contentPane.setLayout(cardLayout);
-		
-		shipZonePanel.setLayout(new BoxLayout(shipZonePanel, BoxLayout.Y_AXIS));
 		
 		getLayeredPane().moveToFront(shipZonePanel);
 
@@ -134,7 +134,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener{
 		setContentPane(contentPane);
 		
 		JMenuBar menuBar = new JMenuBar();
-		menuBar.setBounds(0, 0, 800, 21);
+		menuBar.setBounds(0, 0, 850, 21);
 		gamePane.add(menuBar);
 		
 		JMenu gameMenu = new JMenu("Game");
