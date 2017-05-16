@@ -2,6 +2,7 @@ package ui;
 
 import java.awt.CardLayout;
 import java.awt.Component;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Point;
@@ -27,23 +28,31 @@ import javax.swing.KeyStroke;
 import javax.swing.border.EmptyBorder;
 
 import ui.interfaces.GridClickListener;
+import utils.Constants;
 import utils.Enums.Direction;
 import core.Player;
 import core.Ship;
 
 import java.awt.event.KeyEvent;
 import java.awt.Color;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 import core.Player;
 import core.Ship;
 import core.exceptions.InvalidPointsForShipException;
+
 import javax.swing.JButton;
+import javax.swing.ImageIcon;
 
 public class Gui extends JFrame implements GridClickListener, ActionListener, MouseMotionListener{
 
 	private UserPanel userPanel;
 	private JPanel contentPane;
 	private JPanel profilePanel;
+	private AboutPanel aboutPanel;
 	private CardLayout cardLayout;
 	private JPanel gamePane;
 	private BoardPanel boardPanel;
@@ -51,8 +60,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 	
 	Point lastClick;
 	
-	Ship[] shipArray;
-	int ships = 5;
+	Gui self;
 	
 	private Player player;
 
@@ -77,8 +85,9 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 	 * Create the frame.
 	 */
 	public Gui() {
+		setPreferredSize(Constants.frameSize);
 		
-		shipArray = new Ship[ships];
+		self = this;
 		
 		player = new Player();
 		
@@ -112,8 +121,20 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		cardLayout = new CardLayout();
 		contentPane.setLayout(cardLayout);
 		
-		getLayeredPane().moveToFront(shipZonePanel);
-
+		
+		aboutPanel = new AboutPanel();
+		aboutPanel.setCredits("PuiVicCruGuiA14Credits.html");
+		aboutPanel.setLicence("gpl3.html");
+		aboutPanel.setImageIcon(new ImageIcon("D:\\DAM\\WorkspaceBattleship\\battleship\\Battleship\\img\\icon.png"));
+		aboutPanel.setDescriptionName("BattleShip");
+		aboutPanel.setDescriptionText("Victor Puigcerver i Guillem Cruz");
+		aboutPanel.setVersio("1.0");
+		aboutPanel.setTitleText("Battleship");
+		
+		((AboutPanel) aboutPanel).getCloseButton().addActionListener(this); // listener to return to main panel
+		
+		contentPane.add(aboutPanel, "about");
+		
 		gamePane.add(shipZonePanel);
 		
 		boardPanel = new BoardPanel();
@@ -172,6 +193,21 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		turnTime.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.CTRL_MASK));
 		settingsMenu.add(turnTime);
 		
+		JMenu helpMenu = new JMenu("Help");
+		menuBar.add(helpMenu);
+		
+		JMenuItem onlineHelp = new JMenuItem("Online Help");
+		onlineHelp.setActionCommand("OnlineHelp");
+		onlineHelp.addActionListener(this);
+		onlineHelp.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_MASK));
+		helpMenu.add(onlineHelp);
+		
+		JMenuItem about = new JMenuItem("About");
+		about.setActionCommand(about.getText());
+		about.addActionListener(this);
+		about.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_MASK));
+		helpMenu.add(about);
+		
 		JButton resetBoard = new JButton("Reset Board");
 		resetBoard.setActionCommand("resetBoard");
 		resetBoard.addActionListener(this);
@@ -181,20 +217,16 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		userPanel = new UserPanel();
 		
 		userPanel.getBtnGo().addActionListener(this);
-		userPanel.getBtnGo().setActionCommand(userPanel.getBtnGo().getText());
 		
 		contentPane.add(userPanel, "intro");
 		
 		profilePanel = new ProfilePanel();
-		((ProfilePanel) profilePanel).getSaveBtn().addActionListener(this);
-		((ProfilePanel) profilePanel).getSaveBtn().setActionCommand(((ProfilePanel) profilePanel).getSaveBtnText());
-		
+		profileMenu.setSize(Constants.profilePanelSize);
+		((ProfilePanel) profilePanel).getSaveBtn().addActionListener(this); // listener to return to main panel
 		((ProfilePanel) profilePanel).getCloseBtn().addActionListener(this);
-		((ProfilePanel) profilePanel).getCloseBtn().setActionCommand(((ProfilePanel) profilePanel).getCloseBtnText());
 		
 		contentPane.add(profilePanel, "profile");
 		cardLayout.show(contentPane, "intro");
-		
 		pack();
 		
 	}
@@ -228,24 +260,34 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		
 		
 	}
+	
+	public void resetFrameSize () {
+		self.setSize(Constants.frameSize);
+		repaint();
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equals("edit")) {
-			cardLayout.show(contentPane, "profile");
+			self.setSize(Constants.profilePanelSize);
+			repaint();
+			changePanel("profile");
+			((ProfilePanel) profilePanel).setUsername(userPanel.getUsername());
 		}
-		else if (e.getActionCommand().equals("go")) {
+		else if (e.getActionCommand().equals("StartGame")) {
 			changePanel("game");
 			player.setName(userPanel.getUsername());
 			((ProfilePanel) profilePanel).setUsername(userPanel.getUsername());
 		}
 		
 		else if (e.getActionCommand().equals("CloseProfile")) {
+			resetFrameSize();
 			changePanel("game");
 		}
 		
 		else if (e.getActionCommand().equals("SaveProfile")) {
 			changePanel("game");
+			resetFrameSize();
 			player.setName(((ProfilePanel) profilePanel).getUsername());
 		}
 		
@@ -253,9 +295,44 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 			System.out.println(boardPanel.resetBoard());
 			System.out.println(shipZonePanel.reset());
 		}
+		
+		else if (e.getActionCommand().equals("About")) {
+			self.setSize(Constants.aboutPanelSize);
+			repaint();
+			changePanel("about");
+		}
+		
+		else if (e.getActionCommand().equals("CloseAbout")) {
+			resetFrameSize();
+			changePanel("game");
+		}
+		else if (e.getActionCommand().equals("OnlineHelp")) {
+			try {
+				openWebpage(new URL("http://portaljuegos.wikidot.com/hundirlaflota"));
+			} catch (MalformedURLException e1) {
+				e1.printStackTrace();
+			}
+		}
 	}
 	
+	public static void openWebpage(URI uri) {
+	    Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+	    if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+	        try {
+	            desktop.browse(uri);
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+	    }
+	}
 
+	public static void openWebpage(URL url) {
+	    try {
+	        openWebpage(url.toURI());
+	    } catch (URISyntaxException e) {
+	        e.printStackTrace();
+	    }
+	}
 
 	
 	class MyWindowAdapter extends WindowAdapter {

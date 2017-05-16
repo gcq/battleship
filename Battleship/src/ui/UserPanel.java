@@ -12,6 +12,7 @@ import javax.swing.JButton;
 import javax.swing.border.EmptyBorder;
 
 import java.awt.Color;
+import java.awt.Font;
 
 public class UserPanel extends JPanel {
 	private JTextField textField;
@@ -29,27 +30,29 @@ public class UserPanel extends JPanel {
 		
 		
 		
-		JLabel lblUsername = new JLabel("Username");
-		lblUsername.setBounds(287, 290, 92, 15);
+		JLabel lblUsername = new JLabel("Enter your username");
+		lblUsername.setBounds(334, 250, 137, 18);
 		add(lblUsername);
 		
 		textField = new JTextField();
-		textField.setBounds(397, 288, 114, 19);
+		textField.setBounds(481, 249, 117, 19);
 		textField.setColumns(10);
 		add(textField);
 		
-		btnGo = new JButton("go");
-		btnGo.setBounds(336, 380, 117, 25);
+		btnGo = new JButton("Start Game");
+		btnGo.setActionCommand("StartGame");
+		btnGo.setBounds(481, 299, 117, 25);
 		add(btnGo);
 		
-		lblTitle = new JLabel("TITLE");
-		lblTitle.setBounds(359, 205, 70, 15);
+		lblTitle = new JLabel("ULTIMATE BATTLESHIP GAME");
+		lblTitle.setFont(new Font("Carlito", Font.PLAIN, 40));
+		lblTitle.setBounds(173, 34, 486, 103);
 		add(lblTitle);
 		
-		JLabel lblNewLabel = new JLabel(new ImageIcon("img/warship3.jpg"));
-		lblNewLabel.setBackground(new Color(240, 240, 240));
-		lblNewLabel.setBounds(0, 0, 858, 700);
-		add(lblNewLabel);
+		JLabel background = new JLabel(new ImageIcon("img/warship3.jpg"));
+		background.setBackground(new Color(240, 240, 240));
+		background.setBounds(0, 0, 858, 700);
+		add(background);
 
 	}
 	
