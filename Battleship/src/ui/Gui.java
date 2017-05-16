@@ -46,6 +46,12 @@ import core.exceptions.InvalidPointsForShipException;
 
 import javax.swing.JButton;
 import javax.swing.ImageIcon;
+import java.awt.GridBagLayout;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.BorderLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
 
 public class Gui extends JFrame implements GridClickListener, ActionListener, MouseMotionListener{
 
@@ -55,7 +61,8 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 	private AboutPanel aboutPanel;
 	private CardLayout cardLayout;
 	private JPanel gamePane;
-	private BoardPanel boardPanel;
+	private BoardPanel playerBoardPanel;
+	private BoardPanel enemyBoardPanel;
 	private ShipZonePanel shipZonePanel;
 	
 	Point lastClick;
@@ -85,7 +92,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 	 * Create the frame.
 	 */
 	public Gui() {
-		setPreferredSize(Constants.frameSize);
+		setPreferredSize(Constants.initFrameSize);
 		
 		self = this;
 		
@@ -106,17 +113,9 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		
 		shipZonePanel = new ShipZonePanel();
 		shipZonePanel.setBorder(new EmptyBorder(2, 2, 2, 2));
-		shipZonePanel.setBounds(564,107,274, 256);
+		shipZonePanel.setBounds(570,107,274, 304);
 		shipZonePanel.setAlignmentX(RIGHT_ALIGNMENT);
-
-		
-		
-		MouseListener mouseListener = new MouseAdapter() {
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				System.out.println("Component dropped on Position: " + "X[" + e.getX() + "]" + "Y[" + e.getY() + "]");
-			}
-		};
+		shipZonePanel.getResetBoardBtn().addActionListener(this);
 		
 		cardLayout = new CardLayout();
 		contentPane.setLayout(cardLayout);
@@ -137,17 +136,23 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		
 		gamePane.add(shipZonePanel);
 		
-		boardPanel = new BoardPanel();
-		boardPanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		boardPanel.setBounds(-55, 53, 682, 562);
-		boardPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		boardPanel.setPreferredSize(new Dimension(500, 500));
-		boardPanel.setGridClickListener(this);
-		gamePane.add(boardPanel);
+		playerBoardPanel = new BoardPanel();
+		playerBoardPanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		playerBoardPanel.setBounds(-55, 53, 682, 562);
+		playerBoardPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		playerBoardPanel.setPreferredSize(new Dimension(500, 500));
+		playerBoardPanel.setGridClickListener(this);
 		
+		enemyBoardPanel = new BoardPanel();
+		enemyBoardPanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		enemyBoardPanel.setBounds(600, 53, 682, 562);
+		enemyBoardPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		enemyBoardPanel.setPreferredSize(new Dimension(500, 500));
+		enemyBoardPanel.setGridClickListener(this);
 		
+		gamePane.add(playerBoardPanel);
 		
-		getLayeredPane().moveToBack(boardPanel);
+		getLayeredPane().moveToBack(playerBoardPanel);
 		contentPane.add(gamePane, "game");
 		
 		changePanel("user");
@@ -208,12 +213,6 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		about.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_MASK));
 		helpMenu.add(about);
 		
-		JButton resetBoard = new JButton("Reset Board");
-		resetBoard.setActionCommand("resetBoard");
-		resetBoard.addActionListener(this);
-		resetBoard.setBounds(647, 402, 109, 23);
-		gamePane.add(resetBoard);
-		
 		userPanel = new UserPanel();
 		
 		userPanel.getBtnGo().addActionListener(this);
@@ -248,7 +247,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		if (clickedShip != null ) {
 			Ship ship = new Ship(x, y, clickedShip.getLength(), clickedShip.getDirection(), clickedShip.getId());
 			System.out.println(ship);
-			if (boardPanel.addShip(ship)) { // Si s'afegeix correctament (posicio correcta) borrem del panell
+			if (playerBoardPanel.addShip(ship)) { // Si s'afegeix correctament (posicio correcta) borrem del panell
 				System.out.println(shipZonePanel.removeShip(clickedShip));
 				shipZonePanel.setSelectedShip(null);
 			}
@@ -262,7 +261,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 	}
 	
 	public void resetFrameSize () {
-		self.setSize(Constants.frameSize);
+		self.setSize(Constants.initFrameSize);
 		repaint();
 	}
 
@@ -280,6 +279,14 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 			((ProfilePanel) profilePanel).setUsername(userPanel.getUsername());
 		}
 		
+		else if (e.getActionCommand().equals("start")) {
+			self.setSize(Constants.inGameFrameSize);
+			gamePane.remove(shipZonePanel);
+//			gamePane.remove(comp);
+			gamePane.add(enemyBoardPanel);
+			repaint();
+		}
+		
 		else if (e.getActionCommand().equals("CloseProfile")) {
 			resetFrameSize();
 			changePanel("game");
@@ -292,7 +299,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		}
 		
 		else if (e.getActionCommand().equals("resetBoard")) {
-			System.out.println(boardPanel.resetBoard());
+			System.out.println(playerBoardPanel.resetBoard());
 			System.out.println(shipZonePanel.reset());
 		}
 		

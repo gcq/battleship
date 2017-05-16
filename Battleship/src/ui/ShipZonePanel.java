@@ -76,18 +76,20 @@ class ShipPanelButton extends JButton {
 
 public class ShipZonePanel extends JPanel implements  MouseListener, MouseMotionListener, FocusListener{
 	
-	BoardPanel boardPanel;
+	private BoardPanel boardPanel;
 	
-	Ship selectedShip;
+	private JButton resetBoardBtn;
 	
-	int ships = 5;
+	private Ship selectedShip;
 	
-	Point originPoint = null;
+	private int ships = 5;
 	
-	ShipZonePanel self;
-	MyMouseAdapter myMouseAdapter;
+	private Point originPoint = null;
 	
-	List<Ship> shipArray;
+	private ShipZonePanel self;
+	private MyMouseAdapter myMouseAdapter;
+	
+	private List<Ship> shipArray;
 	private List<JButton>btnArray;
 	
 	private int portavionesLength = 5;
@@ -112,6 +114,10 @@ public class ShipZonePanel extends JPanel implements  MouseListener, MouseMotion
 	
 	public Ship getSelectedShip() {
 		return selectedShip;
+	}
+
+	public JButton getResetBoardBtn() {
+		return resetBoardBtn;
 	}
 
 	public void setSelectedShip(Ship selectedShip) {
@@ -182,14 +188,25 @@ public class ShipZonePanel extends JPanel implements  MouseListener, MouseMotion
 		
 		shipArray = new ArrayList<Ship>();
 		
+		JPanel panel = new JPanel();
+		
 		initShips();
-		setPreferredSize(new Dimension(250, 250));
+		
+		panel.setPreferredSize(new Dimension(250, 250));
 		GridBagLayout gbl_btnPanel = new GridBagLayout();
 		gbl_btnPanel.columnWidths = new int[] {50, 50, 50, 50, 50};
-		gbl_btnPanel.rowHeights = new int[] {50, 50, 50, 50, 50};
+		gbl_btnPanel.rowHeights = new int[] {50, 50, 50, 50, 50, 50};
 		gbl_btnPanel.columnWeights = new double[]{0,0,0,0,0};
-		gbl_btnPanel.rowWeights = new double[]{0,0,0,0,0};
+		gbl_btnPanel.rowWeights = new double[]{0,0,0,0,0, 0};
 		setLayout(gbl_btnPanel);
+		
+		resetBoardBtn = new JButton("Reset Board");
+		resetBoardBtn.setActionCommand("resetBoard");
+		GridBagConstraints gbc_resetBoard = new GridBagConstraints();
+		gbc_resetBoard.insets = new Insets(0, 0, 0, 5);
+		gbc_resetBoard.gridx = 2;
+		gbc_resetBoard.gridy = 5;
+		add(resetBoardBtn, gbc_resetBoard);
 		
 		btnArray = new ArrayList<JButton>();
 		
