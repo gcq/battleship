@@ -130,14 +130,17 @@ public class ShipZonePanel extends JPanel implements  MouseListener, MouseMotion
 		if (this.shipArray.size() > 0 && this.btnArray.size() > 0)
 			removeAllShips();
 		
+		System.out.println("Erased shipsArray: " + shipArray);
 		initShips();
 		initShipsBtnArray();
+		System.out.println("Init shipsArray: " + shipArray);
+		
 		System.out.println("btnArray: " + btnArray);
 		return "ShipZonePanel reset";
 	}
 	
 	public void removeAllShips () {
-		for (int i = 0; i < btnArray.size(); i++) {
+		for (int i = 0; i < shipArray.size(); i++) {
 			System.out.println(i);
 			remove(this.btnArray.get(i));
 			this.btnArray.remove(i);
