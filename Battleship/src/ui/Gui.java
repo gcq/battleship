@@ -60,10 +60,14 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 	private JPanel profilePanel;
 	private AboutPanel aboutPanel;
 	private CardLayout cardLayout;
+	private JMenuBar menuBar;
+	private JMenuItem editProfile;
 	private JPanel gamePane;
 	private BoardPanel playerBoardPanel;
 	private BoardPanel enemyBoardPanel;
 	private ShipZonePanel shipZonePanel;
+	
+	private boolean inGame;
 	
 	Point lastClick;
 	
@@ -93,6 +97,8 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 	 */
 	public Gui() {
 		setPreferredSize(Constants.initFrameSize);
+		
+		inGame = false; 
 		
 		self = this;
 		
@@ -159,8 +165,8 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		
 		setContentPane(contentPane);
 		
-		JMenuBar menuBar = new JMenuBar();
-		menuBar.setBounds(0, 0, 850, 21);
+		menuBar = new JMenuBar();
+		menuBar.setSize(Constants.initMenuBarSize);
 		gamePane.add(menuBar);
 		
 		JMenu gameMenu = new JMenu("Game");
@@ -176,7 +182,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		JMenu profileMenu = new JMenu("Profile");
 		menuBar.add(profileMenu);
 		
-		JMenuItem editProfile = new JMenuItem("edit");
+		editProfile = new JMenuItem("edit");
 		editProfile.setMnemonic(editProfile.getText().charAt(0));
 		editProfile.setActionCommand(editProfile.getText());
 		editProfile.addActionListener(this);
@@ -261,10 +267,13 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 	}
 	
 	public void resetFrameSize () {
-		self.setSize(Constants.initFrameSize);
+		if (!this.inGame)
+			self.setSize(Constants.initFrameSize);
+		else
+			self.setSize(Constants.inGameFrameSize);
 		repaint();
 	}
-
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equals("edit")) {
@@ -280,11 +289,15 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		}
 		
 		else if (e.getActionCommand().equals("start")) {
-			self.setSize(Constants.inGameFrameSize);
-			gamePane.remove(shipZonePanel);
-//			gamePane.remove(comp);
-			gamePane.add(enemyBoardPanel);
-			repaint();
+			if (!this.inGame) {
+				self.setSize(Constants.inGameFrameSize);
+				menuBar.setSize(Constants.inGameMenuBarSize);
+				gamePane.remove(shipZonePanel);
+				gamePane.add(enemyBoardPanel);
+				System.out.println(startGame());
+				inGame = true;
+				repaint();
+			}
 		}
 		
 		else if (e.getActionCommand().equals("CloseProfile")) {
@@ -293,8 +306,8 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		}
 		
 		else if (e.getActionCommand().equals("SaveProfile")) {
-			changePanel("game");
 			resetFrameSize();
+			changePanel("game");
 			player.setName(((ProfilePanel) profilePanel).getUsername());
 		}
 		
@@ -320,6 +333,10 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 				e1.printStackTrace();
 			}
 		}
+	}
+	
+	public String startGame () {
+		return "Game started";
 	}
 	
 	public static void openWebpage(URI uri) {
