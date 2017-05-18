@@ -29,7 +29,9 @@ import javax.swing.border.EmptyBorder;
 
 import ui.interfaces.GridClickListener;
 import utils.Constants;
+import utils.Enums;
 import utils.Enums.Direction;
+import utils.Enums.GameMode;
 import core.Player;
 import core.Ship;
 
@@ -46,6 +48,7 @@ import core.exceptions.InvalidPointsForShipException;
 
 import javax.swing.JButton;
 import javax.swing.ImageIcon;
+
 import java.awt.GridBagLayout;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -57,7 +60,8 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 
 	private UserPanel userPanel;
 	private JPanel contentPane;
-	private JPanel profilePanel;
+	private ProfilePanel profilePanel;
+	private PreferencesPanel preferencesPanel;
 	private AboutPanel aboutPanel;
 	private CardLayout cardLayout;
 	private JMenuBar menuBar;
@@ -68,6 +72,12 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 	private ShipZonePanel shipZonePanel;
 	
 	private boolean inGame;
+	
+	int prefixedTurnTime;
+	
+	boolean infiniteTime; // true si es torn amb temps infinit, false si es torn amb temps prefixat
+	
+	GameMode gameMode;
 	
 	Point lastClick;
 	
@@ -91,6 +101,58 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		});
 	}
 	
+	public void initPanels() {
+		//shipZonePanel
+		shipZonePanel = new ShipZonePanel();
+		shipZonePanel.setBorder(new EmptyBorder(2, 2, 2, 2));
+		shipZonePanel.setBounds(570,107,274, 304);
+		shipZonePanel.setAlignmentX(RIGHT_ALIGNMENT);
+		shipZonePanel.getResetBoardBtn().addActionListener(this);
+		
+		//aboutPanel
+		aboutPanel = new AboutPanel();
+		aboutPanel.setCredits("PuiVicCruGuiA14Credits.html");
+		aboutPanel.setLicence("gpl3.html");
+		aboutPanel.setImageIcon(new ImageIcon("D:\\DAM\\WorkspaceBattleship\\battleship\\Battleship\\img\\icon.png"));
+		aboutPanel.setDescriptionName("BattleShip");
+		aboutPanel.setDescriptionText("Victor Puigcerver i Guillem Cruz");
+		aboutPanel.setVersio("1.0");
+		aboutPanel.setTitleText("Battleship");
+		aboutPanel.getCloseButton().addActionListener(this); // listener to return to main panel
+		
+		//playerBoardPanel
+		playerBoardPanel = new BoardPanel();
+		playerBoardPanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		playerBoardPanel.setBounds(-55, 53, 682, 562);
+		playerBoardPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		playerBoardPanel.setPreferredSize(new Dimension(500, 500));
+		playerBoardPanel.setGridClickListener(this);
+		
+		//enemyBoardPanel
+		enemyBoardPanel = new BoardPanel();
+		enemyBoardPanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		enemyBoardPanel.setBounds(600, 53, 682, 562);
+		enemyBoardPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		enemyBoardPanel.setPreferredSize(new Dimension(500, 500));
+		enemyBoardPanel.setGridClickListener(this);
+		
+		//profilePanel
+		profilePanel = new ProfilePanel();
+		profilePanel.getSaveBtn().addActionListener(this); // listener to return to main panel
+		profilePanel.getCloseBtn().addActionListener(this);
+		
+		//profilePanel
+		userPanel = new UserPanel();
+		userPanel.getBtnGo().addActionListener(this);
+		
+		//preferencesPanel
+		preferencesPanel = new PreferencesPanel();
+		preferencesPanel.getPrefixedBtn().addActionListener(this);
+		preferencesPanel.getInfiniteBtn().addActionListener(this);
+		preferencesPanel.getClosePrefBtn().addActionListener(this);
+		preferencesPanel.getSavePrefBtn().addActionListener(this);
+	}
+	
 
 	/**
 	 * Create the frame.
@@ -103,6 +165,8 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		self = this;
 		
 		player = new Player();
+		
+		gameMode = GameMode.CLASSIC;
 		
 		addWindowListener(new MyWindowAdapter());
 		
@@ -117,51 +181,20 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		gamePane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		gamePane.setLayout(null);
 		
-		shipZonePanel = new ShipZonePanel();
-		shipZonePanel.setBorder(new EmptyBorder(2, 2, 2, 2));
-		shipZonePanel.setBounds(570,107,274, 304);
-		shipZonePanel.setAlignmentX(RIGHT_ALIGNMENT);
-		shipZonePanel.getResetBoardBtn().addActionListener(this);
+		initPanels();
 		
 		cardLayout = new CardLayout();
 		contentPane.setLayout(cardLayout);
-		
-		
-		aboutPanel = new AboutPanel();
-		aboutPanel.setCredits("PuiVicCruGuiA14Credits.html");
-		aboutPanel.setLicence("gpl3.html");
-		aboutPanel.setImageIcon(new ImageIcon("D:\\DAM\\WorkspaceBattleship\\battleship\\Battleship\\img\\icon.png"));
-		aboutPanel.setDescriptionName("BattleShip");
-		aboutPanel.setDescriptionText("Victor Puigcerver i Guillem Cruz");
-		aboutPanel.setVersio("1.0");
-		aboutPanel.setTitleText("Battleship");
-		
-		((AboutPanel) aboutPanel).getCloseButton().addActionListener(this); // listener to return to main panel
+
+		changePanel("user");
 		
 		contentPane.add(aboutPanel, "about");
-		
 		gamePane.add(shipZonePanel);
-		
-		playerBoardPanel = new BoardPanel();
-		playerBoardPanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		playerBoardPanel.setBounds(-55, 53, 682, 562);
-		playerBoardPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		playerBoardPanel.setPreferredSize(new Dimension(500, 500));
-		playerBoardPanel.setGridClickListener(this);
-		
-		enemyBoardPanel = new BoardPanel();
-		enemyBoardPanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		enemyBoardPanel.setBounds(600, 53, 682, 562);
-		enemyBoardPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		enemyBoardPanel.setPreferredSize(new Dimension(500, 500));
-		enemyBoardPanel.setGridClickListener(this);
-		
 		gamePane.add(playerBoardPanel);
 		
-		getLayeredPane().moveToBack(playerBoardPanel);
-		contentPane.add(gamePane, "game");
+//		getLayeredPane().moveToBack(playerBoardPanel);
 		
-		changePanel("user");
+		contentPane.add(gamePane, "game");
 		
 		setContentPane(contentPane);
 		
@@ -172,7 +205,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		JMenu gameMenu = new JMenu("Game");
 		menuBar.add(gameMenu);
 		
-		JMenuItem startItem = new JMenuItem("start");
+		JMenuItem startItem = new JMenuItem("Start");
 		startItem.setMnemonic(startItem.getText().charAt(0));
 		startItem.setActionCommand(startItem.getText());
 		startItem.addActionListener(this);
@@ -180,9 +213,10 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		gameMenu.add(startItem);
 		
 		JMenu profileMenu = new JMenu("Profile");
+		profileMenu.setSize(Constants.profilePanelSize);
 		menuBar.add(profileMenu);
 		
-		editProfile = new JMenuItem("edit");
+		editProfile = new JMenuItem("Edit");
 		editProfile.setMnemonic(editProfile.getText().charAt(0));
 		editProfile.setActionCommand(editProfile.getText());
 		editProfile.addActionListener(this);
@@ -192,17 +226,11 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		JMenu settingsMenu = new JMenu("Settings");
 		menuBar.add(settingsMenu);
 		
-		JMenuItem turnMode = new JMenuItem("turn Mode");
-		turnMode.setActionCommand(turnMode.getText());
-		turnMode.addActionListener(this);
-		turnMode.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M, InputEvent.CTRL_MASK));
-		settingsMenu.add(turnMode);
-		
-		JMenuItem turnTime = new JMenuItem("turn Time");
-		turnTime.setActionCommand(turnTime.getText());
-		turnTime.addActionListener(this);
-		turnTime.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.CTRL_MASK));
-		settingsMenu.add(turnTime);
+		JMenuItem preferences = new JMenuItem("Preferences");
+		preferences.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.CTRL_MASK));
+		preferences.addActionListener(this);
+		preferences.setActionCommand(preferences.getText());
+		settingsMenu.add(preferences);
 		
 		JMenu helpMenu = new JMenu("Help");
 		menuBar.add(helpMenu);
@@ -219,18 +247,10 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		about.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_MASK));
 		helpMenu.add(about);
 		
-		userPanel = new UserPanel();
-		
-		userPanel.getBtnGo().addActionListener(this);
-		
 		contentPane.add(userPanel, "intro");
-		
-		profilePanel = new ProfilePanel();
-		profileMenu.setSize(Constants.profilePanelSize);
-		((ProfilePanel) profilePanel).getSaveBtn().addActionListener(this); // listener to return to main panel
-		((ProfilePanel) profilePanel).getCloseBtn().addActionListener(this);
-		
 		contentPane.add(profilePanel, "profile");
+		contentPane.add(preferencesPanel, "preferences");
+		
 		cardLayout.show(contentPane, "intro");
 		pack();
 		
@@ -274,21 +294,61 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		repaint();
 	}
 	
+	public void setTurnTime () {
+		if (preferencesPanel.getPrefixedBtn().isSelected()) {
+			prefixedTurnTime = Integer.parseInt((String) preferencesPanel.getPrefixedComboBox().getSelectedItem());
+			infiniteTime = false;
+		}
+		else {
+			prefixedTurnTime = 0; // 0 = Temps infinit
+			infiniteTime = true;
+		}
+	}
+	
+	public void setTurnMode () {
+		gameMode = preferencesPanel.getAlternativeBtn().isSelected() ? GameMode.ALTERNATIVE : GameMode.CLASSIC;
+	}
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getActionCommand().equals("edit")) {
+		if (e.getActionCommand().equals("Edit")) {
 			self.setSize(Constants.profilePanelSize);
 			repaint();
 			changePanel("profile");
 			((ProfilePanel) profilePanel).setUsername(userPanel.getUsername());
 		}
+		
+		else if (e.getActionCommand().equals("Preferences")) {
+			self.setSize(Constants.preferencesPanelSize);
+			changePanel("preferences");
+		}
+		
+		else if (e.getActionCommand().equals("Infinite")) {
+			preferencesPanel.getPrefixedComboBox().setEnabled(false);
+		}
+		else if (e.getActionCommand().equals("Prefixed")) {
+			preferencesPanel.getPrefixedComboBox().setEnabled(true);	
+		}
+		
+		else if (e.getActionCommand().equals("ClosePrefBtn")) {
+			changePanel("game");
+			resetFrameSize();
+		}
+		
+		else if (e.getActionCommand().equals("SavePrefBtn")) {
+			setTurnMode();
+			setTurnTime();
+			changePanel("game");
+			resetFrameSize();
+		}
+		
 		else if (e.getActionCommand().equals("StartGame")) {
 			changePanel("game");
 			player.setName(userPanel.getUsername());
-			((ProfilePanel) profilePanel).setUsername(userPanel.getUsername());
+			profilePanel.setUsername(userPanel.getUsername());
 		}
 		
-		else if (e.getActionCommand().equals("start")) {
+		else if (e.getActionCommand().equals("Start")) {
 			if (!this.inGame) {
 				self.setSize(Constants.inGameFrameSize);
 				menuBar.setSize(Constants.inGameMenuBarSize);

@@ -13,4 +13,8 @@ public class Enums {
 		SUNK
 	}
 	
+	public static enum GameMode {
+		CLASSIC,
+		ALTERNATIVE
+	}
 }
