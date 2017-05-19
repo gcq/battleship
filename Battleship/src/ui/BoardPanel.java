@@ -245,12 +245,18 @@ public class BoardPanel extends JPanel implements MouseListener, GridClickPublis
 	 * @return Retorna true si el vaixell es pot posicionar
 	 */
 	public boolean isValidPosition (Ship ship) {
-		if (ship.getDirection() == Direction.HORIZONTAL) {	
+		if (ship.getDirection() == Direction.HORIZONTAL) {
+			if (ship.getX() + ship.getLength() > 10)
+				return false;
+			
 			for (int x = ship.getX(); x < ship.getX() + ship.getLength(); x++) {
 				if (getButtonAt(x, ship.getY()).getBackground() == shipColor)
 					return false;
 			}
 		} else if (ship.getDirection() == Direction.VERTICAL) {
+			if (ship.getY() + ship.getLength() > 10)
+				return false;
+			
 			for (int y = ship.getY(); y < ship.getY() + ship.getLength(); y++) {
 				if (getButtonAt(y, ship.getX()).getBackground() == shipColor)
 					return false;
