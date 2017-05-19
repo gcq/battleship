@@ -3,6 +3,7 @@ package core;
 import java.util.HashMap;
 import java.util.Map;
 
+import utils.Enums.Direction;
 import utils.Enums.HitType;
 import core.exceptions.InvalidShipPlacementException;
 
@@ -37,12 +38,24 @@ public class Player {
 	}
 	
 	public boolean checkShipPlacement(Ship s) {
-		int x = s.getX();
-		int y = s.getY();
-		
-		for (int i = 0; i < s.getLength(); i++)
-			if (board.get(x, y) != 0)
+		if (s.getDirection() == Direction.HORIZONTAL) {
+			if (s.getX() + s.getLength() > 10)
 				return false;
+			
+			for (int x = s.getX(); x < s.getX() + s.getLength(); x++) {
+				if (board.get(x, s.getY()) != 0)
+					return false;
+			}
+		
+		} else if (s.getDirection() == Direction.VERTICAL) {
+			if (s.getY() + s.getLength() > 10)
+				return false;
+			
+			for (int y = s.getY(); y < s.getY() + s.getLength(); y++) {
+				if (board.get(s.getX(), y) != 0)
+					return false;
+			}
+		}
 		
 		return true;
 	}

@@ -11,14 +11,14 @@ public class Test {
 		Player p = new Player(new Board(10, 10));
 
 		try {
-			p.addShip(new Ship(0, 0, 3, Direction.VERTICAL));
+			p.addShip(new Ship(1, 0, 3, Direction.VERTICAL));
 		} catch (InvalidShipPlacementException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
 		try {
-			p.addShip(new Ship(1, 1, 3, Direction.HORIZONTAL));
+			p.addShip(new Ship(0, 3, 3, Direction.HORIZONTAL));
 		} catch (InvalidShipPlacementException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
