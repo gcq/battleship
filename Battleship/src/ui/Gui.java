@@ -5,7 +5,6 @@ import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.EventQueue;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
@@ -30,12 +29,16 @@ import javax.swing.KeyStroke;
 import javax.swing.border.EmptyBorder;
 
 import ui.interfaces.GridClickListener;
+import ui.interfaces.GridEnterListener;
+import ui.interfaces.GridRightClickListener;
 import utils.Constants;
+import utils.Enums.Direction;
 import utils.Enums.GameMode;
+import utils.Point;
 import core.Player;
 import core.Ship;
 
-public class Gui extends JFrame implements GridClickListener, ActionListener, MouseMotionListener{
+public class Gui extends JFrame implements GridClickListener, ActionListener, MouseMotionListener, GridRightClickListener, GridEnterListener{
 
 	private UserPanel userPanel;
 	private JPanel contentPane;
@@ -63,6 +66,8 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 	Gui self;
 	
 	private Player player;
+	
+	Ship floatingShip = new Ship(0, 0, 0, Direction.HORIZONTAL);
 
 	/**
 	 * Launch the application.
@@ -106,6 +111,8 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		playerBoardPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		playerBoardPanel.setPreferredSize(new Dimension(500, 500));
 		playerBoardPanel.setGridClickListener(this);
+		playerBoardPanel.setGridRightClickListener(this);
+		playerBoardPanel.setGridEnterListener(this);
 		
 		//enemyBoardPanel
 		enemyBoardPanel = new BoardPanel();
@@ -113,7 +120,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		enemyBoardPanel.setBounds(600, 53, 682, 562);
 		enemyBoardPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		enemyBoardPanel.setPreferredSize(new Dimension(500, 500));
-		enemyBoardPanel.setGridClickListener(this);
+		//enemyBoardPanel.setGridClickListener(this);
 		
 		//profilePanel
 		profilePanel = new ProfilePanel();
@@ -150,7 +157,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		addWindowListener(new MyWindowAdapter());
 		
 		setResizable(false);		
-		setLocation(new Point(50, 50));		
+		setLocation(new java.awt.Point(50, 50));		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		contentPane = new JPanel();
@@ -238,7 +245,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 	public void changePanel(String name) {
 		cardLayout.show(contentPane, name);
 	}
-
+	
 	@Override
 	public void onGridClick(int x, int y) {
 		System.out.println("Clicked on [" + x + ", " + y + "]");
@@ -250,19 +257,48 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		System.out.println("from " + lastClick + " to " + currentClick);
 		
 		if (clickedShip != null ) {
-			Ship ship = new Ship(x, y, clickedShip.getLength(), clickedShip.getDirection(), clickedShip.getId());
+			Ship ship = new Ship(x, y, clickedShip.getLength(), floatingShip.getDirection(), clickedShip.getId());
 			System.out.println(ship);
+			
+			playerBoardPanel.redrawBoard();
 			if (playerBoardPanel.addShip(ship)) { // Si s'afegeix correctament (posicio correcta) borrem del panell
 				System.out.println(shipZonePanel.removeShip(clickedShip));
 				shipZonePanel.setSelectedShip(null);
+				
+				floatingShip.setDirection(Direction.HORIZONTAL);
 			}
 			else {
 				System.out.println("Posicio incorrecta");
 			}
 			repaint();
 		}
+	}
+	
+	@Override
+	public void onGridEnter(int x, int y) {
+		floatingShip.setX(x);
+		floatingShip.setY(y);
 		
+		int length = 0;
+		if (shipZonePanel.getSelectedShip() != null)
+			length = shipZonePanel.getSelectedShip().getLength();
 		
+		floatingShip.setLength(length);
+		
+		playerBoardPanel.redrawBoard();
+		playerBoardPanel.drawShip(floatingShip);
+		
+		System.out.println(floatingShip);
+	}
+
+	@Override
+	public void onGridRightClick(int x, int y) {
+		floatingShip.setDirection((floatingShip.getDirection() == Direction.HORIZONTAL) ? Direction.VERTICAL : Direction.HORIZONTAL);
+		
+		playerBoardPanel.redrawBoard();
+		playerBoardPanel.drawShip(floatingShip);
+		
+		System.out.println("New direction is " + floatingShip.getDirection());
 	}
 	
 	public void resetFrameSize () {
@@ -328,7 +364,11 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		}
 		
 		else if (e.getActionCommand().equals("Start")) {
-			if (!this.inGame) {
+			
+			if (playerBoardPanel.getShipList().size() != 5) {
+				System.out.println("No tots els vaixells posats! TODO: avisar user.");
+				
+			} else if (!this.inGame) {
 				self.setSize(Constants.inGameFrameSize);
 				menuBar.setSize(Constants.inGameMenuBarSize);
 				gamePane.remove(shipZonePanel);
