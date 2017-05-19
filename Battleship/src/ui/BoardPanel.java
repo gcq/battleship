@@ -48,7 +48,9 @@ public class BoardPanel extends JPanel implements MouseListener, GridClickPublis
 	JPanel[] shipPanels;
 	String[] topBtnsText = {"1","2","3","4","5","6","7","8","9","10"};
 	String[] leftBtnsText = {"A","B","C","D","E","F","G","H","I","J"};
-	private List<JButton>btnArray;
+	private List<JButton> btnArray;
+	
+	List<Ship> shipList;
 	
 	GridClickListener clickListener = new GridClickListener() {
 		
@@ -79,6 +81,8 @@ public class BoardPanel extends JPanel implements MouseListener, GridClickPublis
 	
 	
 	public BoardPanel () {
+		
+		shipList = new ArrayList<>();
 		
 		buttonColor = Color.BLUE;
 		shipColor = Color.black;
@@ -222,6 +226,10 @@ public class BoardPanel extends JPanel implements MouseListener, GridClickPublis
 		return "Board resetejat";
 	}
 	
+	public List<Ship> getShipList() {
+		return shipList;
+	}
+
 	/**
 	 * 
 	 * @param ship
@@ -243,7 +251,6 @@ public class BoardPanel extends JPanel implements MouseListener, GridClickPublis
 	}
 	
 	public boolean addShip(Ship ship) {
-		//displayShip(ship.getX(), ship.getY(), ship.getDirection(), ship.getLength());
 		
 		if (ship.getDirection() == Direction.HORIZONTAL) {
 			if (isValidPosition(ship)) {
@@ -263,6 +270,9 @@ public class BoardPanel extends JPanel implements MouseListener, GridClickPublis
 			else 
 				return false;
 		}
+		
+		shipList.add(ship);
+		
 		return true;
 	}
 	
