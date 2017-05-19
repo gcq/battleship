@@ -328,7 +328,11 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		}
 		
 		else if (e.getActionCommand().equals("Start")) {
-			if (!this.inGame) {
+			
+			if (playerBoardPanel.getShipList().size() != 5) {
+				System.out.println("No tots els vaixells posats! TODO: avisar user.");
+				
+			} else if (!this.inGame) {
 				self.setSize(Constants.inGameFrameSize);
 				menuBar.setSize(Constants.inGameMenuBarSize);
 				gamePane.remove(shipZonePanel);
