@@ -257,11 +257,15 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		System.out.println("from " + lastClick + " to " + currentClick);
 		
 		if (clickedShip != null ) {
-			Ship ship = new Ship(x, y, clickedShip.getLength(), clickedShip.getDirection(), clickedShip.getId());
+			Ship ship = new Ship(x, y, clickedShip.getLength(), floatingShip.getDirection(), clickedShip.getId());
 			System.out.println(ship);
+			
+			playerBoardPanel.redrawBoard();
 			if (playerBoardPanel.addShip(ship)) { // Si s'afegeix correctament (posicio correcta) borrem del panell
 				System.out.println(shipZonePanel.removeShip(clickedShip));
 				shipZonePanel.setSelectedShip(null);
+				
+				floatingShip.setDirection(Direction.HORIZONTAL);
 			}
 			else {
 				System.out.println("Posicio incorrecta");
@@ -281,12 +285,19 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		
 		floatingShip.setLength(length);
 		
+		playerBoardPanel.redrawBoard();
+		playerBoardPanel.drawShip(floatingShip);
+		
 		System.out.println(floatingShip);
 	}
 
 	@Override
 	public void onGridRightClick(int x, int y) {
 		floatingShip.setDirection((floatingShip.getDirection() == Direction.HORIZONTAL) ? Direction.VERTICAL : Direction.HORIZONTAL);
+		
+		playerBoardPanel.redrawBoard();
+		playerBoardPanel.drawShip(floatingShip);
+		
 		System.out.println("New direction is " + floatingShip.getDirection());
 	}
 	
