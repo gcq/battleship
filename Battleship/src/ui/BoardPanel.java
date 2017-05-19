@@ -32,12 +32,13 @@ import ui.interfaces.GridClickListener;
 import ui.interfaces.GridClickPublisher;
 import ui.interfaces.GridEnterListener;
 import ui.interfaces.GridEnterPublisher;
+import ui.interfaces.GridRightClickListener;
 import utils.Enums.Direction;
 import utils.Point;
 import core.Ship;
 
 
-public class BoardPanel extends JPanel implements ActionListener, MouseListener, GridClickPublisher {
+public class BoardPanel extends JPanel implements MouseListener, GridClickPublisher {
 	
 	DropTarget dropTarget;
 	
@@ -54,6 +55,15 @@ public class BoardPanel extends JPanel implements ActionListener, MouseListener,
 		@Override
 		public void onGridClick(int x, int y) {
 			System.out.println("Listener per defecte. Crida setGridClickListener. (" + x + ", " + y + ")");
+			
+		}
+	};
+	
+	GridRightClickListener rightClickListener = new GridRightClickListener() {
+		
+		@Override
+		public void onGridRightClick(int x, int y) {
+			System.out.println("Listener per defecte. Crida setRightGridClickListener. (" + x + ", " + y + ")");
 			
 		}
 	};
@@ -98,7 +108,6 @@ public class BoardPanel extends JPanel implements ActionListener, MouseListener,
 				gbc_button.gridx = gridX+1;
 				gbc_button.gridy = gridY+1;
 				button.setActionCommand(gridX + "," + gridY);
-				button.addActionListener(this);
 				button.addMouseListener(this);
 				add(button, gbc_button);
 				gridY++;
@@ -152,19 +161,20 @@ public class BoardPanel extends JPanel implements ActionListener, MouseListener,
 		
 		return new Point(x, y);
 	}
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-//		System.out.println(e.getActionCommand());
-		
-		Point p = getCoordsFromJButton((JButton) e.getSource());
-		
-		clickListener.onGridClick(p.getX(), p.getY());
-	}
 	
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		// TODO Auto-generated method stub
+		
+		if (e.getButton() == MouseEvent.BUTTON1) {
+			Point p = getCoordsFromJButton((JButton) e.getSource());
+			
+			clickListener.onGridClick(p.getX(), p.getY());
+			
+		} else if (e.getButton() == MouseEvent.BUTTON3) {
+			Point p = getCoordsFromJButton((JButton) e.getSource());
+			
+			rightClickListener.onGridRightClick(p.getX(), p.getY());
+        }
 		
 	}
 
@@ -199,6 +209,10 @@ public class BoardPanel extends JPanel implements ActionListener, MouseListener,
 	
 	public void setGridEnterListener(GridEnterListener l) {
 		enterListener = l;
+	}
+	
+	public void setGridRightClickListener(GridRightClickListener l) {
+		rightClickListener = l;
 	}
 	
 	public String resetBoard () {
