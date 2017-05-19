@@ -127,18 +127,22 @@ public class ShipZonePanel extends JPanel implements  MouseListener, MouseMotion
 	public String removeShip (Ship ship) {
 		System.out.println("index: " + this.shipArray.indexOf(ship));
 		remove(this.btnArray.get(this.shipArray.indexOf(ship)));
-		this.btnArray.remove(this.shipArray.indexOf(ship));
-		this.shipArray.remove(this.shipArray.indexOf(ship));
 		return "Vaixell " + ship + " esborrat del panell";
 	}
 	
 	public String reset () {
-		if (this.shipArray.size() > 0 && this.btnArray.size() > 0)
-			removeAllShips();
+		int gridX = 0;
+		int gridY = 0;
 		
+		for (int i = 0; i < shipArray.size(); i++) {
+			btnArray.get(i).setVisible(false);
+			setButtonPropertiesAndAdd(btnArray.get(i), shipArray.get(i).getLength(), gridX, gridY);
+			btnArray.get(i).setVisible(true);
+			repaint();
+			gridY++;
+		}
 		System.out.println("Erased shipsArray: " + shipArray);
-		initShips();
-		initShipsBtnArray();
+		
 		System.out.println("Init shipsArray: " + shipArray);
 		
 		System.out.println("btnArray: " + btnArray);
@@ -153,27 +157,32 @@ public class ShipZonePanel extends JPanel implements  MouseListener, MouseMotion
 			this.shipArray.remove(i);
 		}
 		repaint();
-//			remove(this.btnArray.get(i));
-//			this.btnArray.remove(i);
 	}
 	
+	public void setButtonPropertiesAndAdd (JButton button, int width, int gridX, int gridY) {
+		GridBagConstraints gbc_button = new GridBagConstraints();				
+		gbc_button.gridwidth = width; 
+		gbc_button.insets = new Insets(0, 0, 5, 0);
+		gbc_button.gridx = gridX;
+		gbc_button.gridy = gridY;
+		gbc_button.fill=GridBagConstraints.BOTH;
+		button.addMouseListener(this);
+		button.setActionCommand(gridX + "," + gridY);
+		add(button, gbc_button);
+		button.addMouseListener(myMouseAdapter);
+		
+	}
 	
 	public void initShipsBtnArray () {
 		int gridX = 0;
 		int gridY = 0;
 		for (int i = 0; i < ships; i++) {
 			JButton button = new ShipPanelButton();			
-			GridBagConstraints gbc_button = new GridBagConstraints();				
-			gbc_button.gridwidth = shipArray.get(i).getLength(); 
-			gbc_button.insets = new Insets(0, 0, 5, 0);
-			gbc_button.gridx = gridX;
-			gbc_button.gridy = gridY;
-			gbc_button.fill=GridBagConstraints.BOTH;
-			button.addMouseListener(this);
-			button.setActionCommand(gridX + "," + gridY);
-			add(button, gbc_button);
+			GridBagConstraints gbc_button = new GridBagConstraints();
+			
+			setButtonPropertiesAndAdd(button, shipArray.get(i).getLength(), gridX, gridY);
+			
 			gridY++;
-			button.addMouseListener(myMouseAdapter);
 			btnArray.add(button);
 			System.out.println("gridX: " + gridX + " | " + "gridY: " + gridY);
 			System.out.println("Button Width: " + gbc_button.gridwidth);

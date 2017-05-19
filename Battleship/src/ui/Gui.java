@@ -113,7 +113,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		aboutPanel = new AboutPanel();
 		aboutPanel.setCredits("PuiVicCruGuiA14Credits.html");
 		aboutPanel.setLicence("gpl3.html");
-		aboutPanel.setImageIcon(new ImageIcon("D:\\DAM\\WorkspaceBattleship\\battleship\\Battleship\\img\\icon.png"));
+		aboutPanel.setImageIcon(new ImageIcon(Gui.class.getResource("/img/icon.png")));
 		aboutPanel.setDescriptionName("BattleShip");
 		aboutPanel.setDescriptionText("Victor Puigcerver i Guillem Cruz");
 		aboutPanel.setVersio("1.0");

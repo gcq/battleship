@@ -49,7 +49,7 @@ public class UserPanel extends JPanel {
 		lblTitle.setBounds(173, 34, 486, 103);
 		add(lblTitle);
 		
-		JLabel background = new JLabel(new ImageIcon("img/warship3.jpg"));
+		JLabel background = new JLabel(new ImageIcon(UserPanel.class.getResource("/img/warship3.jpg")));
 		background.setBackground(new Color(240, 240, 240));
 		background.setBounds(0, 0, 858, 700);
 		add(background);
