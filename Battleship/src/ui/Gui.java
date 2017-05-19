@@ -29,13 +29,16 @@ import javax.swing.KeyStroke;
 import javax.swing.border.EmptyBorder;
 
 import ui.interfaces.GridClickListener;
+import ui.interfaces.GridEnterListener;
+import ui.interfaces.GridRightClickListener;
 import utils.Constants;
+import utils.Enums.Direction;
 import utils.Enums.GameMode;
 import utils.Point;
 import core.Player;
 import core.Ship;
 
-public class Gui extends JFrame implements GridClickListener, ActionListener, MouseMotionListener{
+public class Gui extends JFrame implements GridClickListener, ActionListener, MouseMotionListener, GridRightClickListener, GridEnterListener{
 
 	private UserPanel userPanel;
 	private JPanel contentPane;
@@ -63,6 +66,8 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 	Gui self;
 	
 	private Player player;
+	
+	Ship floatingShip = new Ship(0, 0, 0, Direction.HORIZONTAL);
 
 	/**
 	 * Launch the application.
@@ -106,6 +111,8 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		playerBoardPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		playerBoardPanel.setPreferredSize(new Dimension(500, 500));
 		playerBoardPanel.setGridClickListener(this);
+		playerBoardPanel.setGridRightClickListener(this);
+		playerBoardPanel.setGridEnterListener(this);
 		
 		//enemyBoardPanel
 		enemyBoardPanel = new BoardPanel();
@@ -113,7 +120,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		enemyBoardPanel.setBounds(600, 53, 682, 562);
 		enemyBoardPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		enemyBoardPanel.setPreferredSize(new Dimension(500, 500));
-		enemyBoardPanel.setGridClickListener(this);
+		//enemyBoardPanel.setGridClickListener(this);
 		
 		//profilePanel
 		profilePanel = new ProfilePanel();
@@ -238,7 +245,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 	public void changePanel(String name) {
 		cardLayout.show(contentPane, name);
 	}
-
+	
 	@Override
 	public void onGridClick(int x, int y) {
 		System.out.println("Clicked on [" + x + ", " + y + "]");
@@ -261,8 +268,26 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 			}
 			repaint();
 		}
+	}
+	
+	@Override
+	public void onGridEnter(int x, int y) {
+		floatingShip.setX(x);
+		floatingShip.setY(y);
 		
+		int length = 0;
+		if (shipZonePanel.getSelectedShip() != null)
+			length = shipZonePanel.getSelectedShip().getLength();
 		
+		floatingShip.setLength(length);
+		
+		System.out.println(floatingShip);
+	}
+
+	@Override
+	public void onGridRightClick(int x, int y) {
+		floatingShip.setDirection((floatingShip.getDirection() == Direction.HORIZONTAL) ? Direction.VERTICAL : Direction.HORIZONTAL);
+		System.out.println("New direction is " + floatingShip.getDirection());
 	}
 	
 	public void resetFrameSize () {
