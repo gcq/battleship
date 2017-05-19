@@ -38,6 +38,8 @@ public class BoardPanel extends JPanel implements ActionListener, GridClickPubli
 	DropTarget dropTarget;
 	
 	Color buttonColor; 
+	Color shipColor;
+	
 	JPanel[] shipPanels;
 	String[] topBtnsText = {"1","2","3","4","5","6","7","8","9","10"};
 	String[] leftBtnsText = {"A","B","C","D","E","F","G","H","I","J"};
@@ -56,6 +58,8 @@ public class BoardPanel extends JPanel implements ActionListener, GridClickPubli
 	public BoardPanel () {
 		
 		buttonColor = Color.BLUE;
+		shipColor = Color.black;
+		
 		setAlignmentY(Component.TOP_ALIGNMENT);
 		GridBagLayout gbl_btnPanel = new GridBagLayout();
 		gbl_btnPanel.columnWidths = new int[] {50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50};
@@ -141,19 +145,55 @@ public class BoardPanel extends JPanel implements ActionListener, GridClickPubli
 		listener = l;
 	}
 	
-	public void addShip(Ship ship) {
+	public String resetBoard () {
+		for (JButton jButton : btnArray) {
+			jButton.setBackground(buttonColor);
+		}
+		return "Board resetejat";
+	}
+	
+	/**
+	 * 
+	 * @param ship
+	 * @return Retorna true si el vaixell es pot posicionar
+	 */
+	public boolean isValidPosition (Ship ship) {
+		if (ship.getDirection() == Direction.HORIZONTAL) {	
+			for (int x = ship.getX(); x < ship.getX() + ship.getLength(); x++) {
+				if (getButtonAt(x, ship.getY()).getBackground() == shipColor)
+					return false;
+			}
+		} else if (ship.getDirection() == Direction.VERTICAL) {
+			for (int y = ship.getY(); y < ship.getY() + ship.getLength(); y++) {
+				if (getButtonAt(y, ship.getX()).getBackground() == shipColor)
+					return false;
+			}
+		}
+		return true;
+	}
+	
+	public boolean addShip(Ship ship) {
 		//displayShip(ship.getX(), ship.getY(), ship.getDirection(), ship.getLength());
 		
 		if (ship.getDirection() == Direction.HORIZONTAL) {
-			for (int x = ship.getX(); x < ship.getX() + ship.getLength(); x++) {
-				getButtonAt(x, ship.getY());
+			if (isValidPosition(ship)) {
+				for (int x = ship.getX(); x < ship.getX() + ship.getLength(); x++) {
+					getButtonAt(x, ship.getY()).setBackground(shipColor);
+				}
 			}
+			else
+				return false;
 			
 		} else if (ship.getDirection() == Direction.VERTICAL) {
-			for (int y = ship.getY(); y < ship.getY() + ship.getLength(); y++) {
-				getButtonAt(ship.getX(), y);
+			if (isValidPosition(ship)) {
+				for (int y = ship.getY(); y < ship.getY() + ship.getLength(); y++) {
+					getButtonAt(ship.getX(), y).setBackground(shipColor);
+				}
 			}
+			else 
+				return false;
 		}
+		return true;
 	}
 	
 	public void displayShip(int x, int y, Direction direction, int length) {

@@ -20,7 +20,7 @@ public class ProfilePanel extends JPanel{
 		setLayout(null);
 		
 		innerPanel = new JPanel();
-		innerPanel.setBounds(10, 11, 165, 173);
+		innerPanel.setBounds(108, 29, 165, 173);
 		add(innerPanel);
 		innerPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		
@@ -35,9 +35,11 @@ public class ProfilePanel extends JPanel{
 		innerPanel.add(panel);
 		
 		closeBtn = new JButton("Close");
+		closeBtn.setActionCommand("CloseProfile");
 		panel.add(closeBtn);
 		
 		saveBtn = new JButton("Save");
+		saveBtn.setActionCommand("SaveProfile");
 		panel.add(saveBtn);
 	}
 
@@ -67,14 +69,6 @@ public class ProfilePanel extends JPanel{
 
 	public JButton getSaveBtn() {
 		return saveBtn;
-	}
-	
-	public String getSaveBtnText () {
-		return "SaveProfile";
-	}
-	
-	public String getCloseBtnText () {
-		return "CloseProfile";
 	}
 	
 }

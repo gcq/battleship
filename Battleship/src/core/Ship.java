@@ -15,9 +15,10 @@ public class Ship {
 	
 	int hits;
 	
-	public Ship (int length, int id) {
-		this.length = length;
+	public Ship (int id, int length, Direction direction) {
 		this.id = id;
+		this.length = length;
+		this.direction = direction;
 	}
 	
 	public Ship(int x, int y, int length, Direction direction) {

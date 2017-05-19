@@ -2,6 +2,7 @@ package ui;
 
 import java.awt.CardLayout;
 import java.awt.Component;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Point;
@@ -9,13 +10,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 
-import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -26,34 +30,37 @@ import javax.swing.KeyStroke;
 import javax.swing.border.EmptyBorder;
 
 import ui.interfaces.GridClickListener;
+import utils.Constants;
+import utils.Enums.GameMode;
 import core.Player;
 import core.Ship;
-import java.awt.event.KeyEvent;
-import java.awt.Color;
-import core.Player;
-import core.Ship;
-import core.exceptions.InvalidPointsForShipException;
 
-public class Gui extends JFrame implements GridClickListener, ActionListener{
+public class Gui extends JFrame implements GridClickListener, ActionListener, MouseMotionListener{
 
 	private UserPanel userPanel;
 	private JPanel contentPane;
-	private JPanel profilePanel;
+	private ProfilePanel profilePanel;
+	private PreferencesPanel preferencesPanel;
+	private AboutPanel aboutPanel;
 	private CardLayout cardLayout;
+	private JMenuBar menuBar;
+	private JMenuItem editProfile;
 	private JPanel gamePane;
-	private BoardPanel boardPanel;
+	private BoardPanel playerBoardPanel;
+	private BoardPanel enemyBoardPanel;
 	private ShipZonePanel shipZonePanel;
+	
+	private boolean inGame;
+	
+	int prefixedTurnTime;
+	
+	boolean infiniteTime; // true si es torn amb temps infinit, false si es torn amb temps prefixat
+	
+	GameMode gameMode;
 	
 	Point lastClick;
 	
-	private int portavionesLength = 5;
-	private int acorazadoLength = 4;
-	private int cruceroLength = 3;
-	private int submarinoLength = 3;
-	private int destructorLength = 2;
-	
-	Ship[] shipArray;
-	int ships = 5;
+	Gui self;
 	
 	private Player player;
 
@@ -73,15 +80,72 @@ public class Gui extends JFrame implements GridClickListener, ActionListener{
 		});
 	}
 	
+	public void initPanels() {
+		//shipZonePanel
+		shipZonePanel = new ShipZonePanel();
+		shipZonePanel.setBorder(new EmptyBorder(2, 2, 2, 2));
+		shipZonePanel.setBounds(570,107,274, 304);
+		shipZonePanel.setAlignmentX(RIGHT_ALIGNMENT);
+		shipZonePanel.getResetBoardBtn().addActionListener(this);
+		
+		//aboutPanel
+		aboutPanel = new AboutPanel();
+		aboutPanel.setCredits("PuiVicCruGuiA14Credits.html");
+		aboutPanel.setLicence("gpl3.html");
+		aboutPanel.setImageIcon(new ImageIcon("D:\\DAM\\WorkspaceBattleship\\battleship\\Battleship\\img\\icon.png"));
+		aboutPanel.setDescriptionName("BattleShip");
+		aboutPanel.setDescriptionText("Victor Puigcerver i Guillem Cruz");
+		aboutPanel.setVersio("1.0");
+		aboutPanel.setTitleText("Battleship");
+		aboutPanel.getCloseButton().addActionListener(this); // listener to return to main panel
+		
+		//playerBoardPanel
+		playerBoardPanel = new BoardPanel();
+		playerBoardPanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		playerBoardPanel.setBounds(-55, 53, 682, 562);
+		playerBoardPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		playerBoardPanel.setPreferredSize(new Dimension(500, 500));
+		playerBoardPanel.setGridClickListener(this);
+		
+		//enemyBoardPanel
+		enemyBoardPanel = new BoardPanel();
+		enemyBoardPanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		enemyBoardPanel.setBounds(600, 53, 682, 562);
+		enemyBoardPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		enemyBoardPanel.setPreferredSize(new Dimension(500, 500));
+		enemyBoardPanel.setGridClickListener(this);
+		
+		//profilePanel
+		profilePanel = new ProfilePanel();
+		profilePanel.getSaveBtn().addActionListener(this); // listener to return to main panel
+		profilePanel.getCloseBtn().addActionListener(this);
+		
+		//profilePanel
+		userPanel = new UserPanel();
+		userPanel.getBtnGo().addActionListener(this);
+		
+		//preferencesPanel
+		preferencesPanel = new PreferencesPanel();
+		preferencesPanel.getPrefixedBtn().addActionListener(this);
+		preferencesPanel.getInfiniteBtn().addActionListener(this);
+		preferencesPanel.getClosePrefBtn().addActionListener(this);
+		preferencesPanel.getSavePrefBtn().addActionListener(this);
+	}
+	
 
 	/**
 	 * Create the frame.
 	 */
 	public Gui() {
+		setPreferredSize(Constants.initFrameSize);
 		
-		shipArray = new Ship[ships];
+		inGame = false; 
+		
+		self = this;
 		
 		player = new Player();
+		
+		gameMode = GameMode.CLASSIC;
 		
 		addWindowListener(new MyWindowAdapter());
 		
@@ -96,53 +160,31 @@ public class Gui extends JFrame implements GridClickListener, ActionListener{
 		gamePane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		gamePane.setLayout(null);
 		
-		shipZonePanel = new ShipZonePanel();
-		shipZonePanel.setBorder(new EmptyBorder(2, 2, 2, 2));
-		//shipZonePanel.setBounds(604, 103, 150, 500);
-		shipZonePanel.setBounds(564,107,274, 256);
-		shipZonePanel.setAlignmentX(RIGHT_ALIGNMENT);
-
-		
-		
-		MouseListener mouseListener = new MouseAdapter() {
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				System.out.println("Component dropped on Position: " + "X[" + e.getX() + "]" + "Y[" + e.getY() + "]");
-			}
-		};
+		initPanels();
 		
 		cardLayout = new CardLayout();
 		contentPane.setLayout(cardLayout);
-		
-		getLayeredPane().moveToFront(shipZonePanel);
 
-		gamePane.add(shipZonePanel);
-		
-		boardPanel = new BoardPanel();
-		boardPanel.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		boardPanel.setBounds(-55, 53, 682, 562);
-		boardPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		boardPanel.setPreferredSize(new Dimension(500, 500));
-		boardPanel.setGridClickListener(this);
-		gamePane.add(boardPanel);
-		
-		
-		
-		getLayeredPane().moveToBack(boardPanel);
-		contentPane.add(gamePane, "game");
-		
 		changePanel("user");
+		
+		contentPane.add(aboutPanel, "about");
+		gamePane.add(shipZonePanel);
+		gamePane.add(playerBoardPanel);
+		
+//		getLayeredPane().moveToBack(playerBoardPanel);
+		
+		contentPane.add(gamePane, "game");
 		
 		setContentPane(contentPane);
 		
-		JMenuBar menuBar = new JMenuBar();
-		menuBar.setBounds(0, 0, 850, 21);
+		menuBar = new JMenuBar();
+		menuBar.setSize(Constants.initMenuBarSize);
 		gamePane.add(menuBar);
 		
 		JMenu gameMenu = new JMenu("Game");
 		menuBar.add(gameMenu);
 		
-		JMenuItem startItem = new JMenuItem("start");
+		JMenuItem startItem = new JMenuItem("Start");
 		startItem.setMnemonic(startItem.getText().charAt(0));
 		startItem.setActionCommand(startItem.getText());
 		startItem.addActionListener(this);
@@ -150,9 +192,10 @@ public class Gui extends JFrame implements GridClickListener, ActionListener{
 		gameMenu.add(startItem);
 		
 		JMenu profileMenu = new JMenu("Profile");
+		profileMenu.setSize(Constants.profilePanelSize);
 		menuBar.add(profileMenu);
 		
-		JMenuItem editProfile = new JMenuItem("edit");
+		editProfile = new JMenuItem("Edit");
 		editProfile.setMnemonic(editProfile.getText().charAt(0));
 		editProfile.setActionCommand(editProfile.getText());
 		editProfile.addActionListener(this);
@@ -162,33 +205,31 @@ public class Gui extends JFrame implements GridClickListener, ActionListener{
 		JMenu settingsMenu = new JMenu("Settings");
 		menuBar.add(settingsMenu);
 		
-		JMenuItem turnMode = new JMenuItem("turn Mode");
-		turnMode.setActionCommand(turnMode.getText());
-		turnMode.addActionListener(this);
-		turnMode.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_M, InputEvent.CTRL_MASK));
-		settingsMenu.add(turnMode);
+		JMenuItem preferences = new JMenuItem("Preferences");
+		preferences.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.CTRL_MASK));
+		preferences.addActionListener(this);
+		preferences.setActionCommand(preferences.getText());
+		settingsMenu.add(preferences);
 		
-		JMenuItem turnTime = new JMenuItem("turn Time");
-		turnTime.setActionCommand(turnTime.getText());
-		turnTime.addActionListener(this);
-		turnTime.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.CTRL_MASK));
-		settingsMenu.add(turnTime);
+		JMenu helpMenu = new JMenu("Help");
+		menuBar.add(helpMenu);
 		
-		userPanel = new UserPanel();
+		JMenuItem onlineHelp = new JMenuItem("Online Help");
+		onlineHelp.setActionCommand("OnlineHelp");
+		onlineHelp.addActionListener(this);
+		onlineHelp.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_MASK));
+		helpMenu.add(onlineHelp);
 		
-		userPanel.getBtnGo().addActionListener(this);
-		userPanel.getBtnGo().setActionCommand(userPanel.getBtnGo().getText());
+		JMenuItem about = new JMenuItem("About");
+		about.setActionCommand(about.getText());
+		about.addActionListener(this);
+		about.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_MASK));
+		helpMenu.add(about);
 		
 		contentPane.add(userPanel, "intro");
-		
-		profilePanel = new ProfilePanel();
-		((ProfilePanel) profilePanel).getSaveBtn().addActionListener(this);
-		((ProfilePanel) profilePanel).getSaveBtn().setActionCommand(((ProfilePanel) profilePanel).getSaveBtnText());
-		
-		((ProfilePanel) profilePanel).getCloseBtn().addActionListener(this);
-		((ProfilePanel) profilePanel).getCloseBtn().setActionCommand(((ProfilePanel) profilePanel).getCloseBtnText());
-		
 		contentPane.add(profilePanel, "profile");
+		contentPane.add(preferencesPanel, "preferences");
+		
 		cardLayout.show(contentPane, "intro");
 		pack();
 		
@@ -204,70 +245,156 @@ public class Gui extends JFrame implements GridClickListener, ActionListener{
 		
 		Point currentClick = new Point(x, y);
 		
-		if (lastClick == null) {
-			lastClick = currentClick;
-		
-		} else {
-			System.out.println("from " + lastClick + " to " + currentClick);
-			
-			Ship ship = null;
-			try {
-				ship = Ship.getShipFromPoints(lastClick, currentClick);
+		Ship clickedShip = shipZonePanel.getSelectedShip();
 
-				boardPanel.addShip(ship);
-				
-				System.out.println(ship);
-				
-			} catch (InvalidPointsForShipException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			
-			} finally {
-				lastClick = null;
-			}	
+		System.out.println("from " + lastClick + " to " + currentClick);
+		
+		if (clickedShip != null ) {
+			Ship ship = new Ship(x, y, clickedShip.getLength(), clickedShip.getDirection(), clickedShip.getId());
+			System.out.println(ship);
+			if (playerBoardPanel.addShip(ship)) { // Si s'afegeix correctament (posicio correcta) borrem del panell
+				System.out.println(shipZonePanel.removeShip(clickedShip));
+				shipZonePanel.setSelectedShip(null);
+			}
+			else {
+				System.out.println("Posicio incorrecta");
+			}
+			repaint();
+		}
+		
+		
+	}
+	
+	public void resetFrameSize () {
+		if (!this.inGame)
+			self.setSize(Constants.initFrameSize);
+		else
+			self.setSize(Constants.inGameFrameSize);
+		repaint();
+	}
+	
+	public void setTurnTime () {
+		if (preferencesPanel.getPrefixedBtn().isSelected()) {
+			prefixedTurnTime = Integer.parseInt((String) preferencesPanel.getPrefixedComboBox().getSelectedItem());
+			infiniteTime = false;
+		}
+		else {
+			prefixedTurnTime = 0; // 0 = Temps infinit
+			infiniteTime = true;
 		}
 	}
-
+	
+	public void setTurnMode () {
+		gameMode = preferencesPanel.getAlternativeBtn().isSelected() ? GameMode.ALTERNATIVE : GameMode.CLASSIC;
+	}
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getActionCommand().equals("edit")) {
-			cardLayout.show(contentPane, "profile");
-		}
-		else if (e.getActionCommand().equals("go")) {
-			changePanel("game");
-			player.setName(userPanel.getUsername());
+		if (e.getActionCommand().equals("Edit")) {
+			self.setSize(Constants.profilePanelSize);
+			repaint();
+			changePanel("profile");
 			((ProfilePanel) profilePanel).setUsername(userPanel.getUsername());
 		}
 		
+		else if (e.getActionCommand().equals("Preferences")) {
+			self.setSize(Constants.preferencesPanelSize);
+			changePanel("preferences");
+		}
+		
+		else if (e.getActionCommand().equals("Infinite")) {
+			preferencesPanel.getPrefixedComboBox().setEnabled(false);
+		}
+		else if (e.getActionCommand().equals("Prefixed")) {
+			preferencesPanel.getPrefixedComboBox().setEnabled(true);	
+		}
+		
+		else if (e.getActionCommand().equals("ClosePrefBtn")) {
+			changePanel("game");
+			resetFrameSize();
+		}
+		
+		else if (e.getActionCommand().equals("SavePrefBtn")) {
+			setTurnMode();
+			setTurnTime();
+			changePanel("game");
+			resetFrameSize();
+		}
+		
+		else if (e.getActionCommand().equals("StartGame")) {
+			changePanel("game");
+			player.setName(userPanel.getUsername());
+			profilePanel.setUsername(userPanel.getUsername());
+		}
+		
+		else if (e.getActionCommand().equals("Start")) {
+			if (!this.inGame) {
+				self.setSize(Constants.inGameFrameSize);
+				menuBar.setSize(Constants.inGameMenuBarSize);
+				gamePane.remove(shipZonePanel);
+				gamePane.add(enemyBoardPanel);
+				System.out.println(startGame());
+				inGame = true;
+				repaint();
+			}
+		}
+		
 		else if (e.getActionCommand().equals("CloseProfile")) {
+			resetFrameSize();
 			changePanel("game");
 		}
 		
 		else if (e.getActionCommand().equals("SaveProfile")) {
+			resetFrameSize();
 			changePanel("game");
 			player.setName(((ProfilePanel) profilePanel).getUsername());
 		}
-	}
-	
-	public void initShips () {
-		Ship portaviones = new Ship(portavionesLength, 1);
-		Ship acorazado = new Ship(acorazadoLength, 2);
-		Ship crucero = new Ship(cruceroLength, 3);
-		Ship submarino = new Ship(submarinoLength, 4);
-		Ship destructor = new Ship(destructorLength, 5);
-		this.shipArray[0] = portaviones;
-		this.shipArray[1] = acorazado;
-		this.shipArray[2] = crucero;
-		this.shipArray[3] = submarino;
-		this.shipArray[4] = destructor;
 		
-		for (int i = 0; i < ships; i++) {
-			for (int j = 0; j < shipArray[i].getLength(); j++) {
-				
+		else if (e.getActionCommand().equals("resetBoard")) {
+			System.out.println(playerBoardPanel.resetBoard());
+			System.out.println(shipZonePanel.reset());
+		}
+		
+		else if (e.getActionCommand().equals("About")) {
+			self.setSize(Constants.aboutPanelSize);
+			repaint();
+			changePanel("about");
+		}
+		
+		else if (e.getActionCommand().equals("CloseAbout")) {
+			resetFrameSize();
+			changePanel("game");
+		}
+		else if (e.getActionCommand().equals("OnlineHelp")) {
+			try {
+				openWebpage(new URL("http://portaljuegos.wikidot.com/hundirlaflota"));
+			} catch (MalformedURLException e1) {
+				e1.printStackTrace();
 			}
 		}
-			
-		
+	}
+	
+	public String startGame () {
+		return "Game started";
+	}
+	
+	public static void openWebpage(URI uri) {
+	    Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+	    if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+	        try {
+	            desktop.browse(uri);
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+	    }
+	}
+
+	public static void openWebpage(URL url) {
+	    try {
+	        openWebpage(url.toURI());
+	    } catch (URISyntaxException e) {
+	        e.printStackTrace();
+	    }
 	}
 
 	
@@ -283,5 +410,17 @@ public class Gui extends JFrame implements GridClickListener, ActionListener{
 		}
 	}
 
+
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void mouseMoved(MouseEvent e) {
+		System.out.println(e.getComponent());
+	}
 }
 
