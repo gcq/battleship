@@ -19,6 +19,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TooManyListenersException;
@@ -29,11 +30,14 @@ import javax.swing.JPanel;
 
 import ui.interfaces.GridClickListener;
 import ui.interfaces.GridClickPublisher;
+import ui.interfaces.GridEnterListener;
+import ui.interfaces.GridEnterPublisher;
 import utils.Enums.Direction;
+import utils.Point;
 import core.Ship;
 
 
-public class BoardPanel extends JPanel implements ActionListener, GridClickPublisher {
+public class BoardPanel extends JPanel implements ActionListener, MouseListener, GridClickPublisher {
 	
 	DropTarget dropTarget;
 	
@@ -45,11 +49,20 @@ public class BoardPanel extends JPanel implements ActionListener, GridClickPubli
 	String[] leftBtnsText = {"A","B","C","D","E","F","G","H","I","J"};
 	private List<JButton>btnArray;
 	
-	GridClickListener listener = new GridClickListener() {
+	GridClickListener clickListener = new GridClickListener() {
 		
 		@Override
 		public void onGridClick(int x, int y) {
 			System.out.println("Listener per defecte. Crida setGridClickListener. (" + x + ", " + y + ")");
+			
+		}
+	};
+	
+	GridEnterListener enterListener = new GridEnterListener() {
+		
+		@Override
+		public void onGridEnter(int x, int y) {
+			System.out.println("Listener per defecte. Crida setGridEnterListener. (" + x + ", " + y + ")");
 			
 		}
 	};
@@ -86,6 +99,7 @@ public class BoardPanel extends JPanel implements ActionListener, GridClickPubli
 				gbc_button.gridy = gridY+1;
 				button.setActionCommand(gridX + "," + gridY);
 				button.addActionListener(this);
+				button.addMouseListener(this);
 				add(button, gbc_button);
 				gridY++;
 				btnArray.add(button);
@@ -129,20 +143,62 @@ public class BoardPanel extends JPanel implements ActionListener, GridClickPubli
 		
 		
 	}
+	
+	Point getCoordsFromJButton(JButton b) {
+		String[] coords = b.getActionCommand().split(",");
+		
+		int x = Integer.parseInt(coords[0]);
+		int y = Integer.parseInt(coords[1]);
+		
+		return new Point(x, y);
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 //		System.out.println(e.getActionCommand());
 		
-		String[] coords = e.getActionCommand().split(",");
-		int x = Integer.parseInt(coords[0]);
-		int y = Integer.parseInt(coords[1]);
+		Point p = getCoordsFromJButton((JButton) e.getSource());
 		
-		listener.onGridClick(x, y);
+		clickListener.onGridClick(p.getX(), p.getY());
+	}
+	
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		Point p = getCoordsFromJButton((JButton) e.getSource());
+		
+		enterListener.onGridEnter(p.getX(), p.getY());
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 	public void setGridClickListener(GridClickListener l) {
-		listener = l;
+		clickListener = l;
+	}
+	
+	public void setGridEnterListener(GridEnterListener l) {
+		enterListener = l;
 	}
 	
 	public String resetBoard () {
@@ -259,8 +315,7 @@ public class BoardPanel extends JPanel implements ActionListener, GridClickPubli
 //	public void dropActionChanged(DropTargetDragEvent arg0) {
 //		// TODO Auto-generated method stub
 //		
-//	}
-	
+//	}	
 	
 }
 
