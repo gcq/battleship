@@ -7,7 +7,6 @@ import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.Point;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DnDConstants;
@@ -42,6 +41,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import utils.Enums.Direction;
+import utils.Point;
 import core.Ship;
 
 

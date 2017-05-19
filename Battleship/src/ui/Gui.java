@@ -5,7 +5,6 @@ import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.EventQueue;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
@@ -32,6 +31,7 @@ import javax.swing.border.EmptyBorder;
 import ui.interfaces.GridClickListener;
 import utils.Constants;
 import utils.Enums.GameMode;
+import utils.Point;
 import core.Player;
 import core.Ship;
 
@@ -150,7 +150,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		addWindowListener(new MyWindowAdapter());
 		
 		setResizable(false);		
-		setLocation(new Point(50, 50));		
+		setLocation(new java.awt.Point(50, 50));		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		contentPane = new JPanel();

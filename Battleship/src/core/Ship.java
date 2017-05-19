@@ -1,9 +1,8 @@
 package core;
 
-import java.awt.Point;
-
 import core.exceptions.InvalidPointsForShipException;
 import utils.Enums.Direction;
+import utils.Point;
 
 
 public class Ship {
@@ -40,18 +39,18 @@ public class Ship {
 		if (a.getX() == b.getX()) {
 			//VERTICAL
 			
-			int minY = (int) Math.min(a.getY(), b.getY());
-			int maxY = (int) Math.max(a.getY(), b.getY());
+			int minY = Math.min(a.getY(), b.getY());
+			int maxY = Math.max(a.getY(), b.getY());
 			
-			return new Ship((int) a.getX(), minY, maxY - minY + 1, Direction.VERTICAL);
+			return new Ship(a.getX(), minY, maxY - minY + 1, Direction.VERTICAL);
 		
 		} else if (a.getY() == b.getY()) {
 			//HORIZONTAL
 			
-			int minX = (int) Math.min(a.getX(), b.getX());
-			int maxX = (int) Math.max(a.getX(), b.getX());
+			int minX = Math.min(a.getX(), b.getX());
+			int maxX = Math.max(a.getX(), b.getX());
 			
-			return new Ship(minX, (int) a.getY(), maxX - minX + 1, Direction.HORIZONTAL);
+			return new Ship(minX, a.getY(), maxX - minX + 1, Direction.HORIZONTAL);
 		
 		} else {
 			//INVALID
