@@ -213,16 +213,18 @@ public class Gui extends JFrame implements GridClickListener, ActionListener{
 			Ship ship = null;
 			try {
 				ship = Ship.getShipFromPoints(lastClick, currentClick);
+
+				boardPanel.addShip(ship);
+				
+				System.out.println(ship);
+				
 			} catch (InvalidPointsForShipException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
 			
-			boardPanel.addShip(ship);
-			
-			System.out.println(ship);
-			
-			lastClick = null;
+			} finally {
+				lastClick = null;
+			}	
 		}
 	}
 
