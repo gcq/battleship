@@ -226,12 +226,20 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		JMenu gameMenu = new JMenu("Game");
 		menuBar.add(gameMenu);
 		
-		JMenuItem startItem = new JMenuItem("Start");
-		startItem.setMnemonic(startItem.getText().charAt(0));
-		startItem.setActionCommand(startItem.getText());
-		startItem.addActionListener(this);
-		startItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
-		gameMenu.add(startItem);
+		JMenuItem startMenu = new JMenuItem("Start");
+		startMenu.setMnemonic(startMenu.getText().charAt(0));
+		startMenu.setActionCommand(startMenu.getText());
+		startMenu.addActionListener(this);
+		startMenu.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
+		gameMenu.add(startMenu);
+		
+		JMenuItem loadMenu = new JMenuItem("Load");
+		loadMenu.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, InputEvent.CTRL_MASK));
+		gameMenu.add(loadMenu);
+		
+		JMenuItem saveMenu = new JMenuItem("Save");
+		saveMenu.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.CTRL_MASK));
+		gameMenu.add(saveMenu);
 		
 		JMenu profileMenu = new JMenu("Profile");
 		profileMenu.setSize(Constants.profilePanelSize);
