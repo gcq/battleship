@@ -1,5 +1,8 @@
 package core;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import core.exceptions.InvalidPointsForShipException;
 import utils.Enums.Direction;
 import utils.Point;
@@ -13,27 +16,6 @@ public class Ship {
 	Direction direction;
 	
 	int hits;
-	
-	public Ship (int id, int length, Direction direction) {
-		this.id = id;
-		this.length = length;
-		this.direction = direction;
-	}
-	
-	public Ship(int x, int y, int length, Direction direction) {
-		this(x, y, length, direction, -100);
-	}
-
-	public Ship(int x, int y, int length, Direction direction, int id) {
-		super();
-		this.x = x;
-		this.y = y;
-		this.length = length;
-		this.direction = direction;
-		this.id = id;
-		
-		hits = 0;
-	}
 	
 	public static Ship getShipFromPoints(Point a, Point b) throws InvalidPointsForShipException {
 		if (a.getX() == b.getX()) {
@@ -57,6 +39,25 @@ public class Ship {
 			throw new InvalidPointsForShipException("Points are not in a line");
 		}
 		
+	}
+	
+	public Ship (int length, Direction direction) {
+		this(-100, -100, length, direction);
+	}
+	
+	public Ship(int x, int y, int length, Direction direction) {
+		this(x, y, length, direction, -100);
+	}
+
+	public Ship(int x, int y, int length, Direction direction, int id) {
+		super();
+		this.x = x;
+		this.y = y;
+		this.length = length;
+		this.direction = direction;
+		this.id = id;
+		
+		hits = 0;
 	}
 	
 	@Override
@@ -117,6 +118,20 @@ public class Ship {
 	
 	public boolean isSunk() {
 		return hits >= length;
+	}
+	
+	public List<Point> getSegmentsPositions() {
+		List<Point> points = new ArrayList<>();
+		
+		if (direction == Direction.HORIZONTAL)
+			for (int _x = x; _x < x + length; _x++)
+				points.add(new Point(_x, y));
+		
+		else if (direction == Direction.VERTICAL)	
+			for (int _y = y; _y < y + length; _y++)
+				points.add(new Point(x, _y));
+		
+		return points;
 	}
 	
 }

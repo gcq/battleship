@@ -5,6 +5,7 @@ import java.util.Map;
 
 import utils.Enums.Direction;
 import utils.Enums.HitType;
+import utils.Point;
 import core.exceptions.InvalidShipPlacementException;
 
 public class Player {
@@ -12,6 +13,8 @@ public class Player {
 	String name;
 	Board board;
 	Map<Integer, Ship> ships;
+	
+	Ship lastHitShip;
 	
 	public Player () {
 		
@@ -37,25 +40,24 @@ public class Player {
 		return ships.size() + 1;
 	}
 	
+	public Ship getLastHitShip() {
+		return lastHitShip;
+	}
+	
 	public boolean checkShipPlacement(Ship s) {
-		if (s.getDirection() == Direction.HORIZONTAL) {
-			if (s.getX() + s.getLength() > 10)
-				return false;
-			
-			for (int x = s.getX(); x < s.getX() + s.getLength(); x++) {
-				if (board.get(x, s.getY()) != 0)
-					return false;
-			}
+		int startAxis = -100;
 		
-		} else if (s.getDirection() == Direction.VERTICAL) {
-			if (s.getY() + s.getLength() > 10)
+		if (s.getDirection() == Direction.HORIZONTAL)
+			startAxis = s.getX();
+		else if (s.getDirection() == Direction.VERTICAL)
+			startAxis = s.getY();
+		
+		if (startAxis + s.getLength() > 10)
+			return false;
+		
+		for (Point p : s.getSegmentsPositions())
+			if (board.get(p.getX(), p.getY()) != 0)
 				return false;
-			
-			for (int y = s.getY(); y < s.getY() + s.getLength(); y++) {
-				if (board.get(s.getX(), y) != 0)
-					return false;
-			}
-		}
 		
 		return true;
 	}
@@ -95,13 +97,17 @@ public class Player {
 		boolean isHit = shipid > 0;
 		
 		if (isHit) {
+			lastHitShip = ships.get(shipid);
+			
 			board.set(x, y, -1);
 			
-			if (ships.get(shipid).hit())
+			if (lastHitShip.hit())
 				return HitType.SUNK;
+			
+			return HitType.HIT;
 		}
 		
-		return (isHit) ? HitType.HIT : HitType.WATER;
+		return HitType.WATER;
 	}
 	
 	public boolean isDead() {
@@ -112,8 +118,6 @@ public class Player {
 		
 		return true;
 	}
-	
-	
 	
 	public String getName() {
 		return name;
