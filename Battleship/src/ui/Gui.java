@@ -43,6 +43,8 @@ import utils.Enums.GameMode;
 import utils.Point;
 import core.Player;
 import core.Ship;
+import javax.swing.JLabel;
+import java.awt.Font;
 
 public class Gui extends JFrame implements GridClickListener, ActionListener, MouseMotionListener, GridRightClickListener, GridEnterListener, EnemyPanelClickListener{
 
@@ -58,7 +60,8 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 	private BoardPanel playerBoardPanel;
 	private BoardPanel enemyBoardPanel;
 	private ShipZonePanel shipZonePanel;
-	
+	private JLabel yourTurn;
+	private JLabel enemyTurn;
 	private boolean inGame;
 	
 	int prefixedTurnTime;
@@ -264,6 +267,18 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		about.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_MASK));
 		helpMenu.add(about);
 		
+		yourTurn = new JLabel("Your Turn");
+		yourTurn.setFont(new Font("Tahoma", Font.PLAIN, 30));
+		yourTurn.setBounds(228, 24, 133, 29);
+		yourTurn.setVisible(false);
+		gamePane.add(yourTurn);
+		
+		enemyTurn = new JLabel("Your Turn");
+		enemyTurn.setFont(new Font("Tahoma", Font.PLAIN, 30));
+		enemyTurn.setBounds(650, 35, 133, 29);
+		enemyTurn.setVisible(false);
+		gamePane.add(enemyTurn);
+		
 		contentPane.add(userPanel, "intro");
 		contentPane.add(profilePanel, "profile");
 		contentPane.add(preferencesPanel, "preferences");
@@ -299,7 +314,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 				floatingShip.setDirection(Direction.HORIZONTAL);
 			}
 			else {
-				System.out.println("Posicio incorrecta");
+				JOptionPane.showMessageDialog(this, "Incorrect location", "Warning", JOptionPane.WARNING_MESSAGE);
 			}
 			repaint();
 		}
@@ -423,6 +438,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 				menuBar.setSize(Constants.inGameMenuBarSize);
 				gamePane.remove(shipZonePanel);
 				gamePane.add(enemyBoardPanel);
+				yourTurn.setVisible(true);
 				System.out.println(startGame());
 				inGame = true;				
 				repaint();
