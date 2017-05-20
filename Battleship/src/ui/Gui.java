@@ -33,17 +33,21 @@ import javax.swing.KeyStroke;
 import javax.swing.border.EmptyBorder;
 
 import server.Client;
+import server.ClientRunnable;
 import ui.interfaces.EnemyPanelClickListener;
 import ui.interfaces.GridClickListener;
 import ui.interfaces.GridEnterListener;
 import ui.interfaces.GridRightClickListener;
+import ui.interfaces.ServerMoveListener;
 import utils.Constants;
 import utils.Enums.Direction;
 import utils.Enums.GameMode;
 import utils.Point;
 import core.Player;
 import core.Ship;
+
 import javax.swing.JLabel;
+
 import java.awt.Font;
 
 public class Gui extends JFrame implements GridClickListener, ActionListener, MouseMotionListener, GridRightClickListener, GridEnterListener, EnemyPanelClickListener{
@@ -56,6 +60,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 	private CardLayout cardLayout;
 	private JMenuBar menuBar;
 	private JMenuItem editProfile;
+	private JMenuItem preferences;
 	private JPanel gamePane;
 	private BoardPanel playerBoardPanel;
 	private BoardPanel enemyBoardPanel;
@@ -63,6 +68,9 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 	private JLabel yourTurn;
 	private JLabel enemyTurn;
 	private boolean inGame;
+	private boolean playerTurn;
+	
+//	ClientRunnable clientRunnable;
 	
 	int prefixedTurnTime;
 	
@@ -185,6 +193,10 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		
 		player = new Player();
 		client = new Client();
+//		clientRunnable = new ClientRunnable(client);
+		
+		
+		
 		hitShape = getHitShape();
 		
 		gameMode = GameMode.CLASSIC;
@@ -256,7 +268,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		JMenu settingsMenu = new JMenu("Settings");
 		menuBar.add(settingsMenu);
 		
-		JMenuItem preferences = new JMenuItem("Preferences");
+		preferences = new JMenuItem("Preferences");
 		preferences.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.CTRL_MASK));
 		preferences.addActionListener(this);
 		preferences.setActionCommand(preferences.getText());
@@ -341,7 +353,11 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 	public void onEnemyPanelClickListener(int x, int y) {
 		System.out.println("Enemy Panel: Clicked on [" + x + ", " + y + "]");
 		String moveResult = client.sendMove(x, y);
+		yourTurn.setVisible(false);
+		enemyTurn.setVisible(true);
+		
 		System.out.println("Moveresult: " + moveResult);
+		
 		if (moveResult.equals("hit")) {
 			enemyBoardPanel.getButtonAt(x, y).setIcon(new ImageIcon(hitShape));
 		}
@@ -353,8 +369,14 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 //			enemyBoardPanel.getButtonAt(x, y); pintar tot el ship vermell
 			
 		}
+		else { //The server return his move
+			
+		}
+		
+		
 //		System.out.println("EnemyBoard ShipList: " + enemyBoardPanel.getShipList());
 	}
+	
 	
 	@Override
 	public void onGridEnter(int x, int y) {
@@ -461,8 +483,11 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 				inGame = true;				
 				repaint();
 				
+				preferences.setEnabled(false);
+				
 				client.setConected(true);
 				client.open();
+				
 			}
 		}
 		
@@ -554,5 +579,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 	public void mouseMoved(MouseEvent e) {
 		System.out.println(e.getComponent());
 	}
+
+	
 }
 
