@@ -12,4 +12,7 @@ public class Constants {
 	public static final Dimension initMenuBarSize = new Dimension(854, 21);
 	public static final Dimension inGameMenuBarSize = new Dimension(1300, 21);
 	
+	public static final String serverIp = "localhost";
+	public static final int serverPort = 4321;
+	
 }

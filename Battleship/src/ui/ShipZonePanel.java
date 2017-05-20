@@ -87,7 +87,6 @@ public class ShipZonePanel extends JPanel implements  MouseListener, MouseMotion
 	private Point originPoint = null;
 	
 	private ShipZonePanel self;
-	private MyMouseAdapter myMouseAdapter;
 	
 	private List<Ship> shipArray;
 	private List<JButton>btnArray;
@@ -169,7 +168,6 @@ public class ShipZonePanel extends JPanel implements  MouseListener, MouseMotion
 		button.addMouseListener(this);
 		button.setActionCommand(gridX + "," + gridY);
 		add(button, gbc_button);
-		button.addMouseListener(myMouseAdapter);
 		
 	}
 	
@@ -192,8 +190,6 @@ public class ShipZonePanel extends JPanel implements  MouseListener, MouseMotion
 
 	public ShipZonePanel() {
 		self = this;
-		
-		myMouseAdapter = new MyMouseAdapter();
 		
 		shipArray = new ArrayList<Ship>();
 		

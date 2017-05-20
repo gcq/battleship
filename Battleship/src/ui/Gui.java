@@ -1,10 +1,13 @@
 package ui;
 
 import java.awt.CardLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
@@ -13,6 +16,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -28,6 +32,8 @@ import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.border.EmptyBorder;
 
+import server.Client;
+import ui.interfaces.EnemyPanelClickListener;
 import ui.interfaces.GridClickListener;
 import ui.interfaces.GridEnterListener;
 import ui.interfaces.GridRightClickListener;
@@ -38,7 +44,7 @@ import utils.Point;
 import core.Player;
 import core.Ship;
 
-public class Gui extends JFrame implements GridClickListener, ActionListener, MouseMotionListener, GridRightClickListener, GridEnterListener{
+public class Gui extends JFrame implements GridClickListener, ActionListener, MouseMotionListener, GridRightClickListener, GridEnterListener, EnemyPanelClickListener{
 
 	private UserPanel userPanel;
 	private JPanel contentPane;
@@ -61,13 +67,21 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 	
 	GameMode gameMode;
 	
+	BufferedImage hitShape;
+	
 	Point lastClick;
 	
 	Gui self;
 	
 	private Player player;
+	private Client client;
 	
 	Ship floatingShip = new Ship(0, 0, 0, Direction.HORIZONTAL);
+	
+	
+	private static final int IMG_WIDTH = 50;
+	private static final Color SHAPE_COLOR = Color.RED;
+	private static final int GAP = 4;
 
 	/**
 	 * Launch the application.
@@ -83,6 +97,21 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 				}
 			}
 		});
+	}
+	
+	public BufferedImage getHitShape() {
+		BufferedImage circleImg = new BufferedImage(IMG_WIDTH, IMG_WIDTH, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g2 = circleImg.createGraphics();
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2.setColor(SHAPE_COLOR);
+		int imgX = GAP;
+		int imgY = GAP;
+		int width = IMG_WIDTH - 2 * imgX;
+		int height = IMG_WIDTH - 2 * imgY;
+		g2.fillOval(imgX,imgY, width, height);
+		g2.dispose();
+		
+		return circleImg;
 	}
 	
 	public void initPanels() {
@@ -120,7 +149,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		enemyBoardPanel.setBounds(600, 53, 682, 562);
 		enemyBoardPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		enemyBoardPanel.setPreferredSize(new Dimension(500, 500));
-		//enemyBoardPanel.setGridClickListener(this);
+		enemyBoardPanel.setEnemyPanelClickPublisher(this);
 		
 		//profilePanel
 		profilePanel = new ProfilePanel();
@@ -151,6 +180,8 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		self = this;
 		
 		player = new Player();
+		client = new Client();
+		hitShape = getHitShape();
 		
 		gameMode = GameMode.CLASSIC;
 		
@@ -250,13 +281,13 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 	public void onGridClick(int x, int y) {
 		System.out.println("Clicked on [" + x + ", " + y + "]");
 		
-		Point currentClick = new Point(x, y);
-		
 		Ship clickedShip = shipZonePanel.getSelectedShip();
-
-		System.out.println("from " + lastClick + " to " + currentClick);
-		
 		if (clickedShip != null ) {
+			
+			Point currentClick = new Point(x, y);
+	
+			System.out.println("from " + lastClick + " to " + currentClick);
+		
 			Ship ship = new Ship(x, y, clickedShip.getLength(), floatingShip.getDirection(), clickedShip.getId());
 			System.out.println(ship);
 			
@@ -272,6 +303,25 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 			}
 			repaint();
 		}
+	}
+	
+	@Override
+	public void onEnemyPanelClickListener(int x, int y) {
+		System.out.println("Enemy Panel: Clicked on [" + x + ", " + y + "]");
+		String moveResult = client.sendMove(x, y);
+		System.out.println("Moveresult: " + moveResult);
+		if (moveResult.equals("hit")) {
+			enemyBoardPanel.getButtonAt(x, y).setIcon(new ImageIcon(hitShape));
+		}
+		else if (moveResult.equals("water")) {
+			enemyBoardPanel.getButtonAt(x, y).setText("X");
+		}
+		
+		else if (moveResult.equals("sunk")) {
+//			enemyBoardPanel.getButtonAt(x, y); pintar tot el ship vermell
+			
+		}
+//		System.out.println("EnemyBoard ShipList: " + enemyBoardPanel.getShipList());
 	}
 	
 	@Override
@@ -374,8 +424,11 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 				gamePane.remove(shipZonePanel);
 				gamePane.add(enemyBoardPanel);
 				System.out.println(startGame());
-				inGame = true;
+				inGame = true;				
 				repaint();
+				
+				client.setConected(true);
+				client.open();
 			}
 		}
 		
@@ -443,8 +496,12 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		public void windowClosing(WindowEvent e) {
 			
 			int result = JOptionPane.showConfirmDialog(null, "Are you sure about this?", "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-			if (result == JOptionPane.YES_OPTION)
+			if (result == JOptionPane.YES_OPTION) {
+				if (client.isConected())
+					client.close(); // tanquem totes les conexions i Streams del client
+				
 				setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+			}
 			else
 				setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		}

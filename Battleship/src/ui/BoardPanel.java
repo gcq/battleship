@@ -28,6 +28,8 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import ui.interfaces.EnemyPanelClickListener;
+import ui.interfaces.EnemyPanelClickPublisher;
 import ui.interfaces.GridClickListener;
 import ui.interfaces.GridClickPublisher;
 import ui.interfaces.GridEnterListener;
@@ -38,7 +40,7 @@ import utils.Point;
 import core.Ship;
 
 
-public class BoardPanel extends JPanel implements MouseListener, GridClickPublisher {
+public class BoardPanel extends JPanel implements MouseListener, GridClickPublisher, EnemyPanelClickPublisher {
 	
 	DropTarget dropTarget;
 	
@@ -79,6 +81,14 @@ public class BoardPanel extends JPanel implements MouseListener, GridClickPublis
 		}
 	};
 	
+	EnemyPanelClickListener enemyPanelListener = new EnemyPanelClickListener() {
+		
+		@Override
+		public void onEnemyPanelClickListener(int x, int y) {
+			System.out.println("Listener per defecte. Crida setEnemyPanelClickPublisher. (" + x + ", " + y + ")");
+		}
+	};
+	
 	
 	public BoardPanel () {
 		
@@ -102,7 +112,6 @@ public class BoardPanel extends JPanel implements MouseListener, GridClickPublis
 		for (int i = 1; i<=10; i++) {
 			for (int j = 1; j <= 10 ; j++) {
 				JButton button = new JButton();
-				button.addMouseListener(new MyMouseAdapter());
 				button.setForeground(Color.WHITE);
 				button.setBackground(buttonColor);
 				button.setPreferredSize(new Dimension(50, 50));
@@ -173,6 +182,7 @@ public class BoardPanel extends JPanel implements MouseListener, GridClickPublis
 			Point p = getCoordsFromJButton((JButton) e.getSource());
 			
 			clickListener.onGridClick(p.getX(), p.getY());
+			enemyPanelListener.onEnemyPanelClickListener(p.getX(), p.getY());
 			
 		} else if (e.getButton() == MouseEvent.BUTTON3) {
 			Point p = getCoordsFromJButton((JButton) e.getSource());
@@ -217,6 +227,11 @@ public class BoardPanel extends JPanel implements MouseListener, GridClickPublis
 	
 	public void setGridRightClickListener(GridRightClickListener l) {
 		rightClickListener = l;
+	}
+	
+	@Override
+	public void setEnemyPanelClickPublisher(EnemyPanelClickListener l) {
+		enemyPanelListener = l;
 	}
 	
 	public String resetBoard () {
@@ -309,71 +324,5 @@ public class BoardPanel extends JPanel implements MouseListener, GridClickPublis
 	public JButton getButtonAt(int x, int y) {
 		return btnArray.get(y + x * 10);
 	}
-//
-//	@Override
-//	public void dragEnter(DropTargetDragEvent arg0) {
-//		// TODO Auto-generated method stub
-//		
-//	}
-//
-//	@Override
-//	public void dragExit(DropTargetEvent arg0) {
-//		// TODO Auto-generated method stub
-//		
-//	}
-//
-//	@Override
-//	public void dragOver(DropTargetDragEvent arg0) {
-//		// TODO Auto-generated method stub
-//		
-//	}
-//
-//	@Override
-//	public void drop(DropTargetDropEvent e) {
-//		System.out.println("Dropping");
-//
-//	    try {
-//	      Transferable t = e.getTransferable();
-//
-//	      if (e.isDataFlavorSupported(DataFlavor.stringFlavor)) {
-//	        e.acceptDrop(e.getDropAction());
-//
-//	        String s;
-//	        s = (String) t.getTransferData(DataFlavor.stringFlavor);
-//	        
-//	        //target.setText(s);
-//	        System.out.println("Data droped: " + s);
-//
-//	        e.dropComplete(true);
-//	      } else
-//	        e.rejectDrop();
-//	    } catch (java.io.IOException e2) {
-//	    	
-//	    } catch (UnsupportedFlavorException e2) {
-//	    }
-//	}
-//
-//	@Override
-//	public void dropActionChanged(DropTargetDragEvent arg0) {
-//		// TODO Auto-generated method stub
-//		
-//	}	
-	
-}
 
-
-class MyMouseAdapter extends MouseAdapter {
-	@Override
-	public void mouseEntered(MouseEvent e) {
-		super.mouseEntered(e);
-//		buttonAfterColor = e.getComponent().getBackground();
-//		e.getComponent().setBackground(new Color(255,255,0));
-	}
-	
-	@Override
-	public void mouseExited(MouseEvent e) {
-		super.mouseExited(e);
-		
-//		e.getComponent().setBackground(buttonAfterColor);
-	}
 }
