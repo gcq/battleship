@@ -31,6 +31,9 @@ public class Player {
 	}
 	
 	public void addShip(Ship ship) throws InvalidShipPlacementException {
+		if (!checkShipPlacement(ship))
+			throw new InvalidShipPlacementException();
+		
 		ship.setId(getNextShipId());
 		ships.put(ship.getId(), ship);
 		placeShip(ship);
