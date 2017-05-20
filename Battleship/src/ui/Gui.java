@@ -238,6 +238,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		gameMenu.add(loadMenu);
 		
 		JMenuItem saveMenu = new JMenuItem("Save");
+		saveMenu.setIcon(new ImageIcon(Gui.class.getResource("/img/download-button.png")));
 		saveMenu.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.CTRL_MASK));
 		gameMenu.add(saveMenu);
 		
@@ -265,12 +266,14 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		menuBar.add(helpMenu);
 		
 		JMenuItem onlineHelp = new JMenuItem("Online Help");
+		onlineHelp.setIcon(new ImageIcon(Gui.class.getResource("/img/info.png")));
 		onlineHelp.setActionCommand("OnlineHelp");
 		onlineHelp.addActionListener(this);
 		onlineHelp.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_MASK));
 		helpMenu.add(onlineHelp);
 		
 		JMenuItem about = new JMenuItem("About");
+		about.setIcon(new ImageIcon(Gui.class.getResource("/img/quant.png")));
 		about.setActionCommand(about.getText());
 		about.addActionListener(this);
 		about.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_MASK));
