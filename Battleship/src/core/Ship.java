@@ -41,6 +41,11 @@ public class Ship {
 		
 	}
 	
+	public static Ship fromEncodedString(String s) {
+		String[] arr = s.split(",");
+		return new Ship(Integer.parseInt(arr[1]), Integer.parseInt(arr[2]), Integer.parseInt(arr[3]), Direction.valueOf(arr[4]), Integer.parseInt(arr[0]));
+	}
+	
 	public Ship (int length, Direction direction) {
 		this(-100, -100, length, direction);
 	}
@@ -64,6 +69,10 @@ public class Ship {
 	public String toString() {
 		return "Ship [id=" + id + ", x=" + x + ", y=" + y + ", length="
 				+ length + ", direction=" + direction + ", hits=" + hits + "]";
+	}
+	
+	public String toEncodedString() {
+		return id + "," + x + "," + y + "," + length + "," + direction;
 	}
 
 	public int getX() {

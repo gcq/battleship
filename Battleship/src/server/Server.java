@@ -8,12 +8,14 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Random;
 
+import utils.Point;
 import utils.Enums.Direction;
 import utils.Enums.HitType;
 import core.Board;
 import core.Player;
 import core.Ship;
 import core.exceptions.InvalidShipPlacementException;
+import server.Packet.PacketType;
 
 
 
@@ -118,14 +120,21 @@ class ServerRunnable implements Runnable {
 			while ((inputLine = in.readLine()) != null) {
 				System.out.println("Received message: " + inputLine); // Rebem la gridX i gridY
 				
-				int x = Integer.parseInt(inputLine.split(",")[0]);
-				int y = Integer.parseInt(inputLine.split(",")[1]);
+				Packet packet = Packet.fromString(inputLine);
 				
-				String messageToSend = getHitType(x, y); // decidir que es aquesta jugada; aigua, tocado, hundido
+				if (packet.type == PacketType.MOVEMENT) {
+					Point hitPoint = Protocol.parseMove(packet);
+					
+					packet = Protocol.createMoveResult(player.hit(hitPoint.getX(), hitPoint.getY())); // decidir que es aquesta jugada; aigua, tocado, hundido
+				}
+				
+				else if (packet.type == PacketType.GET_LAST_HIT_SHIP) {
+					packet = Protocol.createGetLastShipResponse(player.getLastHitShip());
+				}
 				
 				//We send the modified data to the client with the PrintWriter variable.
-				out.println(messageToSend);
-				System.out.println("Message sent: " + messageToSend);
+				out.println(packet);
+				System.out.println("Message sent: " + packet);
 				System.out.println(player);
 			}
 		} catch (IOException e) {

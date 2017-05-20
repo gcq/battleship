@@ -40,6 +40,7 @@ import ui.interfaces.GridRightClickListener;
 import utils.Constants;
 import utils.Enums.Direction;
 import utils.Enums.GameMode;
+import utils.Enums.HitType;
 import utils.Point;
 import core.Player;
 import core.Ship;
@@ -340,17 +341,18 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 	@Override
 	public void onEnemyPanelClickListener(int x, int y) {
 		System.out.println("Enemy Panel: Clicked on [" + x + ", " + y + "]");
-		String moveResult = client.sendMove(x, y);
+		HitType moveResult = client.sendMove(x, y);
 		System.out.println("Moveresult: " + moveResult);
-		if (moveResult.equals("hit")) {
+		if (moveResult == HitType.HIT) {
 			enemyBoardPanel.getButtonAt(x, y).setIcon(new ImageIcon(hitShape));
 		}
-		else if (moveResult.equals("water")) {
+		else if (moveResult == HitType.WATER) {
 			enemyBoardPanel.getButtonAt(x, y).setText("X");
 		}
 		
-		else if (moveResult.equals("sunk")) {
-//			enemyBoardPanel.getButtonAt(x, y); pintar tot el ship vermell
+		else if (moveResult == HitType.SUNK) {
+			for (Point p : client.sendGetLastHitShip().getSegmentsPositions())
+				enemyBoardPanel.getButtonAt(p.getX(), p.getY()).setBackground(Color.RED);
 			
 		}
 //		System.out.println("EnemyBoard ShipList: " + enemyBoardPanel.getShipList());
