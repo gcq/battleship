@@ -85,6 +85,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 	private static final int IMG_WIDTH = 50;
 	private static final Color SHAPE_COLOR = Color.RED;
 	private static final int GAP = 4;
+	private JLabel usernameGameLabel;
 
 	/**
 	 * Launch the application.
@@ -273,11 +274,16 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		yourTurn.setVisible(false);
 		gamePane.add(yourTurn);
 		
-		enemyTurn = new JLabel("Your Turn");
+		enemyTurn = new JLabel("Enemy Turn");
 		enemyTurn.setFont(new Font("Tahoma", Font.PLAIN, 30));
-		enemyTurn.setBounds(650, 35, 133, 29);
+		enemyTurn.setBounds(648, 24, 133, 29);
 		enemyTurn.setVisible(false);
 		gamePane.add(enemyTurn);
+		
+		usernameGameLabel = new JLabel();
+		usernameGameLabel.setFont(new Font("Tahoma", Font.PLAIN, 30));
+		usernameGameLabel.setBounds(10, 28, 133, 25);
+		gamePane.add(usernameGameLabel);
 		
 		contentPane.add(userPanel, "intro");
 		contentPane.add(profilePanel, "profile");
@@ -395,7 +401,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 			self.setSize(Constants.profilePanelSize);
 			repaint();
 			changePanel("profile");
-			((ProfilePanel) profilePanel).setUsername(userPanel.getUsername());
+			((ProfilePanel) profilePanel).setUsername(player.getName());
 		}
 		
 		else if (e.getActionCommand().equals("Preferences")) {
@@ -426,6 +432,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 			changePanel("game");
 			player.setName(userPanel.getUsername());
 			profilePanel.setUsername(userPanel.getUsername());
+			usernameGameLabel.setText(userPanel.getUsername());
 		}
 		
 		else if (e.getActionCommand().equals("Start")) {
@@ -457,6 +464,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 			resetFrameSize();
 			changePanel("game");
 			player.setName(((ProfilePanel) profilePanel).getUsername());
+			usernameGameLabel.setText(player.getName());
 		}
 		
 		else if (e.getActionCommand().equals("resetBoard")) {
