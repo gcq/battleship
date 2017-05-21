@@ -13,6 +13,8 @@ public class Ship {
 	int x, y, id;
 	int length;
 	
+	boolean lastShipStanding;
+	
 	Direction direction;
 	
 	int hits;
@@ -43,7 +45,11 @@ public class Ship {
 	
 	public static Ship fromEncodedString(String s) {
 		String[] arr = s.split(",");
-		return new Ship(Integer.parseInt(arr[1]), Integer.parseInt(arr[2]), Integer.parseInt(arr[3]), Direction.valueOf(arr[4]), Integer.parseInt(arr[0]));
+		System.out.println("arr from encodedString: " + arr[5]);
+		Ship ship = new Ship(Integer.parseInt(arr[1]), Integer.parseInt(arr[2]), Integer.parseInt(arr[3]), Direction.valueOf(arr[4]), Integer.parseInt(arr[0]));
+		if (Boolean.valueOf(arr[5])) // == true
+			ship.setLastShipStanding(true);
+		return ship;
 	}
 	
 	public Ship (int length, Direction direction) {
@@ -65,6 +71,16 @@ public class Ship {
 		hits = 0;
 	}
 	
+	
+	
+	public boolean isLastShipStanding() {
+		return lastShipStanding;
+	}
+
+	public void setLastShipStanding(boolean lastShipStanding) {
+		this.lastShipStanding = lastShipStanding;
+	}
+
 	@Override
 	public String toString() {
 		return "Ship [id=" + id + ", x=" + x + ", y=" + y + ", length="

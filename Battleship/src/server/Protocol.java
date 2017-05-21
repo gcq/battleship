@@ -40,6 +40,6 @@ public class Protocol {
 	}
 	
 	public static Ship parseGetLastShipResponse(Packet p) {
-		return Ship.fromEncodedString(p.getContents());
+		return Ship.fromEncodedString(p.getContents() + "," + p.isWinGame());
 	}
 }

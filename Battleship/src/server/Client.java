@@ -71,26 +71,4 @@ public class Client {
 	public void setConected(boolean conected) {
 		this.conected = conected;
 	}
-
-	public static void main(String[] args) throws IOException {
-		
-//		String serverIpString = args[0];	//ip address of the server
-//
-//		int serverPort = Integer.valueOf(args[1]);	//port of the server
-		//both needed in unicast tcp app
-		
-		
-		
-		
-//			String userInput;
-//			System.out.println("Write your move: ");
-//			while ((userInput = stdIn.readLine()) != null) { //We read from the console while user sends STOP signal
-//				out.println(userInput); //We send the user input to the server through the output stream we get from the socket
-//				System.out.println("Received message: " + in.readLine()); //We receive the message returned from the server through Input stream we get from the socket
-//				if (userInput.equals("STOP")) {
-//					return;
-//				}
-//			}
-		}
-	
 }

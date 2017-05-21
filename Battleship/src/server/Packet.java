@@ -12,6 +12,7 @@ public class Packet {
 	
 	PacketType type;
 	String contents;
+	boolean winGame;
 	
 	public Packet() {
 	}
@@ -23,8 +24,18 @@ public class Packet {
 	
 	public static Packet fromString(String p) {
 		String[] arr = p.split("\\|");
-		System.out.println(Arrays.toString(arr));
-		return new Packet(PacketType.valueOf(arr[0]), arr[1]);
+		System.out.println("arr: " + Arrays.toString(arr));
+		Packet packet = new Packet(PacketType.valueOf(arr[0]), arr[1]);
+		packet.setWinGame(Boolean.valueOf(arr[2]));
+		return packet;
+	}
+
+	public boolean isWinGame() {
+		return winGame;
+	}
+
+	public void setWinGame(boolean winGame) {
+		this.winGame = winGame;
 	}
 
 	public PacketType getType() {
@@ -45,6 +56,6 @@ public class Packet {
 
 	@Override
 	public String toString() {
-		return type + "|" + contents;
+		return type + "|" + contents + "|" + winGame;
 	}
 }

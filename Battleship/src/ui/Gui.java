@@ -380,9 +380,13 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		}
 		
 		else if (moveResult == HitType.SUNK) {
-			for (Point p : client.sendGetLastHitShip().getSegmentsPositions())
+			Ship enemyShip = client.sendGetLastHitShip();
+			for (Point p : enemyShip.getSegmentsPositions())
 				enemyBoardPanel.getButtonAt(p.getX(), p.getY()).setBackground(Color.RED);
-			
+			if (enemyShip.isLastShipStanding()) {
+				JOptionPane.showMessageDialog(this, player.getName() + " Wins!", "", JOptionPane.INFORMATION_MESSAGE);
+				this.dispose();
+			}
 		}
 		
 		try {

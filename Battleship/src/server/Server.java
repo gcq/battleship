@@ -124,12 +124,16 @@ class ServerRunnable implements Runnable {
 				
 				if (packet.type == PacketType.MOVEMENT) {
 					Point hitPoint = Protocol.parseMove(packet);
-					
 					packet = Protocol.createMoveResult(player.hit(hitPoint.getX(), hitPoint.getY())); // decidir que es aquesta jugada; aigua, tocado, hundido
 				}
 				
 				else if (packet.type == PacketType.GET_LAST_HIT_SHIP) {
 					packet = Protocol.createGetLastShipResponse(player.getLastHitShip());
+					
+
+					if (player.isDead()) {
+						packet.setWinGame(true);
+					}
 				}
 				
 				//We send the modified data to the client with the PrintWriter variable.
