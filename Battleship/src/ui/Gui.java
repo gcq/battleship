@@ -44,7 +44,9 @@ import utils.Enums.HitType;
 import utils.Point;
 import core.Player;
 import core.Ship;
+
 import javax.swing.JLabel;
+
 import java.awt.Font;
 
 public class Gui extends JFrame implements GridClickListener, ActionListener, MouseMotionListener, GridRightClickListener, GridEnterListener, EnemyPanelClickListener{
@@ -64,6 +66,9 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 	private JLabel yourTurn;
 	private JLabel enemyTurn;
 	private boolean inGame;
+	
+	private boolean myTurn;
+	private boolean hisTurn;
 	
 	int prefixedTurnTime;
 	
@@ -184,6 +189,9 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		
 		self = this;
 		
+		setHisTurn(false);
+		setMyTurn(true);
+		
 		player = new Player();
 		client = new Client();
 		hitShape = getHitShape();
@@ -288,7 +296,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		
 		enemyTurn = new JLabel("Enemy Turn");
 		enemyTurn.setFont(new Font("Tahoma", Font.PLAIN, 30));
-		enemyTurn.setBounds(648, 24, 133, 29);
+		enemyTurn.setBounds(870, 24, 169, 29);
 		enemyTurn.setVisible(false);
 		gamePane.add(enemyTurn);
 		
@@ -338,6 +346,27 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		}
 	}
 	
+	public void toggleTurns () {
+		setMyTurn(!myTurn);
+		setHisTurn(!hisTurn);
+	}
+	
+	public boolean isMyTurn() {
+		return myTurn;
+	}
+
+	public void setMyTurn(boolean myTurn) {
+		this.myTurn = myTurn;
+	}
+
+	public boolean isHisTurn() {
+		return hisTurn;
+	}
+
+	public void setHisTurn(boolean hisTurn) {
+		this.hisTurn = hisTurn;
+	}
+
 	@Override
 	public void onEnemyPanelClickListener(int x, int y) {
 		System.out.println("Enemy Panel: Clicked on [" + x + ", " + y + "]");
@@ -355,6 +384,16 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 				enemyBoardPanel.getButtonAt(p.getX(), p.getY()).setBackground(Color.RED);
 			
 		}
+		
+		try {
+			Thread.sleep(500);
+			toggleTurns();
+			yourTurn.setVisible(isMyTurn());
+			enemyTurn.setVisible(isHisTurn());
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
 //		System.out.println("EnemyBoard ShipList: " + enemyBoardPanel.getShipList());
 	}
 	
