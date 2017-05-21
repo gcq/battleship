@@ -385,6 +385,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 				enemyBoardPanel.getButtonAt(p.getX(), p.getY()).setBackground(Color.RED);
 			if (enemyShip.isLastShipStanding()) {
 				JOptionPane.showMessageDialog(this, player.getName() + " Wins!", "", JOptionPane.INFORMATION_MESSAGE);
+				client.close();
 				this.dispose();
 			}
 		}
