@@ -234,24 +234,27 @@ public class BoardPanel extends JPanel implements MouseListener, GridClickPublis
 		enemyPanelListener = l;
 	}
 	
-	public String resetBoard () {
+	public void clearBoard () {
 		for (JButton jButton : btnArray) {
 			jButton.setBackground(buttonColor);
 			jButton.setText("");
 		}
-		return "Board resetejat";
+	}
+	
+	public void resetShips () {
+		this.shipList.clear();
 	}
 	
 	public void redrawBoard() {
-		resetBoard();
+		clearBoard();
 		
-		for (Ship s : shipList) {
+		for (Ship s : this.shipList) {
 			drawShip(s);
 		}
 	}
 	
 	public List<Ship> getShipList() {
-		return shipList;
+		return this.shipList;
 	}
 
 	/**

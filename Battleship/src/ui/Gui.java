@@ -168,6 +168,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		
 		//profilePanel
 		userPanel = new UserPanel();
+		userPanel.getLblTitle().setBounds(138, 35, 599, 103);
 		userPanel.getBtnGo().addActionListener(this);
 		
 		//preferencesPanel
@@ -290,13 +291,13 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		
 		yourTurn = new JLabel("Your Turn");
 		yourTurn.setFont(new Font("Tahoma", Font.PLAIN, 30));
-		yourTurn.setBounds(228, 24, 133, 29);
+		yourTurn.setBounds(192, 24, 169, 29);
 		yourTurn.setVisible(false);
 		gamePane.add(yourTurn);
 		
 		enemyTurn = new JLabel("Enemy Turn");
 		enemyTurn.setFont(new Font("Tahoma", Font.PLAIN, 30));
-		enemyTurn.setBounds(870, 24, 169, 29);
+		enemyTurn.setBounds(870, 24, 192, 29);
 		enemyTurn.setVisible(false);
 		gamePane.add(enemyTurn);
 		
@@ -390,14 +391,10 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 			}
 		}
 		
-		try {
-			Thread.sleep(500);
-			toggleTurns();
-			yourTurn.setVisible(isMyTurn());
-			enemyTurn.setVisible(isHisTurn());
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		toggleTurns();
+		yourTurn.setVisible(isMyTurn());
+		enemyTurn.setVisible(isHisTurn());
+		
 		
 //		System.out.println("EnemyBoard ShipList: " + enemyBoardPanel.getShipList());
 	}
@@ -525,7 +522,8 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		}
 		
 		else if (e.getActionCommand().equals("resetBoard")) {
-			System.out.println(playerBoardPanel.resetBoard());
+			playerBoardPanel.clearBoard();
+			playerBoardPanel.resetShips();
 			System.out.println(shipZonePanel.reset());
 		}
 		
