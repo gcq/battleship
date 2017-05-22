@@ -6,7 +6,9 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import core.Ship;
 import utils.Constants;
+import utils.Enums.HitType;
 
 
 public class Client {
@@ -42,11 +44,20 @@ public class Client {
 		}
 	}
 	
-	public String sendMove(int x, int y) {
-		String move = String.valueOf(x) + "," + String.valueOf(y);
-		out.println(move); //We send the user input to the server through the output stream we get from the socket
+	public HitType sendMove(int x, int y) {
+		out.println(Protocol.createMove(x, y)); //We send the user input to the server through the output stream we get from the socket
 		try {
-			return in.readLine(); //We receive the message returned from the server through Input stream we get from the socket
+			return Protocol.parseMoveResult(Packet.fromString(in.readLine())); //We receive the message returned from the server through Input stream we get from the socket
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
+		return null;
+	}
+	
+	public Ship sendGetLastHitShip() {
+		out.println(Protocol.createGetLastHitShip()); //We send the user input to the server through the output stream we get from the socket
+		try {
+			return Protocol.parseGetLastShipResponse(Packet.fromString(in.readLine())); //We receive the message returned from the server through Input stream we get from the socket
 		} catch (IOException e) {
 			e.printStackTrace();
 		} 
@@ -60,26 +71,4 @@ public class Client {
 	public void setConected(boolean conected) {
 		this.conected = conected;
 	}
-
-	public static void main(String[] args) throws IOException {
-		
-//		String serverIpString = args[0];	//ip address of the server
-//
-//		int serverPort = Integer.valueOf(args[1]);	//port of the server
-		//both needed in unicast tcp app
-		
-		
-		
-		
-//			String userInput;
-//			System.out.println("Write your move: ");
-//			while ((userInput = stdIn.readLine()) != null) { //We read from the console while user sends STOP signal
-//				out.println(userInput); //We send the user input to the server through the output stream we get from the socket
-//				System.out.println("Received message: " + in.readLine()); //We receive the message returned from the server through Input stream we get from the socket
-//				if (userInput.equals("STOP")) {
-//					return;
-//				}
-//			}
-		}
-	
 }

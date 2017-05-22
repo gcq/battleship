@@ -234,24 +234,27 @@ public class BoardPanel extends JPanel implements MouseListener, GridClickPublis
 		enemyPanelListener = l;
 	}
 	
-	public String resetBoard () {
+	public void clearBoard () {
 		for (JButton jButton : btnArray) {
 			jButton.setBackground(buttonColor);
 			jButton.setText("");
 		}
-		return "Board resetejat";
+	}
+	
+	public void resetShips () {
+		this.shipList.clear();
 	}
 	
 	public void redrawBoard() {
-		resetBoard();
+		clearBoard();
 		
-		for (Ship s : shipList) {
+		for (Ship s : this.shipList) {
 			drawShip(s);
 		}
 	}
 	
 	public List<Ship> getShipList() {
-		return shipList;
+		return this.shipList;
 	}
 
 	/**
@@ -305,8 +308,11 @@ public class BoardPanel extends JPanel implements MouseListener, GridClickPublis
 	}
 	
 	public boolean addShip(Ship ship) {
-		shipList.add(ship);
-		return drawShip(ship);
+		boolean worked = drawShip(ship);
+		
+		if (worked)
+			shipList.add(ship);
+		return worked;
 	}
 	
 	public void displayShip(int x, int y, Direction direction, int length) {

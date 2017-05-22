@@ -40,10 +40,13 @@ import ui.interfaces.GridRightClickListener;
 import utils.Constants;
 import utils.Enums.Direction;
 import utils.Enums.GameMode;
+import utils.Enums.HitType;
 import utils.Point;
 import core.Player;
 import core.Ship;
+
 import javax.swing.JLabel;
+
 import java.awt.Font;
 
 public class Gui extends JFrame implements GridClickListener, ActionListener, MouseMotionListener, GridRightClickListener, GridEnterListener, EnemyPanelClickListener{
@@ -63,6 +66,9 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 	private JLabel yourTurn;
 	private JLabel enemyTurn;
 	private boolean inGame;
+	
+	private boolean myTurn;
+	private boolean hisTurn;
 	
 	int prefixedTurnTime;
 	
@@ -162,6 +168,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		
 		//profilePanel
 		userPanel = new UserPanel();
+		userPanel.getLblTitle().setBounds(138, 35, 599, 103);
 		userPanel.getBtnGo().addActionListener(this);
 		
 		//preferencesPanel
@@ -182,6 +189,9 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		inGame = false; 
 		
 		self = this;
+		
+		setHisTurn(false);
+		setMyTurn(true);
 		
 		player = new Player();
 		client = new Client();
@@ -281,13 +291,13 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		
 		yourTurn = new JLabel("Your Turn");
 		yourTurn.setFont(new Font("Tahoma", Font.PLAIN, 30));
-		yourTurn.setBounds(228, 24, 133, 29);
+		yourTurn.setBounds(192, 24, 169, 29);
 		yourTurn.setVisible(false);
 		gamePane.add(yourTurn);
 		
 		enemyTurn = new JLabel("Enemy Turn");
 		enemyTurn.setFont(new Font("Tahoma", Font.PLAIN, 30));
-		enemyTurn.setBounds(648, 24, 133, 29);
+		enemyTurn.setBounds(870, 24, 192, 29);
 		enemyTurn.setVisible(false);
 		gamePane.add(enemyTurn);
 		
@@ -313,6 +323,8 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 	public void onGridClick(int x, int y) {
 		System.out.println("Clicked on [" + x + ", " + y + "]");
 		
+		System.out.println(playerBoardPanel.getShipList().size());
+		
 		Ship clickedShip = shipZonePanel.getSelectedShip();
 		if (clickedShip != null ) {
 			
@@ -337,22 +349,55 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		}
 	}
 	
+	public void toggleTurns () {
+		setMyTurn(!myTurn);
+		setHisTurn(!hisTurn);
+	}
+	
+	public boolean isMyTurn() {
+		return myTurn;
+	}
+
+	public void setMyTurn(boolean myTurn) {
+		this.myTurn = myTurn;
+	}
+
+	public boolean isHisTurn() {
+		return hisTurn;
+	}
+
+	public void setHisTurn(boolean hisTurn) {
+		this.hisTurn = hisTurn;
+	}
+
 	@Override
 	public void onEnemyPanelClickListener(int x, int y) {
 		System.out.println("Enemy Panel: Clicked on [" + x + ", " + y + "]");
-		String moveResult = client.sendMove(x, y);
+		HitType moveResult = client.sendMove(x, y);
 		System.out.println("Moveresult: " + moveResult);
-		if (moveResult.equals("hit")) {
+		if (moveResult == HitType.HIT) {
 			enemyBoardPanel.getButtonAt(x, y).setIcon(new ImageIcon(hitShape));
 		}
-		else if (moveResult.equals("water")) {
+		else if (moveResult == HitType.WATER) {
 			enemyBoardPanel.getButtonAt(x, y).setText("X");
 		}
 		
-		else if (moveResult.equals("sunk")) {
-//			enemyBoardPanel.getButtonAt(x, y); pintar tot el ship vermell
-			
+		else if (moveResult == HitType.SUNK) {
+			Ship enemyShip = client.sendGetLastHitShip();
+			for (Point p : enemyShip.getSegmentsPositions())
+				enemyBoardPanel.getButtonAt(p.getX(), p.getY()).setBackground(Color.RED);
+			if (enemyShip.isLastShipStanding()) {
+				JOptionPane.showMessageDialog(this, player.getName() + " Wins!", "", JOptionPane.INFORMATION_MESSAGE);
+				client.close();
+				this.dispose();
+			}
 		}
+		
+		toggleTurns();
+		yourTurn.setVisible(isMyTurn());
+		enemyTurn.setVisible(isHisTurn());
+		
+		
 //		System.out.println("EnemyBoard ShipList: " + enemyBoardPanel.getShipList());
 	}
 	
@@ -479,7 +524,8 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		}
 		
 		else if (e.getActionCommand().equals("resetBoard")) {
-			System.out.println(playerBoardPanel.resetBoard());
+			playerBoardPanel.clearBoard();
+			playerBoardPanel.resetShips();
 			System.out.println(shipZonePanel.reset());
 		}
 		

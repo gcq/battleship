@@ -31,7 +31,7 @@ public class UserPanel extends JPanel {
 		
 		
 		JLabel lblUsername = new JLabel("Enter your username");
-		lblUsername.setBounds(334, 250, 137, 18);
+		lblUsername.setBounds(310, 250, 161, 18);
 		add(lblUsername);
 		
 		textField = new JTextField();
