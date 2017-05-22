@@ -400,13 +400,17 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		Packet packet = Packet.fromString(packetString);
 		
 		if (packet.getType() == PacketType.MOVEMENT) {
+			// TODO
+			// Si el paquet té com a tipus moviment, vol dir que es la jugada del servidor
+			
 			Point p = Protocol.parseMove(packet);
 			
 			System.out.println(p);
 			
 			toggleTurns();
 			
-			//player
+			// Falta implementar el model de dades del tauler del client
+			// per representar les jugades que rebem del servidor
 		}
 		
 		if (packet.getType() == PacketType.MOVEMENT_RESULT) {

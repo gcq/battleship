@@ -54,22 +54,10 @@ public class Client {
 	
 	public void sendMove(int x, int y) {
 		out.println(Protocol.createMove(x, y)); //We send the user input to the server through the output stream we get from the socket
-//		try {
-//			return Protocol.parseMoveResult(Packet.fromString(in.readLine())); //We receive the message returned from the server through Input stream we get from the socket
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		} 
-//		return null;
 	}
 	
 	public void sendGetLastHitShip() {
 		out.println(Protocol.createGetLastHitShip()); //We send the user input to the server through the output stream we get from the socket
-//		try {
-//			return Protocol.parseGetLastShipResponse(Packet.fromString(in.readLine())); //We receive the message returned from the server through Input stream we get from the socket
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		} 
-//		return null;
 	}
 
 	public boolean isConected() {

@@ -243,11 +243,6 @@ public class AboutPanel extends JPanel {
 		this.imageIcon.setIcon(icon);
 		this.imageIcon.setText(null);
 	}
-	
-//	public void setImageIcon(String imageRoute) {
-//		this.imageIcon.setIcon(new ImageIcon(PuiVicCruGuiA14AboutPanel.class.getResource(imageRoute)));
-//		this.imageIcon.setText(null);
-//	}
 
 	public void setTitleText(String titleText) {
 		this.titleText.setText(titleText);
