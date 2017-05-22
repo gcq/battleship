@@ -50,7 +50,7 @@ import javax.swing.JLabel;
 import java.awt.Font;
 import javax.swing.JSeparator;
 
-public class Gui extends JFrame implements GridClickListener, ActionListener, MouseMotionListener, GridRightClickListener, GridEnterListener, EnemyPanelClickListener{
+public class Gui extends JFrame implements GridClickListener, ActionListener, GridRightClickListener, GridEnterListener, EnemyPanelClickListener{
 
 	private UserPanel userPanel;
 	private JPanel contentPane;
@@ -612,19 +612,6 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 			
 			closeWindow();
 		}
-	}
-
-
-	@Override
-	public void mouseDragged(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	@Override
-	public void mouseMoved(MouseEvent e) {
-		System.out.println(e.getComponent());
 	}
 }
 

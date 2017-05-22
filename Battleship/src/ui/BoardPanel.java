@@ -40,7 +40,7 @@ import utils.Point;
 import core.Ship;
 
 
-public class BoardPanel extends JPanel implements MouseListener, GridClickPublisher, EnemyPanelClickPublisher {
+public class BoardPanel extends JPanel implements GridClickPublisher, EnemyPanelClickPublisher {
 	
 	DropTarget dropTarget;
 	
@@ -121,7 +121,9 @@ public class BoardPanel extends JPanel implements MouseListener, GridClickPublis
 				gbc_button.gridx = gridX+1;
 				gbc_button.gridy = gridY+1;
 				button.setActionCommand(gridX + "," + gridY);
-				button.addMouseListener(this);
+				
+				button.addMouseListener(new MyMouseAdapter());
+				
 				add(button, gbc_button);
 				gridY++;
 				btnArray.add(button);
@@ -173,48 +175,6 @@ public class BoardPanel extends JPanel implements MouseListener, GridClickPublis
 		int y = Integer.parseInt(coords[1]);
 		
 		return new Point(x, y);
-	}
-	
-	@Override
-	public void mouseClicked(MouseEvent e) {
-		
-		if (e.getButton() == MouseEvent.BUTTON1) {
-			Point p = getCoordsFromJButton((JButton) e.getSource());
-			
-			clickListener.onGridClick(p.getX(), p.getY());
-			enemyPanelListener.onEnemyPanelClickListener(p.getX(), p.getY());
-			
-		} else if (e.getButton() == MouseEvent.BUTTON3) {
-			Point p = getCoordsFromJButton((JButton) e.getSource());
-			
-			rightClickListener.onGridRightClick(p.getX(), p.getY());
-        }
-		
-	}
-
-	@Override
-	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent e) {
-		Point p = getCoordsFromJButton((JButton) e.getSource());
-		
-		enterListener.onGridEnter(p.getX(), p.getY());
-	}
-
-	@Override
-	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
 	}
 	
 	public void setGridClickListener(GridClickListener l) {
@@ -334,4 +294,28 @@ public class BoardPanel extends JPanel implements MouseListener, GridClickPublis
 		return btnArray.get(y + x * 10);
 	}
 
+	class MyMouseAdapter extends MouseAdapter{
+		@Override
+		public void mouseEntered(MouseEvent e) {
+			super.mouseEntered(e);
+			Point p = getCoordsFromJButton((JButton) e.getSource());
+			enterListener.onGridEnter(p.getX(), p.getY());
+		}
+		
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			super.mouseClicked(e);
+			if (e.getButton() == MouseEvent.BUTTON1) {
+				Point p = getCoordsFromJButton((JButton) e.getSource());
+				
+				clickListener.onGridClick(p.getX(), p.getY());
+				enemyPanelListener.onEnemyPanelClickListener(p.getX(), p.getY());
+				
+			} else if (e.getButton() == MouseEvent.BUTTON3) {
+				Point p = getCoordsFromJButton((JButton) e.getSource());
+				
+				rightClickListener.onGridRightClick(p.getX(), p.getY());
+	        }
+		}
+	}
 }
