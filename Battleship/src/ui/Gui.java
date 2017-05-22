@@ -34,6 +34,10 @@ import javax.swing.border.EmptyBorder;
 
 import server.Client;
 import server.ClientRunnable;
+import server.MoveResult;
+import server.Packet;
+import server.Packet.PacketType;
+import server.Protocol;
 import ui.interfaces.EnemyPanelClickListener;
 import ui.interfaces.GridClickListener;
 import ui.interfaces.GridEnterListener;
@@ -42,6 +46,7 @@ import ui.interfaces.ServerMoveListener;
 import utils.Constants;
 import utils.Enums.Direction;
 import utils.Enums.GameMode;
+import utils.Enums.HitType;
 import utils.Point;
 import core.Player;
 import core.Ship;
@@ -71,6 +76,9 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 	private boolean playerTurn;
 	
 //	ClientRunnable clientRunnable;
+	
+	private boolean myTurn;
+	private boolean hisTurn;
 	
 	int prefixedTurnTime;
 	
@@ -170,6 +178,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		
 		//profilePanel
 		userPanel = new UserPanel();
+		userPanel.getLblTitle().setBounds(138, 35, 599, 103);
 		userPanel.getBtnGo().addActionListener(this);
 		
 		//preferencesPanel
@@ -190,6 +199,9 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		inGame = false; 
 		
 		self = this;
+		
+		setHisTurn(false);
+		setMyTurn(true);
 		
 		player = new Player();
 		client = new Client();
@@ -293,13 +305,13 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		
 		yourTurn = new JLabel("Your Turn");
 		yourTurn.setFont(new Font("Tahoma", Font.PLAIN, 30));
-		yourTurn.setBounds(228, 24, 133, 29);
+		yourTurn.setBounds(192, 24, 169, 29);
 		yourTurn.setVisible(false);
 		gamePane.add(yourTurn);
 		
 		enemyTurn = new JLabel("Enemy Turn");
 		enemyTurn.setFont(new Font("Tahoma", Font.PLAIN, 30));
-		enemyTurn.setBounds(648, 24, 133, 29);
+		enemyTurn.setBounds(870, 24, 192, 29);
 		enemyTurn.setVisible(false);
 		gamePane.add(enemyTurn);
 		
@@ -349,60 +361,76 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		}
 	}
 	
+	public void toggleTurns () {
+		setMyTurn(!myTurn);
+		setHisTurn(!hisTurn);
+	}
+	
+	public boolean isMyTurn() {
+		return myTurn;
+	}
+
+	public void setMyTurn(boolean myTurn) {
+		this.myTurn = myTurn;
+	}
+
+	public boolean isHisTurn() {
+		return hisTurn;
+	}
+
+	public void setHisTurn(boolean hisTurn) {
+		this.hisTurn = hisTurn;
+	}
+
 	@Override
 	public void onEnemyPanelClickListener(int x, int y) {
 		System.out.println("Enemy Panel: Clicked on [" + x + ", " + y + "]");
 		client.sendMove(x, y);
-//		String moveResult = client.sendMove(x, y);
-		yourTurn.setVisible(false);
-		enemyTurn.setVisible(true);
-//		
-//		System.out.println("Moveresult: " + moveResult);
-//		
-//		if (moveResult.equals("hit")) {
-//			enemyBoardPanel.getButtonAt(x, y).setIcon(new ImageIcon(hitShape));
-//		}
-//		else if (moveResult.equals("water")) {
-//			enemyBoardPanel.getButtonAt(x, y).setText("X");
-//		}
-//		
-//		else if (moveResult.equals("sunk")) {
-////			enemyBoardPanel.getButtonAt(x, y); pintar tot el ship vermell
-//			
-//		}
-//		else { //The server return his move
-//			
-//		}
 		
-		
-//		System.out.println("EnemyBoard ShipList: " + enemyBoardPanel.getShipList());
+		toggleTurns();
+		yourTurn.setVisible(isMyTurn());
+		enemyTurn.setVisible(isHisTurn());
 	}
 	
 	@Override
-	public void onServerMoveListener(String move) {
-		System.out.println("WTFSPLIT: " + move.split("\\|")[0]);
-		int x = Integer.parseInt(move.split("\\|")[0].split(",")[0]);
-		int y = Integer.parseInt(move.split("\\|")[0].split(",")[1]);
-		String hitType = move.split("\\|")[1];
+	public void onServerMoveListener(String packetString) {
 		
-		if (hitType.equals("hit")) {
-			enemyBoardPanel.getButtonAt(x, y).setIcon(new ImageIcon(hitShape));
-		}
-		else if (hitType.equals("water")) {
-			enemyBoardPanel.getButtonAt(x, y).setText("X");
+		Packet packet = Packet.fromString(packetString);
+		
+		if (packet.getType() == PacketType.MOVEMENT) {
+			Point p = Protocol.parseMove(packet);
+			
+			System.out.println(p);
+			
+			//player
 		}
 		
-		else if (hitType.equals("sunk")) {
-//			enemyBoardPanel.getButtonAt(x, y); pintar tot el ship vermell
+		if (packet.getType() == PacketType.MOVEMENT_RESULT) {
+			MoveResult moveResult = Protocol.parseMoveResult(packet);
+			System.out.println("Moveresult: " + moveResult);
+			
+			enemyBoardPanel.showMove(moveResult.getPoint(), moveResult.getHitType(), hitShape);
+			
+			if (moveResult.getHitType() == HitType.SUNK) {
+				client.sendGetLastHitShip();
+			}
 			
 		}
-		else { //The server return his move
+		
+		if (packet.getType() == PacketType.GET_LAST_HIT_SHIP_RESULT) {
+			Ship enemyShip = Protocol.parseGetLastShipResponse(packet);
 			
+			for (Point p : enemyShip.getSegmentsPositions())
+				enemyBoardPanel.getButtonAt(p.getX(), p.getY()).setBackground(Color.RED);
+			
+			if (enemyShip.isLastShipStanding()) {
+				JOptionPane.showMessageDialog(this, player.getName() + " Wins!", "", JOptionPane.INFORMATION_MESSAGE);
+				client.close();
+				this.dispose();
+			}
 		}
 	}
 
-	
-	
 	@Override
 	public void onGridEnter(int x, int y) {
 		floatingShip.setX(x);
@@ -532,7 +560,8 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		}
 		
 		else if (e.getActionCommand().equals("resetBoard")) {
-			System.out.println(playerBoardPanel.resetBoard());
+			playerBoardPanel.clearBoard();
+			playerBoardPanel.resetShips();
 			System.out.println(shipZonePanel.reset());
 		}
 		

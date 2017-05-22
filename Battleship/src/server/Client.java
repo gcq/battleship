@@ -6,8 +6,10 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import core.Ship;
 import ui.interfaces.ServerMoveListener;
 import utils.Constants;
+import utils.Enums.HitType;
 
 
 public class Client {
@@ -33,9 +35,7 @@ public class Client {
 				
 			stdIn = new BufferedReader(new InputStreamReader(System.in)); //Input Stream that comes from  the console
 			
-			(new Thread(clientRunnable))
-			.start();
-			
+			(new Thread(clientRunnable)).start();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -52,23 +52,28 @@ public class Client {
 		}
 	}
 	
-	public String sendMove(int x, int y) {
-		String move = String.valueOf(x) + "," + String.valueOf(y);
-		out.println(move); //We send the user input to the server through the output stream we get from the socket
+	public void sendMove(int x, int y) {
+		out.println(Protocol.createMove(x, y)); //We send the user input to the server through the output stream we get from the socket
 //		try {
-//			return in.readLine(); //We receive the message returned from the server through Input stream we get from the socket
+//			return Protocol.parseMoveResult(Packet.fromString(in.readLine())); //We receive the message returned from the server through Input stream we get from the socket
 //		} catch (IOException e) {
 //			e.printStackTrace();
 //		} 
-		return move;
+//		return null;
+	}
+	
+	public void sendGetLastHitShip() {
+		out.println(Protocol.createGetLastHitShip()); //We send the user input to the server through the output stream we get from the socket
+//		try {
+//			return Protocol.parseGetLastShipResponse(Packet.fromString(in.readLine())); //We receive the message returned from the server through Input stream we get from the socket
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		} 
+//		return null;
 	}
 
 	public boolean isConected() {
 		return conected;
-	}
-
-	public void setConected(boolean conected) {
-		this.conected = conected;
 	}
 
 	public PrintWriter getOut() {
@@ -78,9 +83,12 @@ public class Client {
 	public BufferedReader getIn() {
 		return in;
 	}
+
+	public void setConected(boolean conected) {
+		this.conected = conected;
+	}
 	
-	public void setServerMoveListener (ServerMoveListener l) {
+	public void setServerMoveListener(ServerMoveListener l) {
 		clientRunnable.setServerMoveListener(l);
 	}
-
 }

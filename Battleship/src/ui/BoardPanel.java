@@ -20,10 +20,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TooManyListenersException;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -36,6 +38,7 @@ import ui.interfaces.GridEnterListener;
 import ui.interfaces.GridEnterPublisher;
 import ui.interfaces.GridRightClickListener;
 import utils.Enums.Direction;
+import utils.Enums.HitType;
 import utils.Point;
 import core.Ship;
 
@@ -234,24 +237,27 @@ public class BoardPanel extends JPanel implements MouseListener, GridClickPublis
 		enemyPanelListener = l;
 	}
 	
-	public String resetBoard () {
+	public void clearBoard () {
 		for (JButton jButton : btnArray) {
 			jButton.setBackground(buttonColor);
 			jButton.setText("");
 		}
-		return "Board resetejat";
+	}
+	
+	public void resetShips () {
+		this.shipList.clear();
 	}
 	
 	public void redrawBoard() {
-		resetBoard();
+		clearBoard();
 		
-		for (Ship s : shipList) {
+		for (Ship s : this.shipList) {
 			drawShip(s);
 		}
 	}
 	
 	public List<Ship> getShipList() {
-		return shipList;
+		return this.shipList;
 	}
 
 	/**
@@ -311,6 +317,16 @@ public class BoardPanel extends JPanel implements MouseListener, GridClickPublis
 	
 	public void displayShip(int x, int y, Direction direction, int length) {
 		
+	}
+	
+	public void showMove(Point p, HitType h, BufferedImage hitShape) {
+		if (h == HitType.HIT) {
+			getButtonAt(p.getX(), p.getY()).setIcon(new ImageIcon(hitShape));
+		}
+		
+		else if (h == HitType.WATER) {
+			getButtonAt(p.getX(), p.getY()).setText("X");
+		}
 	}
 
 	public List<JButton> getBtnArray() {
