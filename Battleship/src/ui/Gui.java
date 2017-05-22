@@ -48,6 +48,7 @@ import core.Ship;
 import javax.swing.JLabel;
 
 import java.awt.Font;
+import javax.swing.JSeparator;
 
 public class Gui extends JFrame implements GridClickListener, ActionListener, MouseMotionListener, GridRightClickListener, GridEnterListener, EnemyPanelClickListener{
 
@@ -59,6 +60,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 	private CardLayout cardLayout;
 	private JMenuBar menuBar;
 	private JMenuItem editProfile;
+	private JMenuItem exitItem;
 	private JPanel gamePane;
 	private BoardPanel playerBoardPanel;
 	private BoardPanel enemyBoardPanel;
@@ -92,6 +94,8 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 	private static final Color SHAPE_COLOR = Color.RED;
 	private static final int GAP = 4;
 	private JLabel usernameGameLabel;
+	private JSeparator separator;
+	private JMenuItem restartItem;
 
 	/**
 	 * Launch the application.
@@ -236,13 +240,6 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		JMenu gameMenu = new JMenu("Game");
 		menuBar.add(gameMenu);
 		
-		JMenuItem startMenu = new JMenuItem("Start");
-		startMenu.setMnemonic(startMenu.getText().charAt(0));
-		startMenu.setActionCommand(startMenu.getText());
-		startMenu.addActionListener(this);
-		startMenu.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
-		gameMenu.add(startMenu);
-		
 		JMenuItem loadMenu = new JMenuItem("Load");
 		loadMenu.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, InputEvent.CTRL_MASK));
 		gameMenu.add(loadMenu);
@@ -251,6 +248,24 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		saveMenu.setIcon(new ImageIcon(Gui.class.getResource("/img/download-button.png")));
 		saveMenu.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.CTRL_MASK));
 		gameMenu.add(saveMenu);
+		
+		separator = new JSeparator();
+		gameMenu.add(separator);
+		
+		JMenuItem startMenu = new JMenuItem("Start");
+		startMenu.setMnemonic(startMenu.getText().charAt(0));
+		startMenu.setActionCommand(startMenu.getText());
+		startMenu.addActionListener(this);
+		startMenu.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
+		gameMenu.add(startMenu);
+		
+		restartItem = new JMenuItem("Restart");
+		gameMenu.add(restartItem);
+		
+		exitItem = new JMenuItem("Exit");
+		exitItem.addActionListener(this);
+		exitItem.setActionCommand(exitItem.getText());
+		gameMenu.add(exitItem);
 		
 		JMenu profileMenu = new JMenu("Profile");
 		profileMenu.setSize(Constants.profilePanelSize);
@@ -489,6 +504,10 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 			usernameGameLabel.setText(userPanel.getUsername());
 		}
 		
+		else if (e.getActionCommand().equals("Exit")) {
+			this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
+		}
+		
 		else if (e.getActionCommand().equals("Start")) {
 			
 			if (playerBoardPanel.getShipList().size() != 5) {
@@ -550,6 +569,23 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		return "Game started";
 	}
 	
+	public void closeWindow () {
+		Object[] options = {
+				"Accept",
+				"Cancel"
+			};
+		
+		int result = JOptionPane.showOptionDialog(self, "Are you sure about this?", "Exiting...", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+		if (result == JOptionPane.YES_OPTION) {
+			if (client.isConected())
+				client.close(); // tanquem totes les conexions i Streams del client
+			
+			setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		}
+		else
+			setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+	}
+	
 	public static void openWebpage(URI uri) {
 	    Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
 	    if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
@@ -574,15 +610,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		@Override
 		public void windowClosing(WindowEvent e) {
 			
-			int result = JOptionPane.showConfirmDialog(null, "Are you sure about this?", "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-			if (result == JOptionPane.YES_OPTION) {
-				if (client.isConected())
-					client.close(); // tanquem totes les conexions i Streams del client
-				
-				setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-			}
-			else
-				setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+			closeWindow();
 		}
 	}
 
