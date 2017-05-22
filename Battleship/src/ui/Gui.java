@@ -364,6 +364,8 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 	public void toggleTurns () {
 		setMyTurn(!myTurn);
 		setHisTurn(!hisTurn);
+		yourTurn.setVisible(isMyTurn());
+		enemyTurn.setVisible(isHisTurn());
 	}
 	
 	public boolean isMyTurn() {
@@ -387,9 +389,9 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		System.out.println("Enemy Panel: Clicked on [" + x + ", " + y + "]");
 		client.sendMove(x, y);
 		
+		enemyBoardPanel.setButtonsEnabled(false);
+		
 		toggleTurns();
-		yourTurn.setVisible(isMyTurn());
-		enemyTurn.setVisible(isHisTurn());
 	}
 	
 	@Override
@@ -402,12 +404,16 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 			
 			System.out.println(p);
 			
+			toggleTurns();
+			
 			//player
 		}
 		
 		if (packet.getType() == PacketType.MOVEMENT_RESULT) {
 			MoveResult moveResult = Protocol.parseMoveResult(packet);
 			System.out.println("Moveresult: " + moveResult);
+			
+			enemyBoardPanel.setButtonsEnabled(true);
 			
 			enemyBoardPanel.showMove(moveResult.getPoint(), moveResult.getHitType(), hitShape);
 			
@@ -611,8 +617,12 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 	class MyWindowAdapter extends WindowAdapter {
 		@Override
 		public void windowClosing(WindowEvent e) {
+			Object[] options = {
+				"Accept",
+				"Cancel"
+			};
 			
-			int result = JOptionPane.showConfirmDialog(null, "Are you sure about this?", "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+			int result = JOptionPane.showOptionDialog(self, "Are you sure about this?", "Confirm", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
 			if (result == JOptionPane.YES_OPTION) {
 				if (client.isConected())
 					client.close(); // tanquem totes les conexions i Streams del client

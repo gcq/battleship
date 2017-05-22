@@ -180,6 +180,8 @@ public class BoardPanel extends JPanel implements MouseListener, GridClickPublis
 	
 	@Override
 	public void mouseClicked(MouseEvent e) {
+		if (!((JButton) e.getSource()).isEnabled())
+			return;
 		
 		if (e.getButton() == MouseEvent.BUTTON1) {
 			Point p = getCoordsFromJButton((JButton) e.getSource());
@@ -260,6 +262,12 @@ public class BoardPanel extends JPanel implements MouseListener, GridClickPublis
 		return this.shipList;
 	}
 
+	public void setButtonsEnabled(boolean enabled) {
+		for (JButton jButton : btnArray) {
+			jButton.setEnabled(enabled);
+		}
+	}
+	
 	/**
 	 * 
 	 * @param ship
