@@ -291,7 +291,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 		
 		yourTurn = new JLabel("Your Turn");
 		yourTurn.setFont(new Font("Tahoma", Font.PLAIN, 30));
-		yourTurn.setBounds(192, 24, 169, 29);
+		yourTurn.setBounds(212, 24, 169, 29);
 		yourTurn.setVisible(false);
 		gamePane.add(yourTurn);
 		
