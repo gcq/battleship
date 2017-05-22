@@ -122,21 +122,23 @@ class ServerRunnable implements Runnable {
 				int x = Integer.parseInt(inputLine.split(",")[0]);
 				int y = Integer.parseInt(inputLine.split(",")[1]);
 				
-				String messageToSend = getHitType(x, y); // decidir que es aquesta jugada; aigua, tocado, hundido
+				String hitType = getHitType(x, y); // decidir que es aquesta jugada; aigua, tocado, hundido
+				String messageToSend = x + "," + y + "|" + hitType;
+				
 				//We send the modified data to the client with the PrintWriter variable.
 				out.println(messageToSend);
 				System.out.println("Message sent: " + messageToSend);
 				System.out.println(player);
 				
-//				try { Codi per enviar al client un moviment random
-//					Thread.sleep(4000);
-//					Random rand = new Random();
-//					String randomMove = String.valueOf(rand.nextInt(9)) + "," + String.valueOf(rand.nextInt(9));
-//					out.println(randomMove);
-//					System.out.println("Server move sent: " + randomMove);
-//				} catch (InterruptedException e) {
-//					e.printStackTrace();
-//				}
+				try { //Codi per enviar al client un moviment random
+					Thread.sleep(4000);
+					Random rand = new Random();
+					String randomMove = String.valueOf(rand.nextInt(9)) + "," + String.valueOf(rand.nextInt(9));
+					out.println(randomMove);
+					System.out.println("Server move sent: " + randomMove);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 				
 			}
 		} catch (IOException e) {

@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import ui.interfaces.ServerMoveListener;
 import utils.Constants;
 
 
@@ -14,8 +15,13 @@ public class Client {
 	private PrintWriter out;
 	private BufferedReader in;
 	private BufferedReader stdIn;
+	ClientRunnable clientRunnable;
 	
 	private boolean conected; 
+	
+	public Client() {
+		clientRunnable = new ClientRunnable(this);
+	}
 	
 	public void open() {
 		
@@ -26,6 +32,10 @@ public class Client {
 			in = new BufferedReader(new InputStreamReader(echoSocket.getInputStream())); //Input Stream that we get from the socket to receive data from the server
 				
 			stdIn = new BufferedReader(new InputStreamReader(System.in)); //Input Stream that comes from  the console
+			
+			(new Thread(clientRunnable))
+			.start();
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -45,12 +55,12 @@ public class Client {
 	public String sendMove(int x, int y) {
 		String move = String.valueOf(x) + "," + String.valueOf(y);
 		out.println(move); //We send the user input to the server through the output stream we get from the socket
-		try {
-			return in.readLine(); //We receive the message returned from the server through Input stream we get from the socket
-		} catch (IOException e) {
-			e.printStackTrace();
-		} 
-		return null;
+//		try {
+//			return in.readLine(); //We receive the message returned from the server through Input stream we get from the socket
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		} 
+		return move;
 	}
 
 	public boolean isConected() {
@@ -69,6 +79,8 @@ public class Client {
 		return in;
 	}
 	
-	
+	public void setServerMoveListener (ServerMoveListener l) {
+		clientRunnable.setServerMoveListener(l);
+	}
 
 }

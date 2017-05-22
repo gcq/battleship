@@ -26,6 +26,7 @@ public class ClientRunnable implements Runnable, ServerMovePublisher{
 		try {
 			while (true) {
 				inputLine = client.getIn().readLine();
+				System.out.println("inputLineClient: " + inputLine);
 				serverMoveListener.onServerMoveListener(inputLine);
 			}
 		} catch (IOException e) {

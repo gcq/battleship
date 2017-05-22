@@ -50,7 +50,7 @@ import javax.swing.JLabel;
 
 import java.awt.Font;
 
-public class Gui extends JFrame implements GridClickListener, ActionListener, MouseMotionListener, GridRightClickListener, GridEnterListener, EnemyPanelClickListener{
+public class Gui extends JFrame implements GridClickListener, ActionListener, MouseMotionListener, GridRightClickListener, GridEnterListener, EnemyPanelClickListener, ServerMoveListener{
 
 	private UserPanel userPanel;
 	private JPanel contentPane;
@@ -352,30 +352,55 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 	@Override
 	public void onEnemyPanelClickListener(int x, int y) {
 		System.out.println("Enemy Panel: Clicked on [" + x + ", " + y + "]");
-		String moveResult = client.sendMove(x, y);
+		client.sendMove(x, y);
+//		String moveResult = client.sendMove(x, y);
 		yourTurn.setVisible(false);
 		enemyTurn.setVisible(true);
+//		
+//		System.out.println("Moveresult: " + moveResult);
+//		
+//		if (moveResult.equals("hit")) {
+//			enemyBoardPanel.getButtonAt(x, y).setIcon(new ImageIcon(hitShape));
+//		}
+//		else if (moveResult.equals("water")) {
+//			enemyBoardPanel.getButtonAt(x, y).setText("X");
+//		}
+//		
+//		else if (moveResult.equals("sunk")) {
+////			enemyBoardPanel.getButtonAt(x, y); pintar tot el ship vermell
+//			
+//		}
+//		else { //The server return his move
+//			
+//		}
 		
-		System.out.println("Moveresult: " + moveResult);
 		
-		if (moveResult.equals("hit")) {
+//		System.out.println("EnemyBoard ShipList: " + enemyBoardPanel.getShipList());
+	}
+	
+	@Override
+	public void onServerMoveListener(String move) {
+		System.out.println("WTFSPLIT: " + move.split("\\|")[0]);
+		int x = Integer.parseInt(move.split("\\|")[0].split(",")[0]);
+		int y = Integer.parseInt(move.split("\\|")[0].split(",")[1]);
+		String hitType = move.split("\\|")[1];
+		
+		if (hitType.equals("hit")) {
 			enemyBoardPanel.getButtonAt(x, y).setIcon(new ImageIcon(hitShape));
 		}
-		else if (moveResult.equals("water")) {
+		else if (hitType.equals("water")) {
 			enemyBoardPanel.getButtonAt(x, y).setText("X");
 		}
 		
-		else if (moveResult.equals("sunk")) {
+		else if (hitType.equals("sunk")) {
 //			enemyBoardPanel.getButtonAt(x, y); pintar tot el ship vermell
 			
 		}
 		else { //The server return his move
 			
 		}
-		
-		
-//		System.out.println("EnemyBoard ShipList: " + enemyBoardPanel.getShipList());
 	}
+
 	
 	
 	@Override
@@ -485,8 +510,11 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 				
 				preferences.setEnabled(false);
 				
+				
 				client.setConected(true);
+				client.setServerMoveListener(this);
 				client.open();
+
 				
 			}
 		}
@@ -579,6 +607,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 	public void mouseMoved(MouseEvent e) {
 		System.out.println(e.getComponent());
 	}
+
 
 	
 }
