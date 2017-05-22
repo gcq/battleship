@@ -99,10 +99,15 @@ public class ShipZonePanel extends JPanel implements  MouseListener, MouseMotion
 	
 	public void initShips () {
 		Ship portaviones = new Ship(portavionesLength, Direction.HORIZONTAL);
+		portaviones.setId(0);
 		Ship acorazado = new Ship(acorazadoLength, Direction.HORIZONTAL);
+		acorazado.setId(1);
 		Ship crucero = new Ship(cruceroLength, Direction.HORIZONTAL);
+		crucero.setId(2);
 		Ship submarino = new Ship(submarinoLength, Direction.HORIZONTAL);
+		submarino.setId(3);
 		Ship destructor = new Ship(destructorLength, Direction.HORIZONTAL);
+		destructor.setId(4);
 		this.shipArray.add(portaviones);
 		this.shipArray.add(acorazado);
 		this.shipArray.add(crucero);

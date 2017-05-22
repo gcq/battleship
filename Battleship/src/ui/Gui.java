@@ -323,8 +323,6 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Mo
 	public void onGridClick(int x, int y) {
 		System.out.println("Clicked on [" + x + ", " + y + "]");
 		
-		System.out.println(playerBoardPanel.getShipList().size());
-		
 		Ship clickedShip = shipZonePanel.getSelectedShip();
 		if (clickedShip != null ) {
 			
