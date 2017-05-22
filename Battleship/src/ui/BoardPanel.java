@@ -97,7 +97,7 @@ public class BoardPanel extends JPanel implements MouseListener, GridClickPublis
 		
 		shipList = new ArrayList<>();
 		
-		buttonColor = Color.BLUE;
+		buttonColor = new Color(40, 122, 255);
 		shipColor = Color.black;
 		
 		setAlignmentY(Component.TOP_ALIGNMENT);
@@ -288,6 +288,9 @@ public class BoardPanel extends JPanel implements MouseListener, GridClickPublis
 	
 	public boolean drawShip(Ship ship) {
 		
+		Color shipColor = Color.getHSBColor((ship.getId() / 5f) - 0.07f, 1f, 1f);
+		System.out.println(ship.getId() + " " + shipColor);
+		
 		if (ship.getDirection() == Direction.HORIZONTAL) {
 			if (isValidPosition(ship)) {
 				for (int x = ship.getX(); x < ship.getX() + ship.getLength(); x++) {
@@ -311,8 +314,11 @@ public class BoardPanel extends JPanel implements MouseListener, GridClickPublis
 	}
 	
 	public boolean addShip(Ship ship) {
-		shipList.add(ship);
-		return drawShip(ship);
+		boolean worked = drawShip(ship);
+		
+		if (worked)
+			shipList.add(ship);
+		return worked;
 	}
 	
 	public void displayShip(int x, int y, Direction direction, int length) {

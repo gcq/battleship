@@ -18,8 +18,6 @@ import core.exceptions.InvalidShipPlacementException;
 import server.Packet.PacketType;
 
 
-
-
 public class Server {
 	static int port = 4321;
 	
