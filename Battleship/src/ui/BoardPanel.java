@@ -61,8 +61,6 @@ public class BoardPanel extends JPanel implements GridClickPublisher, EnemyPanel
 	
 	Player player;
 	
-	List<Ship> shipList;
-	
 	GridClickListener clickListener = new GridClickListener() {
 		
 		@Override
@@ -102,8 +100,6 @@ public class BoardPanel extends JPanel implements GridClickPublisher, EnemyPanel
 	public BoardPanel () {
 		
 		player = new Player(new Board(10, 10)); 
-		
-		shipList = new ArrayList<>();
 		
 		buttonColor = new Color(40, 122, 255);
 		shipColor = Color.black;
@@ -205,13 +201,6 @@ public class BoardPanel extends JPanel implements GridClickPublisher, EnemyPanel
 		enemyPanelListener = l;
 	}
 	
-	public void clearBoard () {
-		for (JButton jButton : btnArray) {
-			jButton.setBackground(buttonColor);
-			jButton.setText("");
-		}
-	}
-	
 	public void setButtonsEnabled(boolean enabled) {
 		for (JButton jButton : btnArray) {
 			jButton.setEnabled(enabled);
@@ -229,7 +218,14 @@ public class BoardPanel extends JPanel implements GridClickPublisher, EnemyPanel
 	}
 	
 	public void resetShips () {
-		this.shipList.clear();
+		player.clearBoard();
+	}
+	
+	public void clearBoard () {
+		for (JButton jButton : btnArray) {
+			jButton.setBackground(buttonColor);
+			jButton.setText("");
+		}
 	}
 	
 	public void redrawBoard() {
@@ -241,7 +237,7 @@ public class BoardPanel extends JPanel implements GridClickPublisher, EnemyPanel
 	}
 	
 	public List<Ship> getShipList() {
-		return this.shipList;
+		return player.getShips();
 	}
 
 	/**
@@ -253,46 +249,30 @@ public class BoardPanel extends JPanel implements GridClickPublisher, EnemyPanel
 		return player.checkShipPlacement(ship);
 	}
 	
-	public boolean drawShip(Ship ship) {
+	public void drawShip(Ship ship) {
 		
 		Color shipColor = Color.getHSBColor((ship.getId() / 5f) - 0.07f, 1f, 1f);
-		System.out.println(ship.getId() + " " + shipColor);
 		
 		if (ship.getDirection() == Direction.HORIZONTAL) {
-			if (isValidPosition(ship)) {
-				for (int x = ship.getX(); x < ship.getX() + ship.getLength(); x++) {
-					getButtonAt(x, ship.getY()).setBackground(shipColor);
-				}
+			for (int x = ship.getX(); x < ship.getX() + ship.getLength() && x < 10; x++) {
+				getButtonAt(x, ship.getY()).setBackground(shipColor);
 			}
-			else
-				return false;
 			
 		} else if (ship.getDirection() == Direction.VERTICAL) {
-			if (isValidPosition(ship)) {
-				for (int y = ship.getY(); y < ship.getY() + ship.getLength(); y++) {
-					getButtonAt(ship.getX(), y).setBackground(shipColor);
-				}
+			for (int y = ship.getY(); y < ship.getY() + ship.getLength() && y < 10; y++) {
+				getButtonAt(ship.getX(), y).setBackground(shipColor);
 			}
-			else 
-				return false;
 		}
-		
-		return true;
 	}
 	
 	public boolean addShip(Ship ship) {
 		try {
 			player.addShip(ship);
-			return true;
 		} catch (InvalidShipPlacementException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			return false;
 		}
-		return false;
-	}
-	
-	public void displayShip(int x, int y, Direction direction, int length) {
 		
+		return true;
 	}
 
 	public List<JButton> getBtnArray() {

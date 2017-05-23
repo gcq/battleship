@@ -62,15 +62,17 @@ public class Player {
 	}
 	
 	public boolean checkShipPlacement(Ship s) {
-		int startAxis = -100;
+
+		if (s.getDirection() == Direction.HORIZONTAL) {
+			if((s.getX() + s.getLength()) > board.getW()) {
+				return false;
+			}
 		
-		if (s.getDirection() == Direction.HORIZONTAL)
-			startAxis = s.getX();
-		else if (s.getDirection() == Direction.VERTICAL)
-			startAxis = s.getY();
-		
-		if (startAxis + s.getLength() > 10)
-			return false;
+		} else if (s.getDirection() == Direction.VERTICAL) {
+			if((s.getY() + s.getLength()) > board.getH()) {
+				return false;
+			}
+		}
 		
 		for (Point p : s.getSegmentsPositions())
 			if (board.get(p.getX(), p.getY()) != 0)

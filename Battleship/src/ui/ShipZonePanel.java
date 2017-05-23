@@ -128,13 +128,12 @@ public class ShipZonePanel extends JPanel{
 		this.selectedShip = selectedShip;
 	}
 	
-	public String removeShip (Ship ship) {
-		System.out.println("index: " + this.shipArray.indexOf(ship));
+	public void removeShip (Ship ship) {
+		System.out.println("Removing ship with index index: " + this.shipArray.indexOf(ship));
 		remove(this.btnArray.get(this.shipArray.indexOf(ship)));
-		return "Vaixell " + ship + " esborrat del panell";
 	}
 	
-	public String reset () {
+	public void reset () {
 		int gridX = 0;
 		int gridY = 0;
 		
@@ -150,7 +149,6 @@ public class ShipZonePanel extends JPanel{
 		System.out.println("Init shipsArray: " + shipArray);
 		
 		System.out.println("btnArray: " + btnArray);
-		return "ShipZonePanel reset";
 	}
 	
 	public void removeAllShips () {
@@ -189,8 +187,6 @@ public class ShipZonePanel extends JPanel{
 			
 			gridY++;
 			btnArray.add(button);
-			System.out.println("gridX: " + gridX + " | " + "gridY: " + gridY);
-			System.out.println("Button Width: " + gbc_button.gridwidth);
 		}
 		repaint();
 	}

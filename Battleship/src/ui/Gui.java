@@ -48,6 +48,7 @@ import utils.Enums.Direction;
 import utils.Enums.GameMode;
 import utils.Enums.HitType;
 import utils.Point;
+import core.Board;
 import core.Player;
 import core.Ship;
 
@@ -93,8 +94,6 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Gr
 	GameMode gameMode;
 	
 	BufferedImage hitShape;
-	
-	Point lastClick;
 	
 	Gui self;
 	
@@ -211,7 +210,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Gr
 		setHisTurn(false);
 		setMyTurn(true);
 		
-		player = new Player();
+		player = new Player(new Board(10, 10));
 		client = new Client();
 //		clientRunnable = new ClientRunnable(client);
 		
@@ -358,17 +357,12 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Gr
 		
 		Ship clickedShip = shipZonePanel.getSelectedShip();
 		if (clickedShip != null ) {
-			
-			Point currentClick = new Point(x, y);
-	
-			System.out.println("from " + lastClick + " to " + currentClick);
 		
 			Ship ship = new Ship(x, y, clickedShip.getLength(), floatingShip.getDirection(), clickedShip.getId());
 			System.out.println(ship);
 			
-			playerBoardPanel.redrawBoard();
 			if (playerBoardPanel.addShip(ship)) { // Si s'afegeix correctament (posicio correcta) borrem del panell
-				System.out.println(shipZonePanel.removeShip(clickedShip));
+				shipZonePanel.removeShip(clickedShip);
 				shipZonePanel.setSelectedShip(null);
 				
 				floatingShip.setDirection(Direction.HORIZONTAL);
@@ -378,6 +372,8 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Gr
 			}
 			repaint();
 		}
+		
+		playerBoardPanel.redrawBoard();
 	}
 	
 	public void toggleTurns () {
@@ -424,7 +420,9 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Gr
 			
 			Point p = Protocol.parseMove(packet);
 			
-			System.out.println(p);
+			HitType hp = player.hit(p.getX(), p.getY());
+			
+			playerBoardPanel.showMove(p, hp, hitShape);
 			
 			toggleTurns();
 			
@@ -474,7 +472,9 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Gr
 		playerBoardPanel.redrawBoard();
 		playerBoardPanel.drawShip(floatingShip);
 		
-		System.out.println(floatingShip);
+		if (!playerBoardPanel.isValidPosition(floatingShip))
+			System.out.println("Posicio invalida. Mostrar algo en la GUI");
+			
 	}
 
 	@Override
@@ -595,7 +595,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Gr
 		else if (e.getActionCommand().equals("resetBoard")) {
 			playerBoardPanel.clearBoard();
 			playerBoardPanel.resetShips();
-			System.out.println(shipZonePanel.reset());
+			shipZonePanel.reset();
 		}
 		
 		else if (e.getActionCommand().equals("About")) {
