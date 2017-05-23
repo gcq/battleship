@@ -1,6 +1,8 @@
 package core;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import utils.Enums.Direction;
@@ -28,6 +30,14 @@ public class Player {
 				this.board.set(x, y, 0);
 		
 		ships = new HashMap<>();
+	}
+	
+	public List<Ship> getShips () {
+		List<Ship> ships = new ArrayList<Ship>();
+		for (Ship ship : this.ships.values()) {
+			ships.add(ship);
+		}
+		return ships;
 	}
 	
 	public void addShip(Ship ship) throws InvalidShipPlacementException {

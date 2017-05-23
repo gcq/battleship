@@ -41,7 +41,10 @@ import ui.interfaces.GridRightClickListener;
 import utils.Enums.Direction;
 import utils.Enums.HitType;
 import utils.Point;
+import core.Board;
+import core.Player;
 import core.Ship;
+import core.exceptions.InvalidShipPlacementException;
 
 
 public class BoardPanel extends JPanel implements GridClickPublisher, EnemyPanelClickPublisher {
@@ -55,6 +58,8 @@ public class BoardPanel extends JPanel implements GridClickPublisher, EnemyPanel
 	String[] topBtnsText = {"1","2","3","4","5","6","7","8","9","10"};
 	String[] leftBtnsText = {"A","B","C","D","E","F","G","H","I","J"};
 	private List<JButton> btnArray;
+	
+	Player player;
 	
 	List<Ship> shipList;
 	
@@ -95,6 +100,8 @@ public class BoardPanel extends JPanel implements GridClickPublisher, EnemyPanel
 	
 	
 	public BoardPanel () {
+		
+		player = new Player(new Board(10, 10)); 
 		
 		shipList = new ArrayList<>();
 		
@@ -228,7 +235,7 @@ public class BoardPanel extends JPanel implements GridClickPublisher, EnemyPanel
 	public void redrawBoard() {
 		clearBoard();
 		
-		for (Ship s : this.shipList) {
+		for (Ship s : player.getShips()) {
 			drawShip(s);
 		}
 	}
@@ -243,24 +250,7 @@ public class BoardPanel extends JPanel implements GridClickPublisher, EnemyPanel
 	 * @return Retorna true si el vaixell es pot posicionar
 	 */
 	public boolean isValidPosition (Ship ship) {
-		if (ship.getDirection() == Direction.HORIZONTAL) {
-			if (ship.getX() + ship.getLength() > 10)
-				return false;
-			
-			for (int x = ship.getX(); x < ship.getX() + ship.getLength(); x++) {
-				if (getButtonAt(x, ship.getY()).getBackground() == shipColor)
-					return false;
-			}
-		} else if (ship.getDirection() == Direction.VERTICAL) {
-			if (ship.getY() + ship.getLength() > 10)
-				return false;
-			
-			for (int y = ship.getY(); y < ship.getY() + ship.getLength(); y++) {
-				if (getButtonAt(y, ship.getX()).getBackground() == shipColor)
-					return false;
-			}
-		}
-		return true;
+		return player.checkShipPlacement(ship);
 	}
 	
 	public boolean drawShip(Ship ship) {
@@ -291,11 +281,14 @@ public class BoardPanel extends JPanel implements GridClickPublisher, EnemyPanel
 	}
 	
 	public boolean addShip(Ship ship) {
-		boolean worked = drawShip(ship);
-		
-		if (worked)
-			shipList.add(ship);
-		return worked;
+		try {
+			player.addShip(ship);
+			return true;
+		} catch (InvalidShipPlacementException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
 	}
 	
 	public void displayShip(int x, int y, Direction direction, int length) {
