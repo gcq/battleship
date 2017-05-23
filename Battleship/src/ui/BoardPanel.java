@@ -234,6 +234,8 @@ public class BoardPanel extends JPanel implements GridClickPublisher, EnemyPanel
 		for (Ship s : player.getShips()) {
 			drawShip(s);
 		}
+		
+		//Dibuixar cada cela amb el valor tocado o agua
 	}
 	
 	public List<Ship> getShipList() {

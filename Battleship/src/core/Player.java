@@ -30,6 +30,16 @@ public class Player {
 		ships = new HashMap<>();
 	}
 	
+	public List<Point> getAllBoardPoints() {
+		List<Point> pts = new ArrayList<>();
+		
+		for (int y = 0; y < this.board.h; y++)
+			for (int x = 0; x < this.board.w; x++)
+				pts.add(new Point(x, y));
+		
+		return pts;
+	}
+	
 	public void clearBoard() {
 		for (int y = 0; y < this.board.h; y++)
 			for (int x = 0; x < this.board.w; x++)
