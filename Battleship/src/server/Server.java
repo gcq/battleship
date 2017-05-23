@@ -79,7 +79,7 @@ public class Server {
 				i++;
 				
 			} catch (InvalidShipPlacementException e) {
-				e.printStackTrace();
+				System.out.println("Invalid movement. Retrying...");
 			}
 		}
 		
