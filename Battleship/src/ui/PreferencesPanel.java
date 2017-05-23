@@ -31,7 +31,7 @@ public class PreferencesPanel extends JPanel{
 		setLayout(null);
 		
 		JPanel buttonPanel = new JPanel();
-		buttonPanel.setBounds(28, 220, 201, 38);
+		buttonPanel.setBounds(10, 211, 201, 38);
 		add(buttonPanel);
 		
 		closePrefBtn = new JButton("Close");

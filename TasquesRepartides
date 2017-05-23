@@ -1,0 +1,22 @@
+Guillem: 
+
+- Core del joc
+- Excepcions al fer un posicionament incorrecte i iniciar el joc sense tots els vaixells posicionats
+- Interficies
+- Right click listener
+- Rotació dels vaixells
+- Preview del posicionament dels vaixells
+- Protocol per a enviar i rebre paquets client-servidor
+Victor: 
+
+- Gui
+- Maquetació menus, icones, accelerators...
+- Persistencia de dades del usuari
+- Preferences Panel
+- User Panel
+- ShipZone panel
+- Board Panel
+- Posicionament dels vaixells
+- Warnings
+- Win game
+- Conexió client-servidor

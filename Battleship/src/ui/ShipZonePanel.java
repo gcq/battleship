@@ -74,7 +74,7 @@ class ShipPanelButton extends JButton {
 	}
 }
 
-public class ShipZonePanel extends JPanel implements  MouseListener, MouseMotionListener, FocusListener{
+public class ShipZonePanel extends JPanel{
 	
 	private BoardPanel boardPanel;
 	
@@ -170,7 +170,9 @@ public class ShipZonePanel extends JPanel implements  MouseListener, MouseMotion
 		gbc_button.gridx = gridX;
 		gbc_button.gridy = gridY;
 		gbc_button.fill=GridBagConstraints.BOTH;
-		button.addMouseListener(this);
+		
+		button.addMouseListener(new MyMouseAdapter());
+		
 		button.setActionCommand(gridX + "," + gridY);
 		add(button, gbc_button);
 		
@@ -221,61 +223,16 @@ public class ShipZonePanel extends JPanel implements  MouseListener, MouseMotion
 		btnArray = new ArrayList<JButton>();
 		
 		initShipsBtnArray();
-
-//		addFocusListener(this);
-//		addMouseMotionListener(this);
-//		addMouseListener(this);
+	}
+	
+	class MyMouseAdapter extends MouseAdapter{
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			super.mouseClicked(e);
+			System.out.println("component: " + e.getComponent());
+			System.out.println("selected ship: " + shipArray.get(btnArray.indexOf(e.getComponent())));
+			setSelectedShip(shipArray.get(btnArray.indexOf(e.getComponent())));
+		}
 	}
 
-	@Override
-	public void mouseDragged(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseMoved(MouseEvent e) {
-		
-	}
-
-	@Override
-	public void focusGained(FocusEvent e) {
-	}
-
-	@Override
-	public void focusLost(FocusEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseClicked(MouseEvent e) {
-		System.out.println("component: " + e.getComponent());
-		System.out.println("selected ship: " + shipArray.get(btnArray.indexOf(e.getComponent())));
-		setSelectedShip(shipArray.get(btnArray.indexOf(e.getComponent())));
-	}
-
-	@Override
-	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
 }

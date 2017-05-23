@@ -1,3 +1,4 @@
+
 package ui;
 
 import java.awt.Color;
@@ -43,7 +44,7 @@ import utils.Point;
 import core.Ship;
 
 
-public class BoardPanel extends JPanel implements MouseListener, GridClickPublisher, EnemyPanelClickPublisher {
+public class BoardPanel extends JPanel implements GridClickPublisher, EnemyPanelClickPublisher {
 	
 	DropTarget dropTarget;
 	
@@ -124,7 +125,9 @@ public class BoardPanel extends JPanel implements MouseListener, GridClickPublis
 				gbc_button.gridx = gridX+1;
 				gbc_button.gridy = gridY+1;
 				button.setActionCommand(gridX + "," + gridY);
-				button.addMouseListener(this);
+				
+				button.addMouseListener(new MyMouseAdapter());
+				
 				add(button, gbc_button);
 				gridY++;
 				btnArray.add(button);
@@ -178,50 +181,6 @@ public class BoardPanel extends JPanel implements MouseListener, GridClickPublis
 		return new Point(x, y);
 	}
 	
-	@Override
-	public void mouseClicked(MouseEvent e) {
-		if (!((JButton) e.getSource()).isEnabled())
-			return;
-		
-		if (e.getButton() == MouseEvent.BUTTON1) {
-			Point p = getCoordsFromJButton((JButton) e.getSource());
-			
-			clickListener.onGridClick(p.getX(), p.getY());
-			enemyPanelListener.onEnemyPanelClickListener(p.getX(), p.getY());
-			
-		} else if (e.getButton() == MouseEvent.BUTTON3) {
-			Point p = getCoordsFromJButton((JButton) e.getSource());
-			
-			rightClickListener.onGridRightClick(p.getX(), p.getY());
-        }
-		
-	}
-
-	@Override
-	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent e) {
-		Point p = getCoordsFromJButton((JButton) e.getSource());
-		
-		enterListener.onGridEnter(p.getX(), p.getY());
-	}
-
-	@Override
-	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-	
 	public void setGridClickListener(GridClickListener l) {
 		clickListener = l;
 	}
@@ -246,6 +205,22 @@ public class BoardPanel extends JPanel implements MouseListener, GridClickPublis
 		}
 	}
 	
+	public void setButtonsEnabled(boolean enabled) {
+		for (JButton jButton : btnArray) {
+			jButton.setEnabled(enabled);
+		}
+	}
+	
+	public void showMove(Point p, HitType h, BufferedImage hitShape) {
+		if (h == HitType.HIT) {
+			getButtonAt(p.getX(), p.getY()).setIcon(new ImageIcon(hitShape));
+		}
+		
+		else if (h == HitType.WATER) {
+			getButtonAt(p.getX(), p.getY()).setText("X");
+		}
+	}
+	
 	public void resetShips () {
 		this.shipList.clear();
 	}
@@ -262,12 +237,6 @@ public class BoardPanel extends JPanel implements MouseListener, GridClickPublis
 		return this.shipList;
 	}
 
-	public void setButtonsEnabled(boolean enabled) {
-		for (JButton jButton : btnArray) {
-			jButton.setEnabled(enabled);
-		}
-	}
-	
 	/**
 	 * 
 	 * @param ship
@@ -332,16 +301,6 @@ public class BoardPanel extends JPanel implements MouseListener, GridClickPublis
 	public void displayShip(int x, int y, Direction direction, int length) {
 		
 	}
-	
-	public void showMove(Point p, HitType h, BufferedImage hitShape) {
-		if (h == HitType.HIT) {
-			getButtonAt(p.getX(), p.getY()).setIcon(new ImageIcon(hitShape));
-		}
-		
-		else if (h == HitType.WATER) {
-			getButtonAt(p.getX(), p.getY()).setText("X");
-		}
-	}
 
 	public List<JButton> getBtnArray() {
 		return btnArray;
@@ -355,4 +314,29 @@ public class BoardPanel extends JPanel implements MouseListener, GridClickPublis
 		return btnArray.get(y + x * 10);
 	}
 
+	class MyMouseAdapter extends MouseAdapter{
+		@Override
+		public void mouseEntered(MouseEvent e) {
+			super.mouseEntered(e);
+			Point p = getCoordsFromJButton((JButton) e.getSource());
+			enterListener.onGridEnter(p.getX(), p.getY());
+		}
+		
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			super.mouseClicked(e);
+			if (e.getButton() == MouseEvent.BUTTON1) {
+				Point p = getCoordsFromJButton((JButton) e.getSource());
+				
+				clickListener.onGridClick(p.getX(), p.getY());
+				enemyPanelListener.onEnemyPanelClickListener(p.getX(), p.getY());
+				
+			} else if (e.getButton() == MouseEvent.BUTTON3) {
+				Point p = getCoordsFromJButton((JButton) e.getSource());
+				
+				rightClickListener.onGridRightClick(p.getX(), p.getY());
+	        }
+		}
+	}
 }
+
