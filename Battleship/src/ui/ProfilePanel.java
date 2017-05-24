@@ -9,6 +9,12 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * 
+ * @author Victor
+ * Panell que permet al usuari modificar les seves dades
+ *
+ */
 public class ProfilePanel extends JPanel{
 	
 	private JTextField userNameTextField;

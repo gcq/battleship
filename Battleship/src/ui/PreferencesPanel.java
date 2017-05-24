@@ -14,6 +14,12 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 
+/**
+ * 
+ * @author Victor
+ * Panell que permet al usuari definir el temps per torn (infinit o fixe) i el mode de joc (classic o aleatori)
+ *
+ */
 public class PreferencesPanel extends JPanel{
 	private final ButtonGroup buttonGroup = new ButtonGroup();
 	private final ButtonGroup buttonGroup_1 = new ButtonGroup();
@@ -31,7 +37,7 @@ public class PreferencesPanel extends JPanel{
 		setLayout(null);
 		
 		JPanel buttonPanel = new JPanel();
-		buttonPanel.setBounds(10, 211, 201, 38);
+		buttonPanel.setBounds(37, 211, 165, 38);
 		add(buttonPanel);
 		
 		closePrefBtn = new JButton("Close");

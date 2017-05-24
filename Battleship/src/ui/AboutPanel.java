@@ -25,6 +25,12 @@ import javax.swing.BoxLayout;
 import javax.swing.Box;
 
 
+/**
+ * 
+ * @author Victor
+ * Panell dels credits
+ *
+ */
 class CreditPanel extends JEditorPane {
 	
 	private URL htmlUrl;
@@ -53,6 +59,12 @@ class CreditPanel extends JEditorPane {
 	}
 }
 
+/**
+ * 
+ * @author Victor
+ * Panell de la descripció
+ *
+ */
 class DescriptionPanel extends JPanel {
 	private JLabel description;
 	private JLabel nom;
@@ -92,6 +104,12 @@ class DescriptionPanel extends JPanel {
 	}
 }
 
+/**
+ * 
+ * @author Victor
+ * Panell de la llicencia
+ *
+ */
 class Licencia extends JScrollPane {
 	public Licencia() {}
 	
@@ -113,6 +131,11 @@ class Licencia extends JScrollPane {
 	}
 }
 
+/**
+ * 
+ * @author Victor
+ *	Panell on es mostra informació dels autors del programa, una petita descripció i la llicencia sobre la que està fet
+ */
 public class AboutPanel extends JPanel {
 
 	private CardLayout PuiVicCL;

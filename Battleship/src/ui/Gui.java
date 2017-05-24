@@ -55,7 +55,7 @@ import javax.swing.JSeparator;
 
 public class Gui extends JFrame implements GridClickListener, ActionListener, GridRightClickListener, GridEnterListener, EnemyPanelClickListener{
 
-	private UserPanel userPanel;
+	private InitialPanel userPanel;
 	private JPanel contentPane;
 	private ProfilePanel profilePanel;
 	private PreferencesPanel preferencesPanel;
@@ -174,7 +174,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Gr
 		profilePanel.getCloseBtn().addActionListener(this);
 		
 		//profilePanel
-		userPanel = new UserPanel();
+		userPanel = new InitialPanel();
 		userPanel.getLblTitle().setBounds(138, 35, 599, 103);
 		userPanel.getBtnGo().addActionListener(this);
 		
@@ -589,7 +589,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Gr
 				"Cancel"
 			};
 		
-		int result = JOptionPane.showOptionDialog(self, "Are you sure about this?", "Exiting...", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+		int result = JOptionPane.showOptionDialog(self, "Are you sure about this?", "Leaving...", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
 		if (result == JOptionPane.YES_OPTION) {
 			if (client.isConected())
 				client.close(); // tanquem totes les conexions i Streams del client

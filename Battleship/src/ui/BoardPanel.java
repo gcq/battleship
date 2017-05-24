@@ -39,7 +39,13 @@ import utils.Enums.Direction;
 import utils.Point;
 import core.Ship;
 
-
+/**
+ * 
+ * @author Victor
+ * Panell utilitzat per el taulell tant del jugador com del adversari
+ * Omplert de JButtons que serán pintats posteriorment segons els colors de cada vaixell posicionat
+ *
+ */
 public class BoardPanel extends JPanel implements GridClickPublisher, EnemyPanelClickPublisher {
 	
 	DropTarget dropTarget;

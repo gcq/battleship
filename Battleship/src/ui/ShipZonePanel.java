@@ -45,18 +45,12 @@ import utils.Point;
 import core.Ship;
 
 
-
-class ShipPanel extends JPanel {
-	public ShipPanel() {
-		setBounds(0, 0, 100, 100);
-		setMinimumSize(new Dimension(150, 50));
-		setMaximumSize(new Dimension(160, 50));
-		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-		
-		int action = DnDConstants.ACTION_COPY_OR_MOVE;
-	}
-}
-
+/**
+ * 
+ * @author Victor
+ * JButton que identifica cada un dels vaixells a posicionar
+ *
+ */
 class ShipPanelButton extends JButton {
 	boolean clicked;
 	
@@ -74,6 +68,12 @@ class ShipPanelButton extends JButton {
 	}
 }
 
+/**
+ * 
+ * @author Victor
+ * Panell on es troben els vaixells a posicionar en el taulell
+ *
+ */
 public class ShipZonePanel extends JPanel{
 	
 	private BoardPanel boardPanel;

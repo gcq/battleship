@@ -14,7 +14,13 @@ import javax.swing.border.EmptyBorder;
 import java.awt.Color;
 import java.awt.Font;
 
-public class UserPanel extends JPanel {
+/**
+ * 
+ * @author Victor
+ * Panell inicial amb el titol del joc que permet al usuari introduir el seu username i començar el joc
+ *
+ */
+public class InitialPanel extends JPanel {
 	private JTextField textField;
 	private JLabel lblTitle;
 	private JButton btnGo;
@@ -22,7 +28,7 @@ public class UserPanel extends JPanel {
 	/**
 	 * Create the panel.
 	 */
-	public UserPanel() {
+	public InitialPanel() {
 		
 		setLayout(null);
 		setPreferredSize(new Dimension(800, 700));
@@ -49,7 +55,7 @@ public class UserPanel extends JPanel {
 		lblTitle.setBounds(173, 34, 486, 103);
 		add(lblTitle);
 		
-		JLabel background = new JLabel(new ImageIcon(UserPanel.class.getResource("/img/warship.jpg")));
+		JLabel background = new JLabel(new ImageIcon(InitialPanel.class.getResource("/img/warship.jpg")));
 		background.setBackground(new Color(240, 240, 240));
 		background.setBounds(0, 0, 858, 700);
 		add(background);
