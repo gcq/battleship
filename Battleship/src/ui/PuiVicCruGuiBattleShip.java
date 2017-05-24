@@ -53,7 +53,7 @@ import utils.Enums.HitType;
 import utils.NoSeLaVeritat;
 import utils.Point;
 
-public class Gui extends JFrame implements GridClickListener, ActionListener, GridRightClickListener, GridEnterListener, EnemyPanelClickListener, ServerMoveListener{
+public class PuiVicCruGuiBattleShip extends JFrame implements GridClickListener, ActionListener, GridRightClickListener, GridEnterListener, EnemyPanelClickListener, ServerMoveListener{
 
 
 	private InitialPanel userPanel;
@@ -89,7 +89,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Gr
 	
 	GameMode gameMode;
 	
-	Gui self;
+	PuiVicCruGuiBattleShip self;
 	
 	private Player player;
 	private Client client;
@@ -109,7 +109,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Gr
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Gui frame = new Gui();
+					PuiVicCruGuiBattleShip frame = new PuiVicCruGuiBattleShip();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -130,7 +130,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Gr
 		aboutPanel = new AboutPanel();
 		aboutPanel.setCredits("PuiVicCruGuiA14Credits.html");
 		aboutPanel.setLicence("gpl3.html");
-		aboutPanel.setImageIcon(new ImageIcon(Gui.class.getResource("/img/icon.png")));
+		aboutPanel.setImageIcon(new ImageIcon(PuiVicCruGuiBattleShip.class.getResource("/img/icon.png")));
 		aboutPanel.setDescriptionName("BattleShip");
 		aboutPanel.setDescriptionText("Victor Puigcerver i Guillem Cruz");
 		aboutPanel.setVersio("1.0");
@@ -177,7 +177,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Gr
 	/**
 	 * Create the frame.
 	 */
-	public Gui() {
+	public PuiVicCruGuiBattleShip() {
 		setPreferredSize(Constants.initFrameSize);
 		
 		inGame = false; 
@@ -235,7 +235,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Gr
 		gameMenu.add(loadMenu);
 		
 		JMenuItem saveMenu = new JMenuItem("Save");
-		saveMenu.setIcon(new ImageIcon(Gui.class.getResource("/img/download-button.png")));
+		saveMenu.setIcon(new ImageIcon(PuiVicCruGuiBattleShip.class.getResource("/img/download-button.png")));
 		saveMenu.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.CTRL_MASK));
 		gameMenu.add(saveMenu);
 		
@@ -283,14 +283,14 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Gr
 		menuBar.add(helpMenu);
 		
 		JMenuItem onlineHelp = new JMenuItem("Online Help");
-		onlineHelp.setIcon(new ImageIcon(Gui.class.getResource("/img/info.png")));
+		onlineHelp.setIcon(new ImageIcon(PuiVicCruGuiBattleShip.class.getResource("/img/info.png")));
 		onlineHelp.setActionCommand("OnlineHelp");
 		onlineHelp.addActionListener(this);
 		onlineHelp.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_MASK));
 		helpMenu.add(onlineHelp);
 		
 		JMenuItem about = new JMenuItem("About");
-		about.setIcon(new ImageIcon(Gui.class.getResource("/img/quant.png")));
+		about.setIcon(new ImageIcon(PuiVicCruGuiBattleShip.class.getResource("/img/quant.png")));
 		about.setActionCommand(about.getText());
 		about.addActionListener(this);
 		about.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_MASK));
