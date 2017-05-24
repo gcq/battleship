@@ -6,54 +6,53 @@ import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.EventQueue;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
 import javax.swing.border.EmptyBorder;
 
+import core.Board;
+import core.Player;
+import core.Ship;
 import server.Client;
+import server.MoveResult;
+import server.Packet;
+import server.Packet.PacketType;
+import server.Protocol;
 import ui.interfaces.EnemyPanelClickListener;
 import ui.interfaces.GridClickListener;
 import ui.interfaces.GridEnterListener;
 import ui.interfaces.GridRightClickListener;
+import ui.interfaces.ServerMoveListener;
 import utils.Constants;
 import utils.Enums.Direction;
 import utils.Enums.GameMode;
 import utils.Enums.HitType;
+import utils.NoSeLaVeritat;
 import utils.Point;
-import core.Player;
-import core.Ship;
 
-import javax.swing.JLabel;
+public class Gui extends JFrame implements GridClickListener, ActionListener, GridRightClickListener, GridEnterListener, EnemyPanelClickListener, ServerMoveListener{
 
-import java.awt.Font;
 
-import javax.swing.JSeparator;
-
-public class Gui extends JFrame implements GridClickListener, ActionListener, GridRightClickListener, GridEnterListener, EnemyPanelClickListener{
 
 	private InitialPanel userPanel;
 	private JPanel contentPane;
@@ -63,7 +62,11 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Gr
 	private CardLayout cardLayout;
 	private JMenuBar menuBar;
 	private JMenuItem editProfile;
+
+	private JMenuItem preferences;
+
 	private JMenuItem exitItem;
+
 	private JPanel gamePane;
 	private BoardPanel playerBoardPanel;
 	private BoardPanel enemyBoardPanel;
@@ -71,6 +74,9 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Gr
 	private JLabel yourTurn;
 	private JLabel enemyTurn;
 	private boolean inGame;
+	private boolean playerTurn;
+	
+//	ClientRunnable clientRunnable;
 	
 	private boolean myTurn;
 	private boolean hisTurn;
@@ -81,10 +87,6 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Gr
 	
 	GameMode gameMode;
 	
-	BufferedImage hitShape;
-	
-	Point lastClick;
-	
 	Gui self;
 	
 	private Player player;
@@ -93,9 +95,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Gr
 	Ship floatingShip = new Ship(0, 0, 0, Direction.HORIZONTAL);
 	
 	
-	private static final int IMG_WIDTH = 50;
-	private static final Color SHAPE_COLOR = Color.RED;
-	private static final int GAP = 4;
+	
 	private JLabel usernameGameLabel;
 	private JSeparator separator;
 	private JMenuItem restartItem;
@@ -114,21 +114,6 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Gr
 				}
 			}
 		});
-	}
-	
-	public BufferedImage getHitShape() {
-		BufferedImage circleImg = new BufferedImage(IMG_WIDTH, IMG_WIDTH, BufferedImage.TYPE_INT_ARGB);
-		Graphics2D g2 = circleImg.createGraphics();
-		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		g2.setColor(SHAPE_COLOR);
-		int imgX = GAP;
-		int imgY = GAP;
-		int width = IMG_WIDTH - 2 * imgX;
-		int height = IMG_WIDTH - 2 * imgY;
-		g2.fillOval(imgX,imgY, width, height);
-		g2.dispose();
-		
-		return circleImg;
 	}
 	
 	public void initPanels() {
@@ -200,9 +185,9 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Gr
 		setHisTurn(false);
 		setMyTurn(true);
 		
-		player = new Player();
+		player = new Player(new Board(10, 10));
 		client = new Client();
-		hitShape = getHitShape();
+//		clientRunnable = new ClientRunnable(client);
 		
 		gameMode = GameMode.CLASSIC;
 		
@@ -286,7 +271,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Gr
 		JMenu settingsMenu = new JMenu("Settings");
 		menuBar.add(settingsMenu);
 		
-		JMenuItem preferences = new JMenuItem("Preferences");
+		preferences = new JMenuItem("Preferences");
 		preferences.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.CTRL_MASK));
 		preferences.addActionListener(this);
 		preferences.setActionCommand(preferences.getText());
@@ -345,17 +330,12 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Gr
 		
 		Ship clickedShip = shipZonePanel.getSelectedShip();
 		if (clickedShip != null ) {
-			
-			Point currentClick = new Point(x, y);
-	
-			System.out.println("from " + lastClick + " to " + currentClick);
 		
 			Ship ship = new Ship(x, y, clickedShip.getLength(), floatingShip.getDirection(), clickedShip.getId());
 			System.out.println(ship);
 			
-			playerBoardPanel.redrawBoard();
 			if (playerBoardPanel.addShip(ship)) { // Si s'afegeix correctament (posicio correcta) borrem del panell
-				System.out.println(shipZonePanel.removeShip(clickedShip));
+				shipZonePanel.removeShip(clickedShip);
 				shipZonePanel.setSelectedShip(null);
 				
 				floatingShip.setDirection(Direction.HORIZONTAL);
@@ -365,11 +345,15 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Gr
 			}
 			repaint();
 		}
+		
+		playerBoardPanel.redrawBoard();
 	}
 	
 	public void toggleTurns () {
 		setMyTurn(!myTurn);
 		setHisTurn(!hisTurn);
+		yourTurn.setVisible(isMyTurn());
+		enemyTurn.setVisible(isHisTurn());
 	}
 	
 	public boolean isMyTurn() {
@@ -391,34 +375,61 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Gr
 	@Override
 	public void onEnemyPanelClickListener(int x, int y) {
 		System.out.println("Enemy Panel: Clicked on [" + x + ", " + y + "]");
-		HitType moveResult = client.sendMove(x, y);
-		System.out.println("Moveresult: " + moveResult);
-		if (moveResult == HitType.HIT) {
-			enemyBoardPanel.getButtonAt(x, y).setIcon(new ImageIcon(hitShape));
-		}
-		else if (moveResult == HitType.WATER) {
-			enemyBoardPanel.getButtonAt(x, y).setText("X");
+		client.sendMove(x, y);
+		
+		enemyBoardPanel.setButtonsEnabled(false);
+		
+		toggleTurns();
+	}
+	
+	@Override
+	public void onServerMoveListener(String packetString) {
+		
+		Packet packet = Packet.fromString(packetString);
+		
+		if (packet.getType() == PacketType.MOVEMENT) {
+			
+			Point p = Protocol.parseMove(packet);
+			
+			HitType hp = playerBoardPanel.getPlayer().hit(p.getX(), p.getY());
+			
+			if (hp == HitType.SUNK) {
+				for (Point pt : playerBoardPanel.getPlayer().getLastHitShip().getSegmentsPositions())
+					playerBoardPanel.getButtonAt(pt.getX(), pt.getY()).setBackground(Color.RED);
+			} else 
+				playerBoardPanel.showMove(p, hp, NoSeLaVeritat.getHitShape());
+			
+			toggleTurns();
 		}
 		
-		else if (moveResult == HitType.SUNK) {
-			Ship enemyShip = client.sendGetLastHitShip();
+		if (packet.getType() == PacketType.MOVEMENT_RESULT) {
+			MoveResult moveResult = Protocol.parseMoveResult(packet);
+			System.out.println("Moveresult: " + moveResult);
+			
+			enemyBoardPanel.setButtonsEnabled(true);
+			
+			enemyBoardPanel.showMove(moveResult.getPoint(), moveResult.getHitType(), NoSeLaVeritat.getHitShape());
+			
+			if (moveResult.getHitType() == HitType.SUNK) {
+				client.sendGetLastHitShip();
+			}
+			
+		}
+		
+		if (packet.getType() == PacketType.GET_LAST_HIT_SHIP_RESULT) {
+			Ship enemyShip = Protocol.parseGetLastShipResponse(packet);
+			
 			for (Point p : enemyShip.getSegmentsPositions())
 				enemyBoardPanel.getButtonAt(p.getX(), p.getY()).setBackground(Color.RED);
+			
 			if (enemyShip.isLastShipStanding()) {
 				JOptionPane.showMessageDialog(this, player.getName() + " Wins!", "", JOptionPane.INFORMATION_MESSAGE);
 				client.close();
 				this.dispose();
 			}
 		}
-		
-		toggleTurns();
-		yourTurn.setVisible(isMyTurn());
-		enemyTurn.setVisible(isHisTurn());
-		
-		
-//		System.out.println("EnemyBoard ShipList: " + enemyBoardPanel.getShipList());
 	}
-	
+
 	@Override
 	public void onGridEnter(int x, int y) {
 		floatingShip.setX(x);
@@ -433,7 +444,9 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Gr
 		playerBoardPanel.redrawBoard();
 		playerBoardPanel.drawShip(floatingShip);
 		
-		System.out.println(floatingShip);
+		if (!playerBoardPanel.isValidPosition(floatingShip))
+			System.out.println("Posicio invalida. Mostrar algo en la GUI");
+			
 	}
 
 	@Override
@@ -516,7 +529,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Gr
 			if (!this.inGame) {
 				playerBoardPanel.clearBoard();
 				playerBoardPanel.resetShips();
-				System.out.println(shipZonePanel.reset());
+				shipZonePanel.reset();
 			}
 			else
 				JOptionPane.showMessageDialog(this, "You can't restart the board while you're playing!", "", JOptionPane.WARNING_MESSAGE);
@@ -536,12 +549,16 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Gr
 					gamePane.add(enemyBoardPanel);
 					yourTurn.setVisible(true);
 					System.out.println(startGame());
-					inGame = true;				
+					inGame = true;
+					
+					playerBoardPanel.removeGridClickListener();
+					playerBoardPanel.removeGridEnterListener();
+					playerBoardPanel.removeGridRightClickListener();
+					
 					repaint();
 				}
 				else
 					JOptionPane.showMessageDialog(this, "Connection refused", "", JOptionPane.WARNING_MESSAGE);
-					
 			}
 		}
 		
@@ -560,7 +577,8 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Gr
 		else if (e.getActionCommand().equals("resetBoard")) {
 			playerBoardPanel.clearBoard();
 			playerBoardPanel.resetShips();
-			System.out.println(shipZonePanel.reset());
+			shipZonePanel.reset();
+			player.clearBoard();
 		}
 		
 		else if (e.getActionCommand().equals("About")) {
@@ -623,9 +641,10 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Gr
 	class MyWindowAdapter extends WindowAdapter {
 		@Override
 		public void windowClosing(WindowEvent e) {
-			
 			closeWindow();
+
 		}
 	}
+
 }
 

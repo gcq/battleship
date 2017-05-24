@@ -79,7 +79,7 @@ public class Server {
 				i++;
 				
 			} catch (InvalidShipPlacementException e) {
-				e.printStackTrace();
+				System.out.println("Invalid movement. Retrying...");
 			}
 		}
 		
@@ -122,7 +122,7 @@ class ServerRunnable implements Runnable {
 				
 				if (packet.type == PacketType.MOVEMENT) {
 					Point hitPoint = Protocol.parseMove(packet);
-					packet = Protocol.createMoveResult(player.hit(hitPoint.getX(), hitPoint.getY())); // decidir que es aquesta jugada; aigua, tocado, hundido
+					packet = Protocol.createMoveResult(hitPoint, player.hit(hitPoint.getX(), hitPoint.getY())); // decidir que es aquesta jugada; aigua, tocado, hundido
 				}
 				
 				else if (packet.type == PacketType.GET_LAST_HIT_SHIP) {
@@ -134,9 +134,22 @@ class ServerRunnable implements Runnable {
 					}
 				}
 				
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
 				//We send the modified data to the client with the PrintWriter variable.
 				out.println(packet);
 				System.out.println("Message sent: " + packet);
+				
+				Random rand = new Random();
+				Packet randomMove = Protocol.createMove(rand.nextInt(9), rand.nextInt(9));
+				out.println(randomMove);
+				System.out.println("Message sent: " + randomMove);
+				
 				System.out.println(player);
 			}
 		} catch (IOException e) {
