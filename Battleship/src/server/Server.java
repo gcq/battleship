@@ -135,7 +135,7 @@ class ServerRunnable implements Runnable {
 				}
 				
 				try {
-					Thread.sleep(new Random().nextInt(200) + 100);
+					Thread.sleep(100);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

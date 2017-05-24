@@ -6,14 +6,11 @@ import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.EventQueue;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
@@ -24,16 +21,20 @@ import java.net.URL;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
 import javax.swing.border.EmptyBorder;
 
+import core.Board;
+import core.Player;
+import core.Ship;
 import server.Client;
-import server.ClientRunnable;
 import server.MoveResult;
 import server.Packet;
 import server.Packet.PacketType;
@@ -44,19 +45,11 @@ import ui.interfaces.GridEnterListener;
 import ui.interfaces.GridRightClickListener;
 import ui.interfaces.ServerMoveListener;
 import utils.Constants;
-import utils.NoSeLaVeritat;
 import utils.Enums.Direction;
 import utils.Enums.GameMode;
 import utils.Enums.HitType;
+import utils.NoSeLaVeritat;
 import utils.Point;
-import core.Board;
-import core.Player;
-import core.Ship;
-
-import javax.swing.JLabel;
-
-import java.awt.Font;
-import javax.swing.JSeparator;
 
 public class Gui extends JFrame implements GridClickListener, ActionListener, GridRightClickListener, GridEnterListener, EnemyPanelClickListener, ServerMoveListener{
 
@@ -399,8 +392,6 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Gr
 		Packet packet = Packet.fromString(packetString);
 		
 		if (packet.getType() == PacketType.MOVEMENT) {
-			// TODO
-			// Si el paquet té com a tipus moviment, vol dir que es la jugada del servidor
 			
 			Point p = Protocol.parseMove(packet);
 			
@@ -409,9 +400,6 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Gr
 			playerBoardPanel.showMove(p, hp, hitShape);
 			
 			toggleTurns();
-			
-			// Falta implementar el model de dades del tauler del client
-			// per representar les jugades que rebem del servidor
 		}
 		
 		if (packet.getType() == PacketType.MOVEMENT_RESULT) {
@@ -420,7 +408,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Gr
 			
 			enemyBoardPanel.setButtonsEnabled(true);
 			
-			enemyBoardPanel.showMove(moveResult.getPoint(), moveResult.getHitType(), hitShape);
+			enemyBoardPanel.showMove(moveResult.getPoint(), moveResult.getHitType(), NoSeLaVeritat.getHitShape());
 			
 			if (moveResult.getHitType() == HitType.SUNK) {
 				client.sendGetLastHitShip();

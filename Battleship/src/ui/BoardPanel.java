@@ -7,44 +7,31 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
-import java.awt.dnd.DropTargetDragEvent;
-import java.awt.dnd.DropTargetDropEvent;
-import java.awt.dnd.DropTargetEvent;
-import java.awt.dnd.DropTargetListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TooManyListenersException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import core.Board;
+import core.Player;
+import core.Ship;
+import core.exceptions.InvalidShipPlacementException;
 import ui.interfaces.EnemyPanelClickListener;
 import ui.interfaces.EnemyPanelClickPublisher;
 import ui.interfaces.GridClickListener;
 import ui.interfaces.GridClickPublisher;
 import ui.interfaces.GridEnterListener;
-import ui.interfaces.GridEnterPublisher;
 import ui.interfaces.GridRightClickListener;
 import utils.Enums.Direction;
 import utils.Enums.HitType;
 import utils.Point;
-import core.Board;
-import core.Player;
-import core.Ship;
-import core.exceptions.InvalidShipPlacementException;
 
 
 public class BoardPanel extends JPanel implements GridClickPublisher, EnemyPanelClickPublisher {
