@@ -19,7 +19,7 @@ public class Client {
 	
 	private boolean conected; 
 	
-	public void open() {
+	public boolean open() {
 		
 		try {
 			echoSocket = new Socket(Constants.serverIp, Constants.serverPort); //Socket that we use to connect with the server
@@ -30,7 +30,9 @@ public class Client {
 			stdIn = new BufferedReader(new InputStreamReader(System.in)); //Input Stream that comes from  the console
 		} catch (IOException e) {
 			e.printStackTrace();
+			return false;
 		}
+		return true;
 	}
 	
 	public void close() {

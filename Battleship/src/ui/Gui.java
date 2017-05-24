@@ -263,6 +263,8 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Gr
 		gameMenu.add(startMenu);
 		
 		restartItem = new JMenuItem("Restart");
+		restartItem.addActionListener(this);
+		restartItem.setActionCommand(restartItem.getText());
 		gameMenu.add(restartItem);
 		
 		exitItem = new JMenuItem("Exit");
@@ -510,6 +512,15 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Gr
 		else if (e.getActionCommand().equals("Exit")) {
 			this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
 		}
+		else if (e.getActionCommand().equals("Restart")) {
+			if (!this.inGame) {
+				playerBoardPanel.clearBoard();
+				playerBoardPanel.resetShips();
+				System.out.println(shipZonePanel.reset());
+			}
+			else
+				JOptionPane.showMessageDialog(this, "You can't restart the board while you're playing!", "", JOptionPane.WARNING_MESSAGE);
+		}
 		
 		else if (e.getActionCommand().equals("Start")) {
 			
@@ -517,17 +528,20 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Gr
 				JOptionPane.showMessageDialog(this, "Locate all your ships in the board before start the game", "", JOptionPane.INFORMATION_MESSAGE);
 				
 			} else if (!this.inGame) {
-				self.setSize(Constants.inGameFrameSize);
-				menuBar.setSize(Constants.inGameMenuBarSize);
-				gamePane.remove(shipZonePanel);
-				gamePane.add(enemyBoardPanel);
-				yourTurn.setVisible(true);
-				System.out.println(startGame());
-				inGame = true;				
-				repaint();
-				
-				client.setConected(true);
-				client.open();
+				client.setConected(client.open());
+				if (client.isConected()) {
+					self.setSize(Constants.inGameFrameSize);
+					menuBar.setSize(Constants.inGameMenuBarSize);
+					gamePane.remove(shipZonePanel);
+					gamePane.add(enemyBoardPanel);
+					yourTurn.setVisible(true);
+					System.out.println(startGame());
+					inGame = true;				
+					repaint();
+				}
+				else
+					JOptionPane.showMessageDialog(this, "Connection refused", "", JOptionPane.WARNING_MESSAGE);
+					
 			}
 		}
 		
