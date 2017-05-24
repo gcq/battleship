@@ -1,6 +1,8 @@
 package core;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import utils.Enums.Direction;
@@ -23,11 +25,33 @@ public class Player {
 	public Player(Board board) {
 		this.board = board;
 		
+		clearBoard();
+		
+		ships = new HashMap<>();
+	}
+	
+	public List<Point> getAllBoardPoints() {
+		List<Point> pts = new ArrayList<>();
+		
+		for (int y = 0; y < this.board.h; y++)
+			for (int x = 0; x < this.board.w; x++)
+				pts.add(new Point(x, y));
+		
+		return pts;
+	}
+	
+	public void clearBoard() {
 		for (int y = 0; y < this.board.h; y++)
 			for (int x = 0; x < this.board.w; x++)
 				this.board.set(x, y, 0);
-		
-		ships = new HashMap<>();
+	}
+	
+	public List<Ship> getShips () {
+		List<Ship> ships = new ArrayList<Ship>();
+		for (Ship ship : this.ships.values()) {
+			ships.add(ship);
+		}
+		return ships;
 	}
 	
 	public void addShip(Ship ship) throws InvalidShipPlacementException {
@@ -48,15 +72,17 @@ public class Player {
 	}
 	
 	public boolean checkShipPlacement(Ship s) {
-		int startAxis = -100;
+
+		if (s.getDirection() == Direction.HORIZONTAL) {
+			if((s.getX() + s.getLength()) > board.getW()) {
+				return false;
+			}
 		
-		if (s.getDirection() == Direction.HORIZONTAL)
-			startAxis = s.getX();
-		else if (s.getDirection() == Direction.VERTICAL)
-			startAxis = s.getY();
-		
-		if (startAxis + s.getLength() > 10)
-			return false;
+		} else if (s.getDirection() == Direction.VERTICAL) {
+			if((s.getY() + s.getLength()) > board.getH()) {
+				return false;
+			}
+		}
 		
 		for (Point p : s.getSegmentsPositions())
 			if (board.get(p.getX(), p.getY()) != 0)

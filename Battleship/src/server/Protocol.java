@@ -5,6 +5,7 @@ import server.Packet.PacketType;
 import utils.Point;
 import utils.Enums.HitType;
 
+
 public class Protocol {
 	public static Packet createMove(int x, int y) {
 		return new Packet(PacketType.MOVEMENT, x + "," + y);
@@ -19,12 +20,19 @@ public class Protocol {
 		return new Point(x, y);
 	}
 
-	public static Packet createMoveResult(HitType hitType) {
-		return new Packet(PacketType.MOVEMENT_RESULT, hitType.toString());
+	public static Packet createMoveResult(Point p, HitType hitType) {
+		return new Packet(PacketType.MOVEMENT_RESULT, p.getX() + "," + p.getY() + "," + hitType.toString());
 	}
 	
-	public static HitType parseMoveResult(Packet p) {
-		return HitType.valueOf(p.getContents());
+	public static MoveResult parseMoveResult(Packet p) {
+		String[] arr = p.getContents().split(",");
+		
+		int x = Integer.parseInt(arr[0]);
+		int y = Integer.parseInt(arr[1]);
+		
+		HitType hitType = HitType.valueOf(arr[2]);
+		
+		return new MoveResult(hitType, new Point(x, y));
 	}
 	
 	public static Packet createGetLastHitShip() {

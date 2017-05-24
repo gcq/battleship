@@ -1,3 +1,4 @@
+
 package ui;
 
 import java.awt.Color;
@@ -6,38 +7,31 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
-import java.awt.dnd.DropTargetDragEvent;
-import java.awt.dnd.DropTargetDropEvent;
-import java.awt.dnd.DropTargetEvent;
-import java.awt.dnd.DropTargetListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TooManyListenersException;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import core.Board;
+import core.Player;
+import core.Ship;
+import core.exceptions.InvalidShipPlacementException;
 import ui.interfaces.EnemyPanelClickListener;
 import ui.interfaces.EnemyPanelClickPublisher;
 import ui.interfaces.GridClickListener;
 import ui.interfaces.GridClickPublisher;
 import ui.interfaces.GridEnterListener;
-import ui.interfaces.GridEnterPublisher;
 import ui.interfaces.GridRightClickListener;
 import utils.Enums.Direction;
+import utils.Enums.HitType;
 import utils.Point;
-import core.Ship;
 
 /**
  * 
@@ -58,34 +52,11 @@ public class BoardPanel extends JPanel implements GridClickPublisher, EnemyPanel
 	String[] leftBtnsText = {"A","B","C","D","E","F","G","H","I","J"};
 	private List<JButton> btnArray;
 	
-	List<Ship> shipList;
+	Player player;
 	
-	GridClickListener clickListener = new GridClickListener() {
-		
-		@Override
-		public void onGridClick(int x, int y) {
-			System.out.println("Listener per defecte. Crida setGridClickListener. (" + x + ", " + y + ")");
-			
-		}
-	};
-	
-	GridRightClickListener rightClickListener = new GridRightClickListener() {
-		
-		@Override
-		public void onGridRightClick(int x, int y) {
-			System.out.println("Listener per defecte. Crida setRightGridClickListener. (" + x + ", " + y + ")");
-			
-		}
-	};
-	
-	GridEnterListener enterListener = new GridEnterListener() {
-		
-		@Override
-		public void onGridEnter(int x, int y) {
-			System.out.println("Listener per defecte. Crida setGridEnterListener. (" + x + ", " + y + ")");
-			
-		}
-	};
+	GridClickListener clickListener;
+	GridRightClickListener rightClickListener;
+	GridEnterListener enterListener;
 	
 	EnemyPanelClickListener enemyPanelListener = new EnemyPanelClickListener() {
 		
@@ -98,7 +69,7 @@ public class BoardPanel extends JPanel implements GridClickPublisher, EnemyPanel
 	
 	public BoardPanel () {
 		
-		shipList = new ArrayList<>();
+		player = new Player(new Board(10, 10)); 
 		
 		buttonColor = new Color(40, 122, 255);
 		shipColor = Color.black;
@@ -187,17 +158,49 @@ public class BoardPanel extends JPanel implements GridClickPublisher, EnemyPanel
 		clickListener = l;
 	}
 	
+	public void removeGridClickListener() {
+		clickListener = null;
+	}
+	
 	public void setGridEnterListener(GridEnterListener l) {
 		enterListener = l;
+	}
+	
+	public void removeGridEnterListener() {
+		enterListener = null;
 	}
 	
 	public void setGridRightClickListener(GridRightClickListener l) {
 		rightClickListener = l;
 	}
 	
+	public void removeGridRightClickListener() {
+		rightClickListener = null;
+	}
+	
 	@Override
 	public void setEnemyPanelClickPublisher(EnemyPanelClickListener l) {
 		enemyPanelListener = l;
+	}
+	
+	public void setButtonsEnabled(boolean enabled) {
+		for (JButton jButton : btnArray) {
+			jButton.setEnabled(enabled);
+		}
+	}
+	
+	public void showMove(Point p, HitType h, BufferedImage hitShape) {
+		if (h == HitType.HIT) {
+			getButtonAt(p.getX(), p.getY()).setIcon(new ImageIcon(hitShape));
+		}
+		
+		else if (h == HitType.WATER) {
+			getButtonAt(p.getX(), p.getY()).setText("X");
+		}
+	}
+	
+	public void resetShips () {
+		player.clearBoard();
 	}
 	
 	public void clearBoard () {
@@ -207,20 +210,18 @@ public class BoardPanel extends JPanel implements GridClickPublisher, EnemyPanel
 		}
 	}
 	
-	public void resetShips () {
-		this.shipList.clear();
-	}
-	
 	public void redrawBoard() {
 		clearBoard();
 		
-		for (Ship s : this.shipList) {
+		for (Ship s : player.getShips()) {
 			drawShip(s);
 		}
+		
+		//Dibuixar cada cela amb el valor tocado o agua
 	}
 	
 	public List<Ship> getShipList() {
-		return this.shipList;
+		return player.getShips();
 	}
 
 	/**
@@ -229,63 +230,33 @@ public class BoardPanel extends JPanel implements GridClickPublisher, EnemyPanel
 	 * @return Retorna true si el vaixell es pot posicionar
 	 */
 	public boolean isValidPosition (Ship ship) {
-		if (ship.getDirection() == Direction.HORIZONTAL) {
-			if (ship.getX() + ship.getLength() > 10)
-				return false;
-			
-			for (int x = ship.getX(); x < ship.getX() + ship.getLength(); x++) {
-				if (getButtonAt(x, ship.getY()).getBackground() == shipColor)
-					return false;
-			}
-		} else if (ship.getDirection() == Direction.VERTICAL) {
-			if (ship.getY() + ship.getLength() > 10)
-				return false;
-			
-			for (int y = ship.getY(); y < ship.getY() + ship.getLength(); y++) {
-				if (getButtonAt(y, ship.getX()).getBackground() == shipColor)
-					return false;
-			}
-		}
-		return true;
+		return player.checkShipPlacement(ship);
 	}
 	
-	public boolean drawShip(Ship ship) {
+	public void drawShip(Ship ship) {
 		
 		Color shipColor = Color.getHSBColor((ship.getId() / 5f) - 0.07f, 1f, 1f);
-		System.out.println(ship.getId() + " " + shipColor);
 		
 		if (ship.getDirection() == Direction.HORIZONTAL) {
-			if (isValidPosition(ship)) {
-				for (int x = ship.getX(); x < ship.getX() + ship.getLength(); x++) {
-					getButtonAt(x, ship.getY()).setBackground(shipColor);
-				}
+			for (int x = ship.getX(); x < ship.getX() + ship.getLength() && x < 10; x++) {
+				getButtonAt(x, ship.getY()).setBackground(shipColor);
 			}
-			else
-				return false;
 			
 		} else if (ship.getDirection() == Direction.VERTICAL) {
-			if (isValidPosition(ship)) {
-				for (int y = ship.getY(); y < ship.getY() + ship.getLength(); y++) {
-					getButtonAt(ship.getX(), y).setBackground(shipColor);
-				}
+			for (int y = ship.getY(); y < ship.getY() + ship.getLength() && y < 10; y++) {
+				getButtonAt(ship.getX(), y).setBackground(shipColor);
 			}
-			else 
-				return false;
 		}
-		
-		return true;
 	}
 	
 	public boolean addShip(Ship ship) {
-		boolean worked = drawShip(ship);
+		try {
+			player.addShip(ship);
+		} catch (InvalidShipPlacementException e) {
+			return false;
+		}
 		
-		if (worked)
-			shipList.add(ship);
-		return worked;
-	}
-	
-	public void displayShip(int x, int y, Direction direction, int length) {
-		
+		return true;
 	}
 
 	public List<JButton> getBtnArray() {
@@ -299,13 +270,19 @@ public class BoardPanel extends JPanel implements GridClickPublisher, EnemyPanel
 	public JButton getButtonAt(int x, int y) {
 		return btnArray.get(y + x * 10);
 	}
+	
+	public Player getPlayer() {
+		return player;
+	}
 
 	class MyMouseAdapter extends MouseAdapter{
 		@Override
 		public void mouseEntered(MouseEvent e) {
 			super.mouseEntered(e);
 			Point p = getCoordsFromJButton((JButton) e.getSource());
-			enterListener.onGridEnter(p.getX(), p.getY());
+			
+			if (enterListener != null)
+				enterListener.onGridEnter(p.getX(), p.getY());
 		}
 		
 		@Override
@@ -314,14 +291,19 @@ public class BoardPanel extends JPanel implements GridClickPublisher, EnemyPanel
 			if (e.getButton() == MouseEvent.BUTTON1) {
 				Point p = getCoordsFromJButton((JButton) e.getSource());
 				
-				clickListener.onGridClick(p.getX(), p.getY());
-				enemyPanelListener.onEnemyPanelClickListener(p.getX(), p.getY());
+				if (clickListener != null)
+					clickListener.onGridClick(p.getX(), p.getY());
+				
+				if (enemyPanelListener != null)
+					enemyPanelListener.onEnemyPanelClickListener(p.getX(), p.getY());
 				
 			} else if (e.getButton() == MouseEvent.BUTTON3) {
 				Point p = getCoordsFromJButton((JButton) e.getSource());
 				
-				rightClickListener.onGridRightClick(p.getX(), p.getY());
+				if (rightClickListener != null)
+					rightClickListener.onGridRightClick(p.getX(), p.getY());
 	        }
 		}
 	}
 }
+
