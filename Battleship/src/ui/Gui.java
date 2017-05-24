@@ -17,6 +17,8 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -48,6 +50,7 @@ import core.Ship;
 import javax.swing.JLabel;
 
 import java.awt.Font;
+
 import javax.swing.JSeparator;
 
 public class Gui extends JFrame implements GridClickListener, ActionListener, GridRightClickListener, GridEnterListener, EnemyPanelClickListener{
@@ -557,11 +560,8 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Gr
 			changePanel("game");
 		}
 		else if (e.getActionCommand().equals("OnlineHelp")) {
-			try {
-				openWebpage(new URL("http://portaljuegos.wikidot.com/hundirlaflota"));
-			} catch (MalformedURLException e1) {
-				e1.printStackTrace();
-			}
+			File htmlFile = new File("src/ui/help.html");
+			openWebpage(htmlFile.toURI());
 		}
 	}
 	

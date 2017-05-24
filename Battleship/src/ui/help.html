@@ -1,0 +1,136 @@
+<html >
+  <header>
+   <meta charset="UTF-8"/>
+  <style>
+   table,th,td {
+    border: 1px solid black;
+    border-collapse: collapse;
+    padding: 5px;
+   }
+   table {
+    margin: 0 auto;
+   }
+   .head {
+   	margin: 0 auto;
+   }
+  </style>
+
+  <div class="head" align="center">
+  	<h1> Ultimate Battleship Game </h1>
+    <img src="../img/warship.jpg">
+  </div>
+    
+  </header>
+
+  <main>
+    <article>
+      <h1>Regles Basiques</h1>
+      <p>S'utilitzen 2 quadrícules de 10x10. En una quadrícula el jugador posicionarà els seus vaixells
+        (els 5 vaixells que es detallen en la secció corresponent) i quan comenci el joc, s'apuntaran els trets del rival.
+        En l'altra quadrícula s'apuntaran dels trets propis.</p>
+    </article>
+
+    <article>
+      <h2> Dispars </h2>
+      <p> Els dispars poden tenir 3 resultats: </p>
+      <div class="dispars">
+        <ol>
+          <li> <b>Aigua:</b> no s'ha acertat amb la posició d'un vaixell </li>
+          <li> <b>Tocat:</b> s'ha acertat amb la posició de la graella en la que estava part d'un vaixell </li>
+          <li> <b>Enfonsat:</b> s'ha tocat un vaixell però totes les seves posicions figuren com "tocades", o el que és equivalent no li queden posicions sense ser tocades. </li>
+        </ol>
+      </div>
+    </article>
+
+    <article>
+      <h2> Qui guanya? </h2>
+      <p> Guanya la partida el jugador que aconsegueixi enfonsar primer els 5 vaixells del seu adversari. </p>
+    </article>
+
+    <article>
+      <h2> Vaixells </h2>
+      <table>
+        <tr>
+          <th>Tipus</th>
+          <th>Posicions</th>
+        </tr>
+
+        <tr>
+          <td> Portavions </td>
+          <td> 5 </td>
+        </tr>
+
+        <tr>
+          <td> Cuirassat </td>
+          <td> 4 </td>
+        </tr>
+
+        <tr>
+          <td> Creuer </td>
+          <td> 3 </td>
+        </tr>
+
+        <tr>
+          <td> Submari </td>
+          <td> 3 </td>
+        </tr>
+
+        <tr>
+          <td> Destructor </td>
+          <td> 2 </td>
+        </tr>
+      </table>
+
+      <p>Cada jugador haurà de col·locar els 5 vaixells a la quadrícula pròpia, l'única restricció és que els vaixells estiguin íntegrament dins de la quadrícula i que no es solapin entre ells.
+      Les posicions de cada vaixell representen el seu llarg i a conseqüència el nombre de trets rebuts o "tocs" que calen per enfonsar-lo.</p>
+
+    </article>
+
+    <article>
+      <h2> Forma de jugar </h2>
+      <h2> <span> Torns </span> </h2>
+      <p>La forma de pasar de torn es circular, pasa d'un jugador a un altre cada torn</p>
+
+      <ul>
+      	<li><u>Modalitat clàssica</u>: cada torn consisteix en 1 dispar</li>
+      	<li><u>Modalitat alternativa</u>: cada torn consisteix en tirar indefinidament mentres es consegueixi tocar o enfonsar un vaixell enemic</li>
+      </ul>
+
+      <p>Cada torn tindrà un temps màxim o indefinit, depenent del que el usuari decideixi</p>
+    </article>
+
+    <article>
+    	<h2><u>Posicionar els vaixells</u></h2>
+    	<p>Per posicionar els vaixells selecciona el vaixell desitjat i col.local en la quadricula esquerra</p>
+    	<p>Una vegada tinguis el vaixell en la posició desitjada, prem el <b>botó esquerre del ratolí</b> i posicionaras el vaixell</p>
+    	<p>Per canviar la orientació vertical i horitzontal del vaixell, has de premer el <b>botó dret del ratolí</b></p>
+    	<img src="../img/shipPlacement.png">
+    </article>
+
+    <article>
+    	<h2>Jugant</h2>
+    	<p>Quan sigui el teu torn en la part superior esquerra de la pantalla apareixerá un missatge dient: "El teu torn".</p>
+    	<p>Si es el torn del teu adversari apareixerá un missatge indican-ho.</p>
+    	<img src="../img/gameplay1.png">
+    	<br>
+
+    	<p>Quan sigui el teu torn podrás efectuar un dispar. Per escollir casella on vols disparar, només fa falta seleccionar-la amb el botó esquerre del ratoli</p>
+
+    	<p>Si el resultat del dispar es:</p>
+
+    	<ul>
+    		<li><font color="red">Aigua</font>: apareixerá una creu en el taulell de la dreta, en la posició del dispar</li>
+    		<li><font color="red">Tocat</font>: apareixerá una rodona vermella en el taulell de la dreta, en la posició del dispar</li>
+    		<li><font color="red">Enfonsat</font>: apareixerá el vaixell que acabas d'enfonsar en vermell i desapareixerán els cops en el vaixell</li>
+    	</ul>
+
+    	<img src="../img/gameplay2.png">
+      <p>Quan el teu adversari dispari pasará el mateix pero en el taulell de l'esquerra</p>
+    </article>
+
+    <article>
+      <p>Si un dels dos jugadors consegueix enfonsar els vaixells del seu enemic, la partida acaba i es mostra un missatge informant de qui ha sigut el guanyador, tot tancant l'aplicació</p>
+      <img src="../img/win.png">
+    </article>
+  </main>
+</html>
