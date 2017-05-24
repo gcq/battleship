@@ -48,32 +48,9 @@ public class BoardPanel extends JPanel implements GridClickPublisher, EnemyPanel
 	
 	Player player;
 	
-	GridClickListener clickListener = new GridClickListener() {
-		
-		@Override
-		public void onGridClick(int x, int y) {
-			System.out.println("Listener per defecte. Crida setGridClickListener. (" + x + ", " + y + ")");
-			
-		}
-	};
-	
-	GridRightClickListener rightClickListener = new GridRightClickListener() {
-		
-		@Override
-		public void onGridRightClick(int x, int y) {
-			System.out.println("Listener per defecte. Crida setRightGridClickListener. (" + x + ", " + y + ")");
-			
-		}
-	};
-	
-	GridEnterListener enterListener = new GridEnterListener() {
-		
-		@Override
-		public void onGridEnter(int x, int y) {
-			System.out.println("Listener per defecte. Crida setGridEnterListener. (" + x + ", " + y + ")");
-			
-		}
-	};
+	GridClickListener clickListener;
+	GridRightClickListener rightClickListener;
+	GridEnterListener enterListener;
 	
 	EnemyPanelClickListener enemyPanelListener = new EnemyPanelClickListener() {
 		
@@ -175,12 +152,24 @@ public class BoardPanel extends JPanel implements GridClickPublisher, EnemyPanel
 		clickListener = l;
 	}
 	
+	public void removeGridClickListener() {
+		clickListener = null;
+	}
+	
 	public void setGridEnterListener(GridEnterListener l) {
 		enterListener = l;
 	}
 	
+	public void removeGridEnterListener() {
+		enterListener = null;
+	}
+	
 	public void setGridRightClickListener(GridRightClickListener l) {
 		rightClickListener = l;
+	}
+	
+	public void removeGridRightClickListener() {
+		rightClickListener = null;
 	}
 	
 	@Override
@@ -275,13 +264,19 @@ public class BoardPanel extends JPanel implements GridClickPublisher, EnemyPanel
 	public JButton getButtonAt(int x, int y) {
 		return btnArray.get(y + x * 10);
 	}
+	
+	public Player getPlayer() {
+		return player;
+	}
 
 	class MyMouseAdapter extends MouseAdapter{
 		@Override
 		public void mouseEntered(MouseEvent e) {
 			super.mouseEntered(e);
 			Point p = getCoordsFromJButton((JButton) e.getSource());
-			enterListener.onGridEnter(p.getX(), p.getY());
+			
+			if (enterListener != null)
+				enterListener.onGridEnter(p.getX(), p.getY());
 		}
 		
 		@Override
@@ -290,13 +285,17 @@ public class BoardPanel extends JPanel implements GridClickPublisher, EnemyPanel
 			if (e.getButton() == MouseEvent.BUTTON1) {
 				Point p = getCoordsFromJButton((JButton) e.getSource());
 				
-				clickListener.onGridClick(p.getX(), p.getY());
-				enemyPanelListener.onEnemyPanelClickListener(p.getX(), p.getY());
+				if (clickListener != null)
+					clickListener.onGridClick(p.getX(), p.getY());
+				
+				if (enemyPanelListener != null)
+					enemyPanelListener.onEnemyPanelClickListener(p.getX(), p.getY());
 				
 			} else if (e.getButton() == MouseEvent.BUTTON3) {
 				Point p = getCoordsFromJButton((JButton) e.getSource());
 				
-				rightClickListener.onGridRightClick(p.getX(), p.getY());
+				if (rightClickListener != null)
+					rightClickListener.onGridRightClick(p.getX(), p.getY());
 	        }
 		}
 	}

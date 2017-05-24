@@ -87,8 +87,6 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Gr
 	
 	GameMode gameMode;
 	
-	BufferedImage hitShape;
-	
 	Gui self;
 	
 	private Player player;
@@ -190,10 +188,6 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Gr
 		player = new Player(new Board(10, 10));
 		client = new Client();
 //		clientRunnable = new ClientRunnable(client);
-		
-		
-		
-		hitShape = NoSeLaVeritat.getHitShape();
 		
 		gameMode = GameMode.CLASSIC;
 		
@@ -395,9 +389,13 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Gr
 			
 			Point p = Protocol.parseMove(packet);
 			
-			HitType hp = player.hit(p.getX(), p.getY());
+			HitType hp = playerBoardPanel.getPlayer().hit(p.getX(), p.getY());
 			
-			playerBoardPanel.showMove(p, hp, hitShape);
+			if (hp == HitType.SUNK) {
+				for (Point pt : playerBoardPanel.getPlayer().getLastHitShip().getSegmentsPositions())
+					playerBoardPanel.getButtonAt(pt.getX(), pt.getY()).setBackground(Color.RED);
+			} else 
+				playerBoardPanel.showMove(p, hp, NoSeLaVeritat.getHitShape());
 			
 			toggleTurns();
 		}
@@ -538,7 +536,12 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Gr
 				gamePane.add(enemyBoardPanel);
 				yourTurn.setVisible(true);
 				System.out.println(startGame());
-				inGame = true;				
+				inGame = true;
+				
+				playerBoardPanel.removeGridClickListener();
+				playerBoardPanel.removeGridEnterListener();
+				playerBoardPanel.removeGridRightClickListener();
+				
 				repaint();
 				
 				preferences.setEnabled(false);
