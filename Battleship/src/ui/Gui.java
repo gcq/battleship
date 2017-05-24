@@ -531,7 +531,7 @@ public class Gui extends JFrame implements GridClickListener, ActionListener, Gr
 			if (!this.inGame) {
 				playerBoardPanel.clearBoard();
 				playerBoardPanel.resetShips();
-				System.out.println(shipZonePanel.reset());
+				shipZonePanel.reset();
 			}
 			else
 				JOptionPane.showMessageDialog(this, "You can't restart the board while you're playing!", "", JOptionPane.WARNING_MESSAGE);

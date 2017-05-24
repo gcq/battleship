@@ -25,7 +25,7 @@ public class Client {
 		clientRunnable = new ClientRunnable(this);
 	}
 	
-	public void open() {
+	public boolean open() {
 		
 		try {
 			echoSocket = new Socket(Constants.serverIp, Constants.serverPort); //Socket that we use to connect with the server
