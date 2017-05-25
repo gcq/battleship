@@ -25,9 +25,9 @@ public class Player {
 	public Player(Board board) {
 		this.board = board;
 		
-		clearBoard();
-		
 		ships = new HashMap<>();
+		
+		clear();
 	}
 	
 	public List<Point> getAllBoardPoints() {
@@ -40,7 +40,9 @@ public class Player {
 		return pts;
 	}
 	
-	public void clearBoard() {
+	public void clear() {
+		ships.clear();
+		
 		for (int y = 0; y < this.board.h; y++)
 			for (int x = 0; x < this.board.w; x++)
 				this.board.set(x, y, 0);
@@ -115,6 +117,7 @@ public class Player {
 	}
 	
 	public void resetBoard() throws InvalidShipPlacementException {
+		clear();
 		for (Ship s : ships.values()) {
 			placeShip(s);
 		}

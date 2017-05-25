@@ -581,10 +581,10 @@ public class PuiVicCruGuiBattleShip extends JFrame implements GridClickListener,
 		}
 		
 		else if (e.getActionCommand().equals("resetBoard")) {
+			playerBoardPanel.getPlayer().clear();
 			playerBoardPanel.clearBoard();
 			playerBoardPanel.resetShips();
 			shipZonePanel.reset();
-			player.clearBoard();
 		}
 		
 		else if (e.getActionCommand().equals("About")) {

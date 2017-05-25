@@ -37,7 +37,7 @@ import utils.Point;
  * 
  * @author Victor
  * Panell utilitzat per el taulell tant del jugador com del adversari
- * Omplert de JButtons que serán pintats posteriorment segons els colors de cada vaixell posicionat
+ * Omplert de JButtons que serï¿½n pintats posteriorment segons els colors de cada vaixell posicionat
  *
  */
 public class BoardPanel extends JPanel implements GridClickPublisher, EnemyPanelClickPublisher {
@@ -200,7 +200,7 @@ public class BoardPanel extends JPanel implements GridClickPublisher, EnemyPanel
 	}
 	
 	public void resetShips () {
-		player.clearBoard();
+		player.clear();
 	}
 	
 	public void clearBoard () {
